@@ -1,0 +1,13 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="floating_btn_size">50dp</dimen>
+    <dimen name="status_bar_height">40dp</dimen>
+
+    <dimen name="popup_window_marginLeftRight">20dp</dimen>
+    <dimen name="popup_window_marginTopBottom">60dp</dimen>
+    <dimen name="popup_window_game_information_icon_size">80dp</dimen>
+    <dimen name="popup_window_game_information_name_size">20sp</dimen>
+</resources>

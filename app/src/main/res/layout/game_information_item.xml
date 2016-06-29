@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/floating_game_item_layout"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="20dp"
+    android:descendantFocusability="blocksDescendants"
+    android:gravity="center">
+    <ImageView
+        android:id="@+id/floating_game_information_icon"
+        android:layout_width="@dimen/popup_window_game_information_icon_size"
+        android:layout_height="@dimen/popup_window_game_information_icon_size"
+        android:background="@drawable/floating"/>
+    <TextView
+        android:id="@+id/floating_game_information_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/popup_window_game_information_name_size"
+        android:textColor="#111111"
+        android:layout_gravity="center"
+        android:text="game"/>
+</LinearLayout>
