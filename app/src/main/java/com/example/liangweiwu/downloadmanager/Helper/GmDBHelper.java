@@ -40,6 +40,16 @@ public class GmDBHelper extends SQLiteOpenHelper {
             sb.append("category VARCHAR(20),");
             sb.append("detail VARCHAR(200),");
             sb.append("status numeric(0,1))");
+            db.execSQL(sb.toString());
+
+            sb = new StringBuilder();
+            sb.append("CREATE TABLE ThreadDetail(");
+            sb.append("ID INTEGER PRIMARY KEY,");
+            sb.append("thread_id INTEGER PRIMARY KEY,");
+            sb.append("thread_status numeric(0,1)");
+            sb.append("thread_blockSize VARCHAR(50),");
+            sb.append("thread_startOffset VARCHAR(50),");
+            sb.append("ID foreign key reference DownloadManager)");
             System.out.println(sb.toString());
             db.execSQL(sb.toString());
         }catch (Exception e){

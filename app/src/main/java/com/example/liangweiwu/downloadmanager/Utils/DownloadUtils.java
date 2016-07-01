@@ -6,13 +6,34 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.util.Log;
+
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 
 
 public class DownloadUtils {
     private Context mContext;
-    public DownloadUtils(Context mContext){
+    private static DownloadUtils mDownloadUtils;
+    private DownloadUtils(Context mContext){
         this.mContext = mContext;
     }
+    public static DownloadUtils getInstance(Context context){
+        if(mDownloadUtils == null){
+            mDownloadUtils = new DownloadUtils(context.getApplicationContext());
+        }
+        return mDownloadUtils;
+    }
+    public static DownloadUtils getInstance(){
+        return mDownloadUtils;
+    }
+
+    public void download(){
+
+    }
+
 
     public void download(String uri){
         DownloadManager manager = (DownloadManager)mContext.getSystemService(Context.DOWNLOAD_SERVICE);

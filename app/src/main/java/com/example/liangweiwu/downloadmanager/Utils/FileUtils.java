@@ -10,6 +10,8 @@ import java.io.File;
 public class FileUtils {
     public static String DIR_ICON;
     public static String DIR_PACKAGE;
+    public static String DIR_PACKAGE_INTERNAL;
+    public static String DIR_PACKAGE_EXTERNAL;
     public static void init(Context context){
         DIR_ICON = context.getFilesDir().getPath()+"/icon/";
         File dir_icon = new File(DIR_ICON);
@@ -17,12 +19,16 @@ public class FileUtils {
             dir_icon.mkdirs();
         }
         try{
-            DIR_PACKAGE = context.getExternalCacheDir().getPath()+"/package/";
+            DIR_PACKAGE_EXTERNAL = context.getExternalFilesDir(null).getPath()+"/package/";
+            DIR_PACKAGE = DIR_PACKAGE_EXTERNAL;
         }catch (Exception e){
-            DIR_PACKAGE = context.getFilesDir().getPath() + "/package/";
+            Log.i("package dir","internal");
+            DIR_PACKAGE_INTERNAL = context.getFilesDir().getPath() + "/package/";
+            DIR_PACKAGE = DIR_PACKAGE_INTERNAL;
         }finally{
             File dir_package = new File(DIR_PACKAGE);
             if(!dir_package.exists()){
+                Log.i("directory","make");
                 dir_package.mkdirs();
             }
         }
