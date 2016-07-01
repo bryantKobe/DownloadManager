@@ -1,12 +1,14 @@
-package com.example.liangweiwu.downloadmanager;
+package com.example.liangweiwu.downloadmanager.Views;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+
+import com.example.liangweiwu.downloadmanager.Utils.MyWindowManager;
+import com.example.liangweiwu.downloadmanager.R;
 
 import java.lang.reflect.Field;
 
@@ -129,8 +131,8 @@ public class FloatingBtnView extends LinearLayout {
      * 打开大悬浮窗，同时关闭小悬浮窗。
      */
     private void openBigWindow() {
-        MyWindowManager.createBigWindow(getContext());
-        MyWindowManager.removeSmallWindow(getContext());
+        MyWindowManager.createPopupWindow(getContext());
+        MyWindowManager.removeFloatingIcon(getContext());
     }
     /**
      * 用于获取状态栏的高度。

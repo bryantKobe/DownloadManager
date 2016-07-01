@@ -1,18 +1,13 @@
-package com.example.liangweiwu.downloadmanager;
+package com.example.liangweiwu.downloadmanager.Services;
 
-import android.app.ActivityManager;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.os.Handler;
 import android.os.IBinder;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.example.liangweiwu.downloadmanager.Utils.MyWindowManager;
+
 import java.util.Timer;
-import java.util.TimerTask;
 
 public class FloatingService extends Service {
     private Handler mHandler = new Handler();
@@ -24,7 +19,7 @@ public class FloatingService extends Service {
     }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        MyWindowManager.createSmallWindow(getApplicationContext());
+        MyWindowManager.createFloatingIcon(getApplicationContext());
         // 开启定时器，每隔0.5秒刷新一次
         if (mTimer == null) {
             mTimer  = new Timer();

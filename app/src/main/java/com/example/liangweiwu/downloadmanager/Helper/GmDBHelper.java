@@ -1,4 +1,4 @@
-package com.example.liangweiwu.downloadmanager;
+package com.example.liangweiwu.downloadmanager.Helper;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -6,6 +6,8 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import com.example.liangweiwu.downloadmanager.Model.GameInformation;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -28,10 +30,11 @@ public class GmDBHelper extends SQLiteOpenHelper {
             StringBuilder sb = new StringBuilder();
             sb.append("CREATE TABLE DownloadManager(");
             sb.append("ID INTEGER PRIMARY KEY AUTOINCREMENT,");
-            sb.append("name VARCHAR(50) NOT NULL,");
-            sb.append("icon INTEGER NOT NULL,");
+            sb.append("name VARCHAR(50),");
+            sb.append("icon VARCHAR(50),");
+            sb.append("url VARCHAR(200),");
             sb.append("package VARCHAR(100),");
-            sb.append("versionCode INTEGER,");
+            sb.append("versionCode VARCHAR(100),");
             sb.append("versionName VARCHAR(100),");
             sb.append("size VARCHAR(20),");
             sb.append("category VARCHAR(20),");
@@ -55,11 +58,10 @@ public class GmDBHelper extends SQLiteOpenHelper {
         try{
             while(cursor.moveToNext()){
                 GameInformation info = new GameInformation();
-                String[] column_filed = {"ID","name","icon","package","versionCode",
+                String[] column_filed = {"ID","name","icon","url","package","versionCode",
                         "versionName","size","category","detail","status"};
                 for(String filed:column_filed){
-                    if(filed.equals("ID")||filed.equals("icon")
-                            ||filed.equals("versionCode")||filed.equals("status")){
+                    if(filed.equals("ID")||filed.equals("status")){
                         info.setAttribute(filed,cursor.getInt(cursor.getColumnIndex(filed)));
                     }else{
                         info.setAttribute(filed,cursor.getString(cursor.getColumnIndex(filed)));
@@ -84,11 +86,10 @@ public class GmDBHelper extends SQLiteOpenHelper {
         try{
             if(cursor.moveToFirst()){
                 info = new GameInformation();
-                String[] column_filed = {"ID","name","icon","package","versionCode",
+                String[] column_filed = {"ID","name","icon","url","package","versionCode",
                         "versionName","size","category","detail","status"};
                 for(String filed:column_filed){
-                    if(filed.equals("ID")||filed.equals("icon")
-                            ||filed.equals("versionCode")||filed.equals("status")){
+                    if(filed.equals("ID") || filed.equals("status")){
                         info.setAttribute(filed,cursor.getInt(cursor.getColumnIndex(filed)));
                     }else{
                         info.setAttribute(filed,cursor.getString(cursor.getColumnIndex(filed)));
@@ -110,11 +111,12 @@ public class GmDBHelper extends SQLiteOpenHelper {
             return;
         }
         try{
-            String sql = "insert into DownloadManager(ID,name,icon,package,versionCode,versionName,size,category,detail,status) values(?,?,?,?,?,?,?,?,?,?)";
+            String sql = "insert into DownloadManager(ID,name,icon,url,package,versionCode,versionName,size,category,detail,status) values(?,?,?,?,?,?,?,?,?,?,?)";
             db.execSQL(sql,new Object[]{
                     info.getID(),
                     info.getName(),
                     info.getIcon(),
+                    info.getAttribution("url"),
                     info.getAttribution("package"),
                     info.getAttribution("versionCode"),
                     info.getAttribution("versionName"),
@@ -139,12 +141,13 @@ public class GmDBHelper extends SQLiteOpenHelper {
     public void update(GameInformation info){
         SQLiteDatabase db = this.getWritableDatabase();
         try{
-            String sql = "update DownloadManager set name=?,icon=?,package=?," +
+            String sql = "update DownloadManager set name=?,icon=?,url=?,package=?," +
                     "versionCode=?,versionName=?,size=?,category=?," +
                     "detail=?,status=? where ID=?";
             db.execSQL(sql,new Object[]{
                     info.getName(),
                     info.getIcon(),
+                    info.getAttribution("url"),
                     info.getAttribution("package"),
                     info.getAttribution("versionCode"),
                     info.getAttribution("versionName"),

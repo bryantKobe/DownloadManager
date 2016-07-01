@@ -1,21 +1,30 @@
-package com.example.liangweiwu.downloadmanager;
+package com.example.liangweiwu.downloadmanager.Model;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v4.util.Pair;
 import android.util.Log;
+
+import com.example.liangweiwu.downloadmanager.R;
+import com.example.liangweiwu.downloadmanager.Utils.FileUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
 
 public class GameInformation {
     private int mId;
-    private String mName = "";
-    private int mIcon = 0;
+    private String mName = "正在加载...";
+    private String mIcon = "default";
     private HashMap<String,Object> mAttributeSet = new HashMap<>();
+    public static int MAX_ID = 0;
 
     public GameInformation(){
-
+        this.mId = MAX_ID;
+        MAX_ID++;
     }
-    public GameInformation(int ID,String name,int icon){
+    public GameInformation(int ID,String name,String icon){
         this.mId = ID;
         this.mName = name;
         this.mIcon = icon;
@@ -26,7 +35,16 @@ public class GameInformation {
     public String getName(){
         return mName;
     }
-    public int getIcon(){
+    public Bitmap getIconBtimap(Context context){
+        Bitmap bitmap = null;
+        if(mIcon.equals("default")){
+            bitmap = FileUtils.getBitmap(context, R.drawable.default_icon);
+        }else{
+            bitmap = FileUtils.getBitmap(context, mIcon);
+        }
+        return bitmap;
+    }
+    public String getIcon(){
         return mIcon;
     }
     public void setAttribute(String field,Object value){
@@ -45,7 +63,7 @@ public class GameInformation {
             return;
         }
         if(field.equals("icon")){
-            this.mIcon = (int)value;
+            this.mIcon = (String)value;
             return;
         }
         mAttributeSet.put(field,value);
@@ -64,7 +82,7 @@ public class GameInformation {
     public void debug(){
         Log.i("ID",String.valueOf(mId));
         Log.i("name",mName);
-        Log.i("icon",String.valueOf(mIcon));
+        Log.i("icon",mIcon);
         for(String field:mAttributeSet.keySet()){
             Object value = mAttributeSet.get(field);
             if(value == null || String.valueOf(value).equals("")){

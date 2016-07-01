@@ -1,14 +1,14 @@
-package com.example.liangweiwu.downloadmanager;
+package com.example.liangweiwu.downloadmanager.Utils;
 
-import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.view.WindowManager;
+
+import com.example.liangweiwu.downloadmanager.Views.FloatingBtnView;
+import com.example.liangweiwu.downloadmanager.Views.FloatingPopupWindowView;
 
 
 public class MyWindowManager {
@@ -44,7 +44,7 @@ public class MyWindowManager {
      * @param context
      *            必须为应用程序的Context.
      */
-    public static void createSmallWindow(Context context) {
+    public static void createFloatingIcon(Context context) {
         Log.i("state","Floating Icon Show");
         WindowManager windowManager = getWindowManager(context);
         DisplayMetrics metrics = new DisplayMetrics();
@@ -77,7 +77,7 @@ public class MyWindowManager {
      * @param context
      *            必须为应用程序的Context.
      */
-    public static void removeSmallWindow(Context context) {
+    public static void removeFloatingIcon(Context context) {
         if (smallWindow != null) {
             WindowManager windowManager = getWindowManager(context);
             windowManager.removeView(smallWindow);
@@ -91,7 +91,7 @@ public class MyWindowManager {
      * @param context
      *            必须为应用程序的Context.
      */
-    public static void createBigWindow(Context context) {
+    public static void createPopupWindow(Context context) {
         Log.i("state","Floating Popup Window Show");
         WindowManager windowManager = getWindowManager(context);
         /*
@@ -118,33 +118,18 @@ public class MyWindowManager {
         }
     }
 
-    public static void createGameDetailWindow(Context context){
-        Log.i("state","Game Detail Show");
-        WindowManager windowManager = getWindowManager(context);
-        
-    }
-
     /**
      * 将大悬浮窗从屏幕上移除。
      *
      * @param context
      *            必须为应用程序的Context.
      */
-    public static void removeBigWindow(Context context) {
+    public static void removePopupWindow(Context context) {
         if (bigWindow != null) {
             WindowManager windowManager = getWindowManager(context);
             windowManager.removeView(bigWindow);
             bigWindow = null;
         }
-    }
-
-    /**
-     * 是否有悬浮窗(包括小悬浮窗和大悬浮窗)显示在屏幕上。
-     *
-     * @return 有悬浮窗显示在桌面上返回true，没有的话返回false。
-     */
-    public static boolean isWindowShowing() {
-        return smallWindow != null || bigWindow != null;
     }
 
     /**

@@ -1,10 +1,14 @@
-package com.example.liangweiwu.downloadmanager;
+package com.example.liangweiwu.downloadmanager.Activitys;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+
+import com.example.liangweiwu.downloadmanager.Services.FloatingService;
+import com.example.liangweiwu.downloadmanager.R;
+import com.example.liangweiwu.downloadmanager.Utils.GameInformationUtils;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,6 +25,14 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             }
         });
-
+        onLaunch();
+    }
+    private void onLaunch(){
+        GameInformationUtils.getInstance(this);
+    }
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        GameInformationUtils.getInstance().onDestory();
     }
 }

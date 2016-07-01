@@ -1,4 +1,4 @@
-package com.example.liangweiwu.downloadmanager;
+package com.example.liangweiwu.downloadmanager.Views;
 
 import android.content.Context;
 import android.os.Handler;
@@ -12,6 +12,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.example.liangweiwu.downloadmanager.Model.GameInformation;
+import com.example.liangweiwu.downloadmanager.Utils.GameInformationUtils;
+import com.example.liangweiwu.downloadmanager.Utils.MyWindowManager;
+import com.example.liangweiwu.downloadmanager.R;
+import com.example.liangweiwu.downloadmanager.Helper.RecyclerAdapter;
 
 import java.util.ArrayList;
 
@@ -84,8 +90,8 @@ public class FloatingPopupWindowView extends LinearLayout {
         switch (event.getAction()){
             case MotionEvent.ACTION_OUTSIDE:
                 Log.i("motion","touch outside");
-                MyWindowManager.createSmallWindow(getContext());
-                MyWindowManager.removeBigWindow(getContext());
+                MyWindowManager.createFloatingIcon(getContext());
+                MyWindowManager.removePopupWindow(getContext());
                 break;
             default:
                 break;
