@@ -10,4 +10,5 @@
     <dimen name="popup_window_marginTopBottom">60dp</dimen>
     <dimen name="popup_window_game_information_icon_size">80dp</dimen>
     <dimen name="popup_window_game_information_name_size">20sp</dimen>
+
 </resources>

@@ -1,6 +1,7 @@
 package com.example.liangweiwu.downloadmanager;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -76,7 +77,7 @@ public class FloatingBtnView extends LinearLayout {
     }
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        System.out.println("touch");
+        //Log.i("motion","move floating icon");
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 // 手指按下时记录必要数据,纵坐标的值都需要减去状态栏高度

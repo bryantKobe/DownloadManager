@@ -3,15 +3,14 @@
     android:id="@+id/floating_popWin_layout"
     android:orientation="vertical"
     android:layout_width="300dp"
-    android:layout_height="400dp"
+    android:layout_height="500dp"
     android:background="@drawable/popup_window_background"
-    android:gravity="center">
+    android:gravity="top">
     <android.support.v7.widget.RecyclerView
         android:id="@+id/floating_recycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:scrollbars="vertical">
-
     </android.support.v7.widget.RecyclerView>
-
 </LinearLayout>

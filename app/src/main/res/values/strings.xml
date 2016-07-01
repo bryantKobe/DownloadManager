@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">DownloadManager</string>
+
+    <string name="game_detail_status_install">安装</string>
+    <string name="game_detail_status_launch">打开</string>
 </resources>

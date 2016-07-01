@@ -1,42 +1,41 @@
 package com.example.liangweiwu.downloadmanager;
 
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import java.util.ArrayList;
 
-/**
- * Created by liangwei.wu on 16/6/29.
- */
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder>{
     public ArrayList<GameInformation> datas = null;
-    public RecyclerAdapter(ArrayList<GameInformation> datas) {
+    public Handler mHandler;
+    public RecyclerAdapter(ArrayList<GameInformation> datas,Handler handler) {
         this.datas = datas;
+        this.mHandler = handler;
     }
     //创建新View，被LayoutManager所调用
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.game_information_item,viewGroup,false);
-        ViewHolder viewHolder = new ViewHolder(view);
-        return viewHolder;
+        return new ViewHolder(view);
     }
     //将数据与界面进行绑定的操作
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, int position) {
-        viewHolder.mTextView.setText(datas.get(position).getName());
-        viewHolder.mImageView.setBackgroundResource(datas.get(position).getIcon());
+        final GameInformation info = datas.get(position);
+        viewHolder.mTextView.setText(info.getName());
+        viewHolder.mImageView.setBackgroundResource(info.getIcon());
         viewHolder.mItemLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                System.out.println("click");
-                //Toast.makeText(view.getContext(),viewHolder.mTextView.getText(),Toast.LENGTH_SHORT).show();
+                Log.i("motion","game detail");
                 // TODO
+                mHandler.sendMessage(mHandler.obtainMessage(FloatingPopupWindowView.SHOW_GAME_DETAIL,info.getID()));
             }
         });
     }

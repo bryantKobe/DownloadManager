@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,7 +45,7 @@ public class MyWindowManager {
      *            必须为应用程序的Context.
      */
     public static void createSmallWindow(Context context) {
-        System.out.println("floating");
+        Log.i("state","Floating Icon Show");
         WindowManager windowManager = getWindowManager(context);
         DisplayMetrics metrics = new DisplayMetrics();
         windowManager.getDefaultDisplay().getMetrics(metrics);
@@ -57,8 +58,8 @@ public class MyWindowManager {
                 smallWindowParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
                 smallWindowParams.format = PixelFormat.RGBA_8888;
 
-                smallWindowParams.flags =   WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH;
-
+                smallWindowParams.flags =   WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                        | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
                 smallWindowParams.gravity = Gravity.TOP|Gravity.LEFT;
                 smallWindowParams.width = FloatingBtnView.viewWidth;
                 smallWindowParams.height = FloatingBtnView.viewHeight;
@@ -91,19 +92,22 @@ public class MyWindowManager {
      *            必须为应用程序的Context.
      */
     public static void createBigWindow(Context context) {
-        System.out.println("popup");
+        Log.i("state","Floating Popup Window Show");
         WindowManager windowManager = getWindowManager(context);
+        /*
         DisplayMetrics metrics = new DisplayMetrics();
         windowManager.getDefaultDisplay().getMetrics(metrics);
         int screenWidth = metrics.widthPixels;
         int screenHeight = metrics.heightPixels;
+        */
         if (bigWindow == null) {
             bigWindow = new FloatingPopupWindowView(context);
             if (bigWindowParams == null) {
                 bigWindowParams = new WindowManager.LayoutParams();
                 bigWindowParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
-
-                bigWindowParams.flags =   WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
+                bigWindowParams.flags =    WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
+                      | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                      |WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
 
                 bigWindowParams.format = PixelFormat.RGBA_8888;
                 bigWindowParams.gravity = Gravity.CENTER;
@@ -112,6 +116,12 @@ public class MyWindowManager {
             }
             windowManager.addView(bigWindow, bigWindowParams);
         }
+    }
+
+    public static void createGameDetailWindow(Context context){
+        Log.i("state","Game Detail Show");
+        WindowManager windowManager = getWindowManager(context);
+        
     }
 
     /**
