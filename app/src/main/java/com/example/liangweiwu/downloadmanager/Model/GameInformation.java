@@ -21,6 +21,7 @@ public class GameInformation {
     public static int MAX_ID = 0;
 
     public GameInformation(){
+        mAttributeSet.put("thread_number",1);
         this.mId = MAX_ID;
         MAX_ID++;
     }
@@ -28,6 +29,7 @@ public class GameInformation {
         this.mId = ID;
         this.mName = name;
         this.mIcon = icon;
+        mAttributeSet.put("thread_number",1);
     }
     public int getID(){
         return mId;
@@ -36,7 +38,7 @@ public class GameInformation {
         return mName;
     }
     public Bitmap getIconBtimap(Context context){
-        Bitmap bitmap = null;
+        Bitmap bitmap;
         if(mIcon.equals("default")){
             bitmap = FileUtils.getBitmap(context, R.drawable.default_icon);
         }else{

@@ -15,24 +15,28 @@ import java.net.URLConnection;
 
 
 public class DownloadUtils {
-    private Context mContext;
     private static DownloadUtils mDownloadUtils;
+    private Context mContext;
+
     private DownloadUtils(Context mContext){
         this.mContext = mContext;
     }
-    public static DownloadUtils getInstance(Context context){
+    public static void init(Context context){
         if(mDownloadUtils == null){
             mDownloadUtils = new DownloadUtils(context.getApplicationContext());
         }
-        return mDownloadUtils;
     }
     public static DownloadUtils getInstance(){
         return mDownloadUtils;
     }
 
-    public void download(){
 
-    }
+
+
+
+
+
+
 
 
     public void download(String uri){

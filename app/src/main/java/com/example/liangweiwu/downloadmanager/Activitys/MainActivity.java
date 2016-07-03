@@ -6,13 +6,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import com.example.liangweiwu.downloadmanager.Helper.DownloadTask;
-import com.example.liangweiwu.downloadmanager.Model.DownloadParam;
+import com.example.liangweiwu.downloadmanager.Model.DownloadController;
 import com.example.liangweiwu.downloadmanager.Services.FloatingService;
 import com.example.liangweiwu.downloadmanager.R;
-import com.example.liangweiwu.downloadmanager.Utils.DownloadUtils;
 import com.example.liangweiwu.downloadmanager.Utils.FileUtils;
 import com.example.liangweiwu.downloadmanager.Utils.GameInformationUtils;
+import com.example.liangweiwu.downloadmanager.Utils.GameParamUtils;
+import com.example.liangweiwu.downloadmanager.Utils.NetworkUtils;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,24 +30,68 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         onLaunch();
+        netTest();
         downloadTest();
     }
     private void onLaunch(){
-        GameInformationUtils.getInstance(this);
+        GameInformationUtils.init(this);
+        GameParamUtils.init(this);
         FileUtils.init(this);
-        System.out.println(FileUtils.DIR_PACKAGE);
+        NetworkUtils.init(this);
+    }
+    private void netTest(){
+        System.out.println("network:" + NetworkUtils.getInstance().isNetworkAvailable());
+        System.out.println("wifi:" + NetworkUtils.getInstance().isWifi());
+        System.out.println("3G:" + NetworkUtils.getInstance().is3G());
     }
     private void downloadTest(){
-        //DownloadUtils.getInstance(this).download();
         String url = "http://down1.xxzhushou.cn/uploads/2016-04-08/com.youyou.hylt.guopan-1.0_s_1460103121.apk";
-        DownloadTask task = new DownloadTask(null,url,1,FileUtils.DIR_PACKAGE+"test.apk");
-        //DownloadParam param = new DownloadParam("http://www.blogjava.net/toby/archive/2009/04/24/267413.html",0,0);
-        //task.execute();
-        //System.out.println(param.getFilename());
+        int thread_number = 5;
+        try{
+            final DownloadController task = new DownloadController(url,thread_number);
+            Button start = (Button)findViewById(R.id.thread_start);
+            start.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    task.start();
+                }
+            });
+            Button pause = (Button)findViewById(R.id.thread_pause);
+            pause.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    task.pause();
+                }
+            });
+            Button resume = (Button)findViewById(R.id.thread_resume);
+            resume.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    task.resume();
+                }
+            });
+            Button stop = (Button)findViewById(R.id.thread_stop);
+            stop.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    task.stop();
+                }
+            });
+            Button restart = (Button)findViewById(R.id.thread_restart);
+            restart.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    task.restart();
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
     @Override
     protected void onDestroy(){
         super.onDestroy();
-        GameInformationUtils.getInstance().onDestory();
+        GameInformationUtils.getInstance().onDestroy();
+        GameParamUtils.getInstance().onDestroy();
     }
 }

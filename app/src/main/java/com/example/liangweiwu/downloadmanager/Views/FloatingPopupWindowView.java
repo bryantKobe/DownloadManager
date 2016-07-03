@@ -49,7 +49,7 @@ public class FloatingPopupWindowView extends LinearLayout {
                     rootLayout.addView(view);
                     LinearLayout itemLayout = (LinearLayout) view.findViewById(R.id.detail_layout);
                     int id = (int)msg.obj;
-                    GameInformation info = GameInformationUtils.getInstance(getContext()).getGameInfoByID(id);
+                    GameInformation info = GameInformationUtils.getInstance().getGameInfoByID(id);
                     for(Pair<String,String> pair : info.getAttributions()){
                         addField(itemLayout,pair);
                     }
@@ -83,7 +83,7 @@ public class FloatingPopupWindowView extends LinearLayout {
     }
 
     private ArrayList<GameInformation> getDatas(){
-        return GameInformationUtils.getInstance(getContext()).getGameList();
+        return GameInformationUtils.getInstance().getGameList();
     }
     @Override
     public boolean onTouchEvent(MotionEvent event){

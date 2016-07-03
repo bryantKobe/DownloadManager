@@ -16,25 +16,23 @@ public class GameInformationUtils {
 
 
     private GameInformationUtils(Context context){
-        Log.i("debug","init0");
         mContext = context;
         onCreate();
     }
     /*
      *  获取Util单例
      */
-    public static GameInformationUtils getInstance(Context context){
-        if(mGameInfoUtils==null){
-            mGameInfoUtils = new GameInformationUtils(context.getApplicationContext());
-        }
-        return mGameInfoUtils;
-    }
     public static GameInformationUtils getInstance(){
         return mGameInfoUtils;
     }
     /*
      *  初始化
      */
+    public static void init(Context context){
+        if(mGameInfoUtils==null){
+            mGameInfoUtils = new GameInformationUtils(context.getApplicationContext());
+        }
+    }
     private void onCreate(){
         mDBHelper = GmDBHelper.getGmDBhelper(mContext);
         //initData();
@@ -44,14 +42,13 @@ public class GameInformationUtils {
     /*
      *  销毁
      */
-    public void onDestory(){
+    public void onDestroy(){
         mDBHelper.close();
     }
     /*
      *   TODO
      */
     public void initData(){
-        Log.i("debug","init");
         GameInformation info = new GameInformation();
         mDBHelper.insert(info);
     }
@@ -72,5 +69,13 @@ public class GameInformationUtils {
     }
     public GameInformation getGameInfoByID(int id){
         return mGameInfoMap.get(id);
+    }
+    public GameInformation createGameInfo(){
+        GameInformation info = new GameInformation();
+        mGameInfoMap.put(info.getID(),info);
+        return info;
+    }
+    public void saveToStorage(){
+
     }
 }

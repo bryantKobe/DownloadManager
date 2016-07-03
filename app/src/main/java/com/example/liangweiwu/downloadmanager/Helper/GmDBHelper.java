@@ -39,20 +39,22 @@ public class GmDBHelper extends SQLiteOpenHelper {
             sb.append("size VARCHAR(20),");
             sb.append("category VARCHAR(20),");
             sb.append("detail VARCHAR(200),");
-            sb.append("status numeric(0,1))");
+            sb.append("status numeric(0,1),");
+            sb.append("thread_number INTEGER DEFAULT 1 )");
             db.execSQL(sb.toString());
 
             sb = new StringBuilder();
             sb.append("CREATE TABLE ThreadDetail(");
-            sb.append("ID INTEGER PRIMARY KEY,");
-            sb.append("thread_id INTEGER PRIMARY KEY,");
-            sb.append("thread_status numeric(0,1)");
+            sb.append("ID INTEGER REFERENCES DownloadManager,");
+            sb.append("thread_id INTEGER,");
+            sb.append("thread_status numeric(0,1),");
             sb.append("thread_blockSize VARCHAR(50),");
             sb.append("thread_startOffset VARCHAR(50),");
-            sb.append("ID foreign key reference DownloadManager)");
+            sb.append("PRIMARY KEY(ID,thread_id) )");
             System.out.println(sb.toString());
             db.execSQL(sb.toString());
         }catch (Exception e){
+            e.printStackTrace();
             Log.e("create database",e.getMessage());
         }
     }
@@ -69,9 +71,9 @@ public class GmDBHelper extends SQLiteOpenHelper {
             while(cursor.moveToNext()){
                 GameInformation info = new GameInformation();
                 String[] column_filed = {"ID","name","icon","url","package","versionCode",
-                        "versionName","size","category","detail","status"};
+                        "versionName","size","category","detail","status","thread_number"};
                 for(String filed:column_filed){
-                    if(filed.equals("ID")||filed.equals("status")){
+                    if(filed.equals("ID") || filed.equals("status") || filed.equals("thread_number")){
                         info.setAttribute(filed,cursor.getInt(cursor.getColumnIndex(filed)));
                     }else{
                         info.setAttribute(filed,cursor.getString(cursor.getColumnIndex(filed)));
@@ -80,9 +82,10 @@ public class GmDBHelper extends SQLiteOpenHelper {
                 info.debug();
                 list.put(info.getID(),info);
             }
-            Log.i("query game number",String.valueOf(cursor.getCount()));
+            Log.i("Query Size",String.valueOf(cursor.getCount()));
         }catch (SQLException e){
-            Log.e("query",e.getMessage());
+            e.printStackTrace();
+            Log.e("Query",e.getMessage());
         }
         cursor.close();
         db.close();
@@ -97,9 +100,9 @@ public class GmDBHelper extends SQLiteOpenHelper {
             if(cursor.moveToFirst()){
                 info = new GameInformation();
                 String[] column_filed = {"ID","name","icon","url","package","versionCode",
-                        "versionName","size","category","detail","status"};
+                        "versionName","size","category","detail","status","thread_number"};
                 for(String filed:column_filed){
-                    if(filed.equals("ID") || filed.equals("status")){
+                    if(filed.equals("ID") || filed.equals("status") || filed.equals("thread_number")){
                         info.setAttribute(filed,cursor.getInt(cursor.getColumnIndex(filed)));
                     }else{
                         info.setAttribute(filed,cursor.getString(cursor.getColumnIndex(filed)));
@@ -107,9 +110,9 @@ public class GmDBHelper extends SQLiteOpenHelper {
                 }
                 info.debug();
             }
-            Log.i("query game number",String.valueOf(cursor.getCount()));
         }catch (SQLException e){
-            Log.e("query",e.getMessage());
+            e.printStackTrace();
+            Log.e("Query",e.getMessage());
         }
         cursor.close();
         db.close();
@@ -121,7 +124,7 @@ public class GmDBHelper extends SQLiteOpenHelper {
             return;
         }
         try{
-            String sql = "insert into DownloadManager(ID,name,icon,url,package,versionCode,versionName,size,category,detail,status) values(?,?,?,?,?,?,?,?,?,?,?)";
+            String sql = "insert into DownloadManager(ID,name,icon,url,package,versionCode,versionName,size,category,detail,status,thread_number) values(?,?,?,?,?,?,?,?,?,?,?,?)";
             db.execSQL(sql,new Object[]{
                     info.getID(),
                     info.getName(),
@@ -133,9 +136,11 @@ public class GmDBHelper extends SQLiteOpenHelper {
                     info.getAttribution("size"),
                     info.getAttribution("category"),
                     info.getAttribution("detail"),
-                    info.getAttribution("status")
+                    info.getAttribution("status"),
+                    info.getAttribution("thread_number")
             });
         }catch (SQLException e){
+            e.printStackTrace();
             Log.e("insert",e.getMessage());
         }
         db.close();
@@ -153,7 +158,7 @@ public class GmDBHelper extends SQLiteOpenHelper {
         try{
             String sql = "update DownloadManager set name=?,icon=?,url=?,package=?," +
                     "versionCode=?,versionName=?,size=?,category=?," +
-                    "detail=?,status=? where ID=?";
+                    "detail=?,status=?,thread_number=? where ID=?";
             db.execSQL(sql,new Object[]{
                     info.getName(),
                     info.getIcon(),
@@ -165,9 +170,11 @@ public class GmDBHelper extends SQLiteOpenHelper {
                     info.getAttribution("category"),
                     info.getAttribution("detail"),
                     info.getAttribution("status"),
+                    info.getAttribution("thread_number"),
                     info.getID()
             });
         }catch (SQLException e){
+            e.printStackTrace();
             Log.e("update",e.getMessage());
         }
         db.close();
@@ -178,8 +185,13 @@ public class GmDBHelper extends SQLiteOpenHelper {
             String sql = "delete from DownloadManager where ID = ?";
             db.execSQL(sql,new Object[]{id});
         }catch (SQLException e){
+            e.printStackTrace();
             Log.e("delete",e.getMessage());
         }
         db.close();
+    }
+
+    public void insertParam(){
+
     }
 }
