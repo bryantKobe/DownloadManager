@@ -27,7 +27,7 @@
             android:enabled="true"
             android:exported="true">
         </service>
-        <receiver android:name=".Model.DownloadController">
+        <receiver android:name=".Receiver.NetworkStateReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
             </intent-filter>

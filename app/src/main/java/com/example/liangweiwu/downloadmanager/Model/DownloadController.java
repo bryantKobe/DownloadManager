@@ -1,36 +1,23 @@
 package com.example.liangweiwu.downloadmanager.Model;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.widget.Toast;
+import android.view.View;
 
-import com.example.liangweiwu.downloadmanager.Utils.NetworkUtils;
 
-public class DownloadController extends BroadcastReceiver{
-    private DownloadTask mDownloadTask;
+public abstract class DownloadController {
+    private DownloadTask mDownloadTask = null;
     private GameInformation info;
     private DownloadParam[] params;
+    private View mItemView;
     public DownloadController(){}
     public DownloadController(String url, int threadNum) throws Exception{
-        mDownloadTask = new DownloadTask(url,threadNum);
+        mDownloadTask = newTask(url,threadNum);
         info = mDownloadTask.getInfo();
         params = mDownloadTask.getParams();
     }
     public DownloadController(GameInformation info, DownloadParam[] params) throws Exception{
-        mDownloadTask = new DownloadTask(info,params);
+        mDownloadTask = newTask(info,params);
         this.info = info;
         this.params = params;
-    }
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        this.stop();
-        boolean isConnected = NetworkUtils.getInstance().isNetworkAvailable();
-        if(isConnected){
-            this.resume();
-        }else{
-            Toast.makeText(context, "网络中断，请检查网络连接！",Toast.LENGTH_SHORT).show();
-        }
     }
     /**
      *  开始下载任务，若已经开始，则不起作用
@@ -59,11 +46,52 @@ public class DownloadController extends BroadcastReceiver{
             return;
         }
         try{
-            mDownloadTask = new DownloadTask(info,params);
+            mDownloadTask = newTask(info,params);
             mDownloadTask.Start();
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
 
+    private DownloadTask newTask(String url, int threadNum) throws Exception{
+        return new DownloadTask(url,threadNum){
+            @Override
+            protected void onStart(Integer... values){
+                initViews(values);
+            }
+            @Override
+            protected void onStop(){
+                onDownloadStop();
+            }
+            @Override
+            protected void onUpdate(Integer... values){
+                bindViews(values);
+            }
+        };
+    }
+    private DownloadTask newTask(GameInformation info, DownloadParam[] params)throws Exception{
+        return new DownloadTask(info,params){
+            @Override
+            protected void onStart(Integer... values){
+                initViews(values);
+            }
+            @Override
+            protected void onStop(){
+                onDownloadStop();
+            }
+            @Override
+            protected void onUpdate(Integer... values){
+                bindViews(values);
+            }
+        };
+    }
+    public abstract void initViews(Integer... values);
+    public abstract void bindViews(Integer... values);
+    public abstract void onDownloadStop();
+    public void debug(){
+        info.debug();
+        for(int i = 0 ; i < params.length; i++){
+            params[i].debug();
+        }
     }
 }

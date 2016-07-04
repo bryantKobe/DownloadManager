@@ -12,25 +12,33 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.io.RandomAccessFile;
 import java.net.MalformedURLException;
+import java.net.SocketException;
 import java.net.URL;
 import java.net.URLConnection;
 
 
 public class DownloadThread extends Thread {
+    public static int MAX_LOOP_TIMES = 1;
+
+    public static final int THREAD_STATE_NEW = 0;                   //线程状态:新建
+    public static final int THREAD_STATE_RUNNABLE = 1;              //线程状态:可运行
+    public static final int THREAD_STATE_RUNNING = 2;               //线程状态:运行中
+    public static final int THREAD_STATE_INTERRUPTED = 3;           //线程状态:中断
+    public static final int THREAD_STATE_FAILED = 4;                //线程状态:失败
+    public static final int THREAD_STATE_COMPLETED = 5;             //线程状态:完成
+    public static final int THREAD_STATE_END = 6;                   //线程状态:结束
+
     /** 文件保存路径 */
     private File file;
     /** 下载参数 */
     private DownloadParam param;
-    /** 当前下载是否完成 */
-    private boolean isCompleted = false;
-    /** 下载数据是否成功写入 */
-    private boolean isSuccessful = false;
     /** 当前下载文件长度 */
     private int downloadLength = 0;
-    /** 线程中断标志 */
-    private boolean isPreStop = false;
-    private boolean isPostStop = false;
-    private boolean forcedStop = false;
+    /** 线程状态变量 */
+    private int thread_state = THREAD_STATE_NEW;
+    private boolean isInterrupted = false;
+    private boolean isCompleted = false;
+    private boolean isFailed = false;
 
     /**
      *  url:文件下载地址
@@ -46,10 +54,6 @@ public class DownloadThread extends Thread {
     @Override
     public void run() {
         if(param.getThread_status()==DownloadParam.THREAD_STATUS_COMPLETED){
-            isSuccessful = true;
-            isCompleted = true;
-            isPreStop = true;
-            isPostStop = true;
             Log.d("Thread "+param.getThread_id(), "Completed");
             return;
         }
@@ -61,36 +65,43 @@ public class DownloadThread extends Thread {
         int startPos = blockSize * threadId + startOffset;//开始位置
         int endPos = blockSize * (threadId + 1) - 1;//结束位置
         byte[] buffer = new byte[1024];
-        boolean isSuccessfulTemp;
-        while(!forcedStop && !isSuccessful){
-            isSuccessfulTemp = true;        //数据写入失败，自动重启线程
-            downloadLength = 0;         //重置已经下载数据量
+        int loopTimes = 0;
+        thread_state = THREAD_STATE_RUNNABLE;
+        downloadLength = 0;         //重置已经下载数据量
+        while(thread_state != THREAD_STATE_END){
+            loopTimes ++;
             try {
+                if(loopTimes > MAX_LOOP_TIMES){
+                    isFailed = true;
+                    thread_state = THREAD_STATE_END;
+                    break;
+                }
+                thread_state = THREAD_STATE_RUNNING;
                 URL downloadUrl = new URL(param.getUrl());              //MalformedURLException
                 URLConnection conn = downloadUrl.openConnection();      //IOException
                 conn.setAllowUserInteraction(true);
                 //设置当前线程下载的起点、终点
-                conn.setRequestProperty("Range", "bytes=" + startPos + "-" + endPos);
-                Log.d("download",Thread.currentThread().getName() + "  bytes=" + startPos + "-" + endPos);
+                int curStartPos = startPos + downloadLength;
+                conn.setRequestProperty("Range", "bytes=" + curStartPos + "-" + endPos);
+                //Log.d("download",Thread.currentThread().getName() + "  bytes=" + curStartPos + "-" + endPos);
                 bis = new BufferedInputStream(conn.getInputStream());   //IOException
                 raf = new RandomAccessFile(file, "rwd");                //FileNotFoundException
-                raf.seek(startPos);
+                raf.seek(curStartPos);
                 int len;
-                while (((len = bis.read(buffer, 0, 1024)) != -1) && !isInterrupted()) {
+                while (((len = bis.read(buffer, 0, 1024)) != -1) && thread_state != THREAD_STATE_INTERRUPTED) {
                     raf.write(buffer, 0, len);
                     downloadLength += len;
                 }
-                if(!isInterrupted()){
+                if(thread_state != THREAD_STATE_INTERRUPTED){
                     isCompleted = true;
+                    thread_state = THREAD_STATE_COMPLETED;
                 }
-                isPreStop = true;
-            }catch (InterruptedIOException e){
-
-            }catch (IOException e1){
-                isSuccessfulTemp = false;
-                e1.printStackTrace();
-            }catch (Exception e2){
-                e2.printStackTrace();
+            }catch (Exception e){
+                if(!(e instanceof InterruptedIOException && isInterrupted())){
+                    System.out.println("Thread " + threadId + ": failed!");
+                    thread_state = THREAD_STATE_FAILED;
+                }
+                //e.printStackTrace();
             }finally {
                 if (bis != null) {
                     try {
@@ -103,48 +114,50 @@ public class DownloadThread extends Thread {
                     try {
                         raf.close();
                     } catch (IOException e) {
-                        isSuccessfulTemp = false;
                         e.printStackTrace();
+                        isCompleted = false;
+                        downloadLength = 0;                     //写入失败,下载数据清零
+                        thread_state = THREAD_STATE_FAILED;
                     }
                 }
-                isSuccessful = isSuccessfulTemp;
-                if(isCompleted && isSuccessful){
+                if(isCompleted || thread_state == THREAD_STATE_COMPLETED){
                     param.setThreadStatus(DownloadParam.THREAD_STATUS_COMPLETED);
-                    Log.d("Thread:"+param.getThread_id(), "Finished,all size:" + downloadLength);
+                    thread_state = THREAD_STATE_END;
                 }
-                isPostStop = true;
+                if(isInterrupted || thread_state == THREAD_STATE_INTERRUPTED){
+                    thread_state = THREAD_STATE_END;
+                }
+                if(isFailed){
+                    thread_state = THREAD_STATE_END;
+                }
             }
         }
+        Log.d("Thread:"+param.getThread_id(), "Finished,all size:" + downloadLength);
+        param.update(downloadLength);
     }
     /**
      *
      */
     public void Stop(){
-        forcedStop = true;
-        if(isPreStop){
+        if(thread_state != THREAD_STATE_RUNNING && thread_state != THREAD_STATE_RUNNABLE){
             return;
         }
+        thread_state = THREAD_STATE_INTERRUPTED;
+        isInterrupted = true;
         interrupt();
-        while(!isPostStop){
-            //Log.d("download","Stopping Thread "+ threadId);
+        while(thread_state != THREAD_STATE_END){
         }
         Log.d("download","Thread:" + param.getThread_id() + " has stopped,downloaded size:" + downloadLength);
-        param.update(downloadLength);
+
     }
     /**
      * 线程文件是否下载完毕
      */
-    public boolean isCompleted() {
-        return isCompleted;
+    public boolean isStop(){
+        return isCompleted || isInterrupted || isFailed;
     }
-    public boolean isEnd(){
-        return isPostStop||isPreStop;
-    }
-    /**
-     * 下载数据是否成功写入
-     */
-    public boolean isSuccessful(){
-        return isSuccessful;
+    public boolean isFailed(){
+        return isFailed;
     }
     /**
      * 线程下载文件长度

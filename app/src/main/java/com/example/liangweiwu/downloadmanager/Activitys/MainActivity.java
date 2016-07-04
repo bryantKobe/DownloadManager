@@ -3,6 +3,7 @@ package com.example.liangweiwu.downloadmanager.Activitys;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -45,10 +46,26 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("3G:" + NetworkUtils.getInstance().is3G());
     }
     private void downloadTest(){
-        String url = "http://down1.xxzhushou.cn/uploads/2016-04-08/com.youyou.hylt.guopan-1.0_s_1460103121.apk";
+        String url = "http://mydata.xxzhushou.cn/web_server/upload/app/2016-03-04/com.DBGame.DiabloLOL.apk";
         int thread_number = 5;
         try{
-            final DownloadController task = new DownloadController(url,thread_number);
+            final DownloadController task = new DownloadController(url,thread_number){
+                @Override
+                public void bindViews(Integer... values){
+                    Log.d("progress","downloaded size:" + values[0] + " b; speed: " + values[1] + " b/s");
+                }
+                @Override
+                public void initViews(Integer... values){
+                    Log.d("progress","init");
+                    Log.d("fileSize",values[0] + " b");
+                    Log.d("downloadedSize",values[1] + " b");
+                }
+                @Override
+                public void onDownloadStop(){
+                    debug();
+                    Log.d("progress","stop");
+                }
+            };
             Button start = (Button)findViewById(R.id.thread_start);
             start.setOnClickListener(new View.OnClickListener() {
                 @Override

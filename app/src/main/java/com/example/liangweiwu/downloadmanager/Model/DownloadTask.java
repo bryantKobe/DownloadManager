@@ -2,10 +2,6 @@ package com.example.liangweiwu.downloadmanager.Model;
 
 import android.os.AsyncTask;
 import android.util.Log;
-
-import com.example.liangweiwu.downloadmanager.Model.DownloadParam;
-import com.example.liangweiwu.downloadmanager.Model.DownloadThread;
-import com.example.liangweiwu.downloadmanager.Model.GameInformation;
 import com.example.liangweiwu.downloadmanager.Utils.FileUtils;
 import com.example.liangweiwu.downloadmanager.Utils.GameInformationUtils;
 import com.example.liangweiwu.downloadmanager.Utils.GameParamUtils;
@@ -14,6 +10,7 @@ import java.io.File;
 import java.io.RandomAccessFile;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashMap;
 
 
 public class DownloadTask extends AsyncTask<Integer,Integer,String> {
@@ -31,11 +28,12 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
     private File file;
     private int blockSize;                  // 每一个线程的下载量
     private int fileSize;                   // 下载文件的大小
-    private int downloadedSize = 0;      //已下载的文件大小
+    private int downloadedSize = 0;         //已下载的文件大小
     private DownloadThread[] threads;       //线程池
     private DownloadParam[] params;         //参数池
     private GameInformation info;
     private int download_states = DOWNLOAD_STATE_NEW;
+
 
     /**
      **  继续未完成的下载任务
@@ -68,6 +66,10 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
     }
     private void init(String downloadUrl, int threadNum) throws Exception{
         this.threadNum = threadNum;
+        Object size = info.getAttribution("size");
+        if(size != null){
+            this.fileSize = Integer.valueOf((String)size);
+        }
         file = new File(FileUtils.DIR_PACKAGE + info.getAttribution("package"));
         this.threads = new DownloadThread[threadNum];
         url = new URL(downloadUrl);
@@ -81,18 +83,30 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
+        onStart(fileSize,downloadedSize);
     }
-
     //doInBackground执行完后由UI线程调用，用于更新界面操作
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
+        onStop();
+    }
+    @Override
+    protected void onProgressUpdate(Integer... values) {
+        super.onProgressUpdate(values);
+        onUpdate(values);
+    }
+    protected void onStart(Integer... values){
+    }
+    protected void onUpdate(Integer... values){
+    }
+    protected void onStop(){
     }
 
     //在PreExcute执行后被启动AysncTask的后台线程调用，将结果返回给UI线程
     @Override
     protected String doInBackground(Integer... args){
-        if(info.getAttribution("status") == 1){
+        if((int)info.getAttribution("status") == 1){
             download_states = DOWNLOAD_STATE_END;
             return null;
         }
@@ -113,7 +127,9 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
             for(int i = 0 ; i < threadNum; i++){
                 params[i].setThread_blockSize(blockSize);
             }
-            while(download_states != DOWNLOAD_STATE_TERMINATED && download_states != DOWNLOAD_STATE_END){
+            while(download_states != DOWNLOAD_STATE_TERMINATED
+                    && download_states != DOWNLOAD_STATE_END
+                    && download_states != DOWNLOAD_STATE_FAILED){
                 while(download_states != DOWNLOAD_STATE_TERMINATED && download_states != DOWNLOAD_STATE_RUNNABLE){
                     Log.d("download","waiting");
                     Thread.sleep(1000);
@@ -124,12 +140,14 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
                 Log.d("download","running");
                 download_states = DOWNLOAD_STATE_RUNNING;
                 for (int i = 0; i < threadNum; i++) {
-                    if(threads[i].isEnd()){
+                    if(threads[i].isStop()){
                         threads[i] = new DownloadThread(params[i],file);
                         threads[i].setName("Thread:" + i);
                     }
                     threads[i].start();
                 }
+
+                boolean isFailed = false;
                 boolean isFinished = false;
                 int speedPerSecond = 0;
                 int preDownloadedSize = downloadedSize;
@@ -139,13 +157,20 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
                     downloadedAllSize = downloadedSize;
                     for (int i = 0; i < threadNum; i++) {
                         downloadedAllSize += threads[i].getDownloadLength();
-                        if (!(threads[i].isEnd() || threads[i].isCompleted() || threads[i].isSuccessful())) {
+                        if(threads[i].isFailed()){
+                            isFailed = true;
+                        }
+                        if (!threads[i].isStop()){
                             isFinished = false;
                         }
                     }
+                    if(isFailed){
+                        download_states = DOWNLOAD_STATE_FAILED;
+                        break;
+                    }
                     speedPerSecond = downloadedAllSize - preDownloadedSize;
                     preDownloadedSize = downloadedAllSize;
-                    publishProgress(downloadedAllSize,speedPerSecond);
+                    publishProgress(downloadedAllSize,speedPerSecond,fileSize);
                     Thread.sleep(1000);
                 }
                 if(downloadedAllSize == fileSize){
@@ -168,12 +193,17 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
             e.printStackTrace();
             Log.e("download","download failed!");
         }
+        if(download_states == DOWNLOAD_STATE_FAILED){
+            onThreadFailed();
+        }
         return null;
     }
-    @Override
-    protected void onProgressUpdate(Integer... values) {
-        Log.d("download", values[0] + " b");
-        super.onProgressUpdate(values);
+    private void onThreadFailed(){
+        for(int i = 0 ; i < threadNum; i++){
+            if(threads[i].isAlive()){
+                threads[i].Stop();
+            }
+        }
     }
     public void Start(){
         if(download_states != DOWNLOAD_STATE_NEW){
