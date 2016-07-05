@@ -41,9 +41,10 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
     public DownloadTask(GameInformation info,DownloadParam[] params) throws Exception{
         this.params = params;
         this.info = info;
-        init((String)info.getAttribution("url"),(Integer)info.getAttribution("thread_number"));
+        String url = (String)info.getAttribution("url");
+        init(url,(Integer)info.getAttribution("thread_number"));
         for(int i = 0 ; i < threadNum ; i++){
-            threads[i] = new DownloadThread(params[i], file);
+            threads[i] = new DownloadThread(params[i], file, url);
             threads[i].setName("Thread:" + i);
         }
     }
@@ -51,7 +52,7 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
      **  新建下载任务
      **/
     public DownloadTask(String downloadUrl, int threadNum) throws Exception{
-        info = GameInformationUtils.getInstance().createGameInfo();
+        info = GameInformationUtils.getInstance().createGameInfo(downloadUrl,threadNum);
         info.setAttribute("url",downloadUrl);
         info.setAttribute("thread_number",threadNum);
         info.setAttribute("package",DownloadParam.getFilename(downloadUrl));
@@ -59,8 +60,8 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
         init(downloadUrl,threadNum);
         params = new DownloadParam[threadNum];
         for(int i = 0 ; i < threadNum; i++){
-            params[i] = new DownloadParam(info.getID(),(String)info.getAttribution("url"),i,0);
-            threads[i] = new DownloadThread(params[i], file);
+            params[i] = new DownloadParam(info.getID(),i);
+            threads[i] = new DownloadThread(params[i], file , downloadUrl);
             threads[i].setName("Thread:" + i);
         }
     }
@@ -141,7 +142,7 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
                 download_states = DOWNLOAD_STATE_RUNNING;
                 for (int i = 0; i < threadNum; i++) {
                     if(threads[i].isStop()){
-                        threads[i] = new DownloadThread(params[i],file);
+                        threads[i] = new DownloadThread(params[i],file,(String)info.getAttribution("url"));
                         threads[i].setName("Thread:" + i);
                     }
                     threads[i].start();

@@ -9,6 +9,8 @@ import android.widget.Button;
 
 import com.example.liangweiwu.downloadmanager.Helper.DownloadItemAdapter;
 import com.example.liangweiwu.downloadmanager.Model.DownloadController;
+import com.example.liangweiwu.downloadmanager.Model.DownloadParam;
+import com.example.liangweiwu.downloadmanager.Model.GameInformation;
 import com.example.liangweiwu.downloadmanager.Services.FloatingService;
 import com.example.liangweiwu.downloadmanager.R;
 import com.example.liangweiwu.downloadmanager.Utils.FileUtils;
@@ -32,30 +34,33 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
-    private List<Object> mDatas;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_list);
         onLaunch();
+    }
+    private void onLaunch(){
+        GameInformationUtils.init(this);
+        GameParamUtils.init(this);
+        FileUtils.init(this);
+        NetworkUtils.init(this);
         dataInit();
         uiInit();
     }
-
-
     private void uiInit(){
-
-        mAdapter = new DownloadItemAdapter(mDatas);
+        mAdapter = new DownloadItemAdapter(GameInformationUtils.getInstance().getGameList());
         mRecyclerView = (RecyclerView) findViewById(R.id.downloadList);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(mAdapter);
-
         checkAnimInit();
         //startService(new Intent(MainActivity.this, FloatingService.class));
 
     }
-
+    private void dataInit() {
+        //GameParamUtils.getInstance().debug();
+    }
     private void checkAnimInit() {
         final Animation animation = new RotateAnimation(0, -89, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         LinearInterpolator lin = new LinearInterpolator();
@@ -71,26 +76,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-    protected void dataInit() {
-        mDatas = new ArrayList<>();
-        for (int i = 'A'; i < 'D'; i++) {
-            mDatas.add("" + (char) i);
-        }
-    }
-
-    private void onLaunch(){
-        GameInformationUtils.init(this);
-        GameParamUtils.init(this);
-        FileUtils.init(this);
-        NetworkUtils.init(this);
+    @Override
+    protected void onStop(){
+        System.out.println("stop");
+        super.onStop();
+        GameInformationUtils.getInstance().onDestroy();
+        GameParamUtils.getInstance().onDestroy();
     }
     @Override
     protected void onDestroy(){
         super.onDestroy();
-        GameInformationUtils.getInstance().onDestroy();
-        GameParamUtils.getInstance().onDestroy();
     }
+
+
     private void netTest(){
         System.out.println("network:" + NetworkUtils.getInstance().isNetworkAvailable());
         System.out.println("wifi:" + NetworkUtils.getInstance().isWifi());

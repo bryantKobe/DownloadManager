@@ -32,6 +32,8 @@ public class DownloadThread extends Thread {
     private File file;
     /** 下载参数 */
     private DownloadParam param;
+    /** 下载参数 */
+    private String url;
     /** 当前下载文件长度 */
     private int downloadLength = 0;
     /** 线程状态变量 */
@@ -47,9 +49,10 @@ public class DownloadThread extends Thread {
      *  threadId:线程ID
      *  startOffset:开始位置偏移量
      */
-    public DownloadThread(DownloadParam param,File file){
+    public DownloadThread(DownloadParam param,File file,String downloadUrl){
         this.file = file;
         this.param = param;
+        this.url = downloadUrl;
     }
     @Override
     public void run() {
@@ -77,7 +80,7 @@ public class DownloadThread extends Thread {
                     break;
                 }
                 thread_state = THREAD_STATE_RUNNING;
-                URL downloadUrl = new URL(param.getUrl());              //MalformedURLException
+                URL downloadUrl = new URL(url);              //MalformedURLException
                 URLConnection conn = downloadUrl.openConnection();      //IOException
                 conn.setAllowUserInteraction(true);
                 //设置当前线程下载的起点、终点

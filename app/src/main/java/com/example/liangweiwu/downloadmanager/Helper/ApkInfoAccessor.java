@@ -5,13 +5,19 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+
 import com.example.liangweiwu.downloadmanager.Model.GameInformation;
+import com.example.liangweiwu.downloadmanager.Utils.GameInformationUtils;
+
+import java.io.File;
+import java.util.HashMap;
 
 
 public class ApkInfoAccessor {
     String mFilePath;
     Context mContext;
     GameInformation mInfo;
+    HashMap<String,Object> mPackItems;
 
     public ApkInfoAccessor(String filePath, Context context) {
         this(filePath, context,null);
@@ -22,7 +28,10 @@ public class ApkInfoAccessor {
         this.mContext = context;
         this.mInfo = info;
         if(this.mInfo == null){
-            this.mInfo = new GameInformation();
+            this.mInfo = GameInformationUtils.getInstance().createGameInfo();
+        }
+        if(mPackItems == null){
+            mPackItems = new HashMap<>();
         }
     }
 
@@ -58,4 +67,46 @@ public class ApkInfoAccessor {
 
         return mInfo;
     }
+
+    public GameInformation drawPacks(String filePath){
+        this.mFilePath = filePath;
+        return drawPacks();
+    }
+
+    public HashMap<String,Object> drawPackItems(){
+        if(!mPackItems.isEmpty()){
+            return mPackItems;
+        }
+
+        PackageManager pm = mContext.getPackageManager();
+        PackageInfo packageInfo = pm.getPackageArchiveInfo(mFilePath,PackageManager.GET_ACTIVITIES);
+
+        if(mInfo!=null){
+            ApplicationInfo appInfo = packageInfo.applicationInfo;
+            Drawable icon = pm.getApplicationIcon(appInfo);
+            int targetSdkVersion = appInfo.targetSdkVersion;
+            int minSdkVersion = appInfo.minSdkVersion;
+            int versionCode = packageInfo.versionCode;
+            long appSize = new File(appInfo.publicSourceDir).length();
+            String appSizeStr = String.format("%.2f",1.0*appSize/(1024*1024));
+            String permission = appInfo.permission;
+            String versionName = packageInfo.versionName;
+            String packageName = packageInfo.packageName;
+            String appName = pm.getApplicationLabel(appInfo).toString();
+
+            mPackItems.put("名称",appName);
+            mPackItems.put("包名",packageName);
+            mPackItems.put("VersionCode",Integer.toString(versionCode));
+            mPackItems.put("VersionName",versionName);
+            mPackItems.put("大小",appSizeStr);
+            mPackItems.put("TargetSdkVersion",Integer.toString(targetSdkVersion));
+            mPackItems.put("MinSdkVersion",Integer.toString(minSdkVersion));
+            mPackItems.put("Permission",permission);
+        }
+
+        return mPackItems;
+
+    }
+
+
 }

@@ -7,21 +7,26 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import com.example.liangweiwu.downloadmanager.Model.GameInformation;
 import com.example.liangweiwu.downloadmanager.R;
 import java.util.List;
 
 
 public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapter.MyViewHolder> {
 
-    public List<Object> mDatas = null;
+    public List<GameInformation> mDatas = null;
     public Handler handler = null;
 
-    public DownloadItemAdapter(List<Object> mDatas) {
+    public DownloadItemAdapter(List<GameInformation> mDatas) {
         this.mDatas = mDatas;
     }
 
-    public DownloadItemAdapter(List<Object> mDatas, Handler handler) {
+    public DownloadItemAdapter(List<GameInformation> mDatas, Handler handler) {
         this.mDatas = mDatas;
         this.handler = handler;
     }
@@ -34,7 +39,12 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-
+        TextView stateText = (TextView)holder.itemView.findViewById(R.id.stateText);
+        TextView speedText = (TextView)holder.itemView.findViewById(R.id.speedText);
+        TextView appName = (TextView)holder.itemView.findViewById(R.id.appName);
+        ImageView appIcon = (ImageView)holder.itemView.findViewById(R.id.appIcon);
+        Button btn = (Button)holder.itemView.findViewById(R.id.download_button);
+        ProgressBar bar = (ProgressBar)holder.itemView.findViewById(R.id.progressBar);
     }
 
     @Override

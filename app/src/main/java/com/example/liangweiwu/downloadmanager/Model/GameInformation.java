@@ -21,9 +21,23 @@ public class GameInformation {
     public static int MAX_ID = 0;
 
     public GameInformation(){
+    }
+    public GameInformation(String type){
+        if(!(type == null || type.equals("") || type.equals("empty"))){
+            this.mId = MAX_ID;
+            MAX_ID++;
+        }
         mAttributeSet.put("thread_number",1);
+    }
+    public GameInformation(String url,int thread_num){
         this.mId = MAX_ID;
         MAX_ID++;
+        mAttributeSet.put("url",url);
+        if(thread_num > 1){
+            mAttributeSet.put("thread_number",thread_num);
+        }else{
+            mAttributeSet.put("thread_number",1);
+        }
     }
     public GameInformation(int ID,String name,String icon){
         this.mId = ID;
@@ -48,6 +62,12 @@ public class GameInformation {
     }
     public String getIcon(){
         return mIcon;
+    }
+    public int getThreadNumber(){
+        return (int)mAttributeSet.get("thread_number");
+    }
+    public String getUrl(){
+        return (String)mAttributeSet.get("url");
     }
     public void setAttribute(String field,Object value){
         if(value == null){

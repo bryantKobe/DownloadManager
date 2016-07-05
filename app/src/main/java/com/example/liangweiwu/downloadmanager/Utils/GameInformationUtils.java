@@ -43,19 +43,12 @@ public class GameInformationUtils {
      *  销毁
      */
     public void onDestroy(){
+        saveToStorage();
         mDBHelper.close();
     }
     /*
      *   TODO
      */
-    public void initData(){
-        GameInformation info = new GameInformation();
-        mDBHelper.insert(info);
-    }
-    public ArrayList<GameInformation> getGameListFromStroage(){
-        ArrayList<GameInformation> list = new ArrayList<>();
-        return list;
-    }
     public ArrayList<GameInformation> getGameList(){
         return new ArrayList<>(mGameInfoMap.values());
     }
@@ -70,12 +63,18 @@ public class GameInformationUtils {
     public GameInformation getGameInfoByID(int id){
         return mGameInfoMap.get(id);
     }
-    public GameInformation createGameInfo(){
-        GameInformation info = new GameInformation();
+    public GameInformation createGameInfo(String url,int thread_number){
+        GameInformation info = new GameInformation(url,thread_number);
         mGameInfoMap.put(info.getID(),info);
         return info;
     }
-    public void saveToStorage(){
-
+    public GameInformation createGameInfo(){
+        GameInformation info = new GameInformation("new");
+        mGameInfoMap.put(info.getID(),info);
+        return info;
+    }
+    private void saveToStorage(){
+        System.out.println("store");
+        mDBHelper.insert(mGameInfoMap.values());
     }
 }
