@@ -11,4 +11,9 @@
     <dimen name="popup_window_game_information_icon_size">80dp</dimen>
     <dimen name="popup_window_game_information_name_size">20sp</dimen>
 
+    <dimen name="bar_item_margin">8dp</dimen>
+    <dimen name="bar_item_width">35dp</dimen>
+    <dimen name="bar_item_height">35dp</dimen>
+    <dimen name="bar_edit_minWidth">180dp</dimen>
+    <dimen name="appIconSize">70dp</dimen>
 </resources>

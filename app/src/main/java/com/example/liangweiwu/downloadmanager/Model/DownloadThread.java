@@ -18,7 +18,7 @@ import java.net.URLConnection;
 
 
 public class DownloadThread extends Thread {
-    public static int MAX_LOOP_TIMES = 1;
+    public static int MAX_LOOP_TIMES = 2;
 
     public static final int THREAD_STATE_NEW = 0;                   //线程状态:新建
     public static final int THREAD_STATE_RUNNABLE = 1;              //线程状态:可运行

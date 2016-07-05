@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.liangweiwu.downloadmanager.Helper.DownloadItemAdapter;
 import com.example.liangweiwu.downloadmanager.Model.DownloadController;
 import com.example.liangweiwu.downloadmanager.Services.FloatingService;
 import com.example.liangweiwu.downloadmanager.R;
@@ -14,31 +15,81 @@ import com.example.liangweiwu.downloadmanager.Utils.FileUtils;
 import com.example.liangweiwu.downloadmanager.Utils.GameInformationUtils;
 import com.example.liangweiwu.downloadmanager.Utils.GameParamUtils;
 import com.example.liangweiwu.downloadmanager.Utils.NetworkUtils;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
+
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
+    public static final String TAG = "MainActivityTest";
+
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private List<Object> mDatas;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Button mFloatingBtn = (Button) findViewById(R.id.floating_btn);
-        mFloatingBtn.setOnClickListener(new View.OnClickListener() {
+        setContentView(R.layout.activity_main_list);
+        onLaunch();
+        dataInit();
+        uiInit();
+    }
+
+
+    private void uiInit(){
+
+        mAdapter = new DownloadItemAdapter(mDatas);
+        mRecyclerView = (RecyclerView) findViewById(R.id.downloadList);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setAdapter(mAdapter);
+
+        checkAnimInit();
+        //startService(new Intent(MainActivity.this, FloatingService.class));
+
+    }
+
+    private void checkAnimInit() {
+        final Animation animation = new RotateAnimation(0, -89, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        LinearInterpolator lin = new LinearInterpolator();
+        animation.setInterpolator(lin);
+        animation.setDuration(200);
+
+        final ImageView iv = (ImageView) findViewById(R.id.checkImageView);
+        iv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this,FloatingService.class);
-                startService(intent);
-                finish();
+                Log.d(TAG, "onClick: animator success");
+                iv.startAnimation(animation);
             }
         });
-        onLaunch();
-        netTest();
-        downloadTest();
     }
+
+    protected void dataInit() {
+        mDatas = new ArrayList<>();
+        for (int i = 'A'; i < 'D'; i++) {
+            mDatas.add("" + (char) i);
+        }
+    }
+
     private void onLaunch(){
         GameInformationUtils.init(this);
         GameParamUtils.init(this);
         FileUtils.init(this);
         NetworkUtils.init(this);
+    }
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        GameInformationUtils.getInstance().onDestroy();
+        GameParamUtils.getInstance().onDestroy();
     }
     private void netTest(){
         System.out.println("network:" + NetworkUtils.getInstance().isNetworkAvailable());
@@ -105,10 +156,6 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-    @Override
-    protected void onDestroy(){
-        super.onDestroy();
-        GameInformationUtils.getInstance().onDestroy();
-        GameParamUtils.getInstance().onDestroy();
-    }
+
 }
+

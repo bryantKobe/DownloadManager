@@ -3,4 +3,22 @@
 
     <string name="game_detail_status_install">安装</string>
     <string name="game_detail_status_launch">打开</string>
+
+    <string name="url_hint">请输入下载链接</string>
+    <string name="default_name">正在加载...</string>
+    <string name="default_process_speed">879KB/S</string>
+    <string name="default_process_size">34.2M/103.8M</string>
+    <string name="process_wait">等待下载</string>
+    <string name="process_pause">已暂停</string>
+    <string name="process_downloaded">等待安装</string>
+    <string name="button_wait">等待中</string>
+    <string name="button_on_download">暂停</string>
+    <string name="button_on_pause">继续</string>
+    <string name="button_on_finish">安装</string>
+    <string name="button_on_installed">打开</string>
+
+    <string name="dialog_title">提示</string>
+    <string name="dialog_message">删除任务会同时删除已下载的本地文件,是否确定删除?</string>
+    <string name="dialog_ok">确定</string>
+    <string name="dialog_cancel">取消</string>
 </resources>

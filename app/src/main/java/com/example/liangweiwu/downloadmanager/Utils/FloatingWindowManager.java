@@ -11,7 +11,7 @@ import com.example.liangweiwu.downloadmanager.Views.FloatingBtnView;
 import com.example.liangweiwu.downloadmanager.Views.FloatingPopupWindowView;
 
 
-public class MyWindowManager {
+public class FloatingWindowManager {
     /**
      * 小悬浮窗View的实例
      */

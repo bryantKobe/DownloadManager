@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
-import com.example.liangweiwu.downloadmanager.Utils.MyWindowManager;
+import com.example.liangweiwu.downloadmanager.Utils.FloatingWindowManager;
 import com.example.liangweiwu.downloadmanager.R;
 
 import java.lang.reflect.Field;
@@ -131,8 +131,8 @@ public class FloatingBtnView extends LinearLayout {
      * 打开大悬浮窗，同时关闭小悬浮窗。
      */
     private void openBigWindow() {
-        MyWindowManager.createPopupWindow(getContext());
-        MyWindowManager.removeFloatingIcon(getContext());
+        FloatingWindowManager.createPopupWindow(getContext());
+        FloatingWindowManager.removeFloatingIcon(getContext());
     }
     /**
      * 用于获取状态栏的高度。

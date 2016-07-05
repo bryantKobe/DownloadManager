@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
 
-import com.example.liangweiwu.downloadmanager.Utils.MyWindowManager;
+import com.example.liangweiwu.downloadmanager.Utils.FloatingWindowManager;
 
 import java.util.Timer;
 
@@ -19,7 +19,7 @@ public class FloatingService extends Service {
     }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        MyWindowManager.createFloatingIcon(getApplicationContext());
+        FloatingWindowManager.createFloatingIcon(getApplicationContext());
         // 开启定时器，每隔0.5秒刷新一次
         if (mTimer == null) {
             mTimer  = new Timer();
@@ -40,30 +40,30 @@ public class FloatingService extends Service {
         @Override
         public void run() {
             // 当前界面是桌面，且没有悬浮窗显示，则创建悬浮窗。
-            if (isHome() && !MyWindowManager.isWindowShowing()) {
+            if (isHome() && !FloatingWindowManager.isWindowShowing()) {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        MyWindowManager.createSmallWindow(getApplicationContext());
+                        FloatingWindowManager.createSmallWindow(getApplicationContext());
                     }
                 });
             }
             // 当前界面不是桌面，且有悬浮窗显示，则移除悬浮窗。
-            else if (!isHome() && MyWindowManager.isWindowShowing()) {
+            else if (!isHome() && FloatingWindowManager.isWindowShowing()) {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        MyWindowManager.removeSmallWindow(getApplicationContext());
-                        MyWindowManager.removeBigWindow(getApplicationContext());
+                        FloatingWindowManager.removeSmallWindow(getApplicationContext());
+                        FloatingWindowManager.removeBigWindow(getApplicationContext());
                     }
                 });
             }
             // 当前界面是桌面，且有悬浮窗显示，则更新内存数据。
-            else if (isHome() && MyWindowManager.isWindowShowing()) {
+            else if (isHome() && FloatingWindowManager.isWindowShowing()) {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        MyWindowManager.updateUsedPercent(getApplicationContext());
+                        FloatingWindowManager.updateUsedPercent(getApplicationContext());
                     }
                 });
             }
