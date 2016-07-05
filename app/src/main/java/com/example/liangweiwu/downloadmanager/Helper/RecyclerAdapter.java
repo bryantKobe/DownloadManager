@@ -32,7 +32,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     public void onBindViewHolder(final ViewHolder viewHolder, int position) {
         final GameInformation info = datas.get(position);
         viewHolder.mTextView.setText(info.getName());
-        viewHolder.mImageView.setImageBitmap(info.getIconBtimap(viewHolder.mImageView.getContext()));
+        viewHolder.mImageView.setBackground(info.getIcon());
         viewHolder.mItemLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -35,7 +35,6 @@ public class GmDBHelper extends SQLiteOpenHelper {
             sb.append("CREATE TABLE DownloadManager(");
             sb.append("ID INTEGER PRIMARY KEY AUTOINCREMENT,");
             sb.append("name VARCHAR(50),");
-            sb.append("icon VARCHAR(50),");
             sb.append("url VARCHAR(200),");
             sb.append("package VARCHAR(100),");
             sb.append("versionCode VARCHAR(100),");
@@ -74,7 +73,7 @@ public class GmDBHelper extends SQLiteOpenHelper {
         try{
             while(cursor.moveToNext()){
                 GameInformation info = new GameInformation();
-                String[] column_filed = {"ID","name","icon","url","package","versionCode",
+                String[] column_filed = {"ID","name","url","package","versionCode",
                         "versionName","size","category","detail","status","thread_number"};
                 for(String filed:column_filed){
                     if(filed.equals("ID") || filed.equals("status") || filed.equals("thread_number")){
@@ -83,7 +82,7 @@ public class GmDBHelper extends SQLiteOpenHelper {
                         info.setAttribute(filed,cursor.getString(cursor.getColumnIndex(filed)));
                     }
                 }
-                //info.debug();
+                info.debug();
                 list.put(info.getID(),info);
             }
             Log.i("Query Size",String.valueOf(cursor.getCount()));
@@ -103,7 +102,7 @@ public class GmDBHelper extends SQLiteOpenHelper {
         try{
             if(cursor.moveToFirst()){
                 info = new GameInformation();
-                String[] column_filed = {"ID","name","icon","url","package","versionCode",
+                String[] column_filed = {"ID","name","url","package","versionCode",
                         "versionName","size","category","detail","status","thread_number"};
                 for(String filed:column_filed){
                     if(filed.equals("ID") || filed.equals("status") || filed.equals("thread_number")){
@@ -132,11 +131,10 @@ public class GmDBHelper extends SQLiteOpenHelper {
         }
         SQLiteDatabase db = this.getWritableDatabase();
         try{
-            String sql = "insert into DownloadManager(ID,name,icon,url,package,versionCode,versionName,size,category,detail,status,thread_number) values(?,?,?,?,?,?,?,?,?,?,?,?)";
+            String sql = "insert into DownloadManager(ID,name,url,package,versionCode,versionName,size,category,detail,status,thread_number) values(?,?,?,?,?,?,?,?,?,?,?)";
             db.execSQL(sql,new Object[]{
                     info.getID(),
                     info.getName(),
-                    info.getIcon(),
                     info.getAttribution("url"),
                     info.getAttribution("package"),
                     info.getAttribution("versionCode"),
@@ -167,12 +165,11 @@ public class GmDBHelper extends SQLiteOpenHelper {
         }
         SQLiteDatabase db = this.getWritableDatabase();
         try{
-            String sql = "update DownloadManager set name=?,icon=?,url=?,package=?," +
+            String sql = "update DownloadManager set name=?,url=?,package=?," +
                     "versionCode=?,versionName=?,size=?,category=?," +
                     "detail=?,status=?,thread_number=? where ID=?";
             db.execSQL(sql,new Object[]{
                     info.getName(),
-                    info.getIcon(),
                     info.getAttribution("url"),
                     info.getAttribution("package"),
                     info.getAttribution("versionCode"),
@@ -246,6 +243,7 @@ public class GmDBHelper extends SQLiteOpenHelper {
                 }else{
                     map.get(id)[thread_id] = param;
                 }
+                param.debug();
             }
         }catch (SQLException e){
             e.printStackTrace();

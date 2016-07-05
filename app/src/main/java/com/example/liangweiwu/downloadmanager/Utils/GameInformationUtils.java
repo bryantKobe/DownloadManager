@@ -77,4 +77,11 @@ public class GameInformationUtils {
         System.out.println("store");
         mDBHelper.insert(mGameInfoMap.values());
     }
+    public void clear(){
+        for(int key : mGameInfoMap.keySet()){
+            mDBHelper.delete_param(key);
+            mDBHelper.delete(key);
+        }
+        mGameInfoMap.clear();
+    }
 }

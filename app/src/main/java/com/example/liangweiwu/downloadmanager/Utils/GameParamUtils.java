@@ -67,6 +67,9 @@ public class GameParamUtils {
         System.out.println("store param");
         mDBHelper.insert_params(mParamMap.values());
     }
+    public void clean(){
+
+    }
     public void debug(){
         for(DownloadParam[] params : mParamMap.values()){
             for(DownloadParam param : params){

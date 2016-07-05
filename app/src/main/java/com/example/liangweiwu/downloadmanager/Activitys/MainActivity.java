@@ -4,12 +4,15 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.liangweiwu.downloadmanager.Helper.ApkInfoAccessor;
 import com.example.liangweiwu.downloadmanager.Helper.DownloadItemAdapter;
 import com.example.liangweiwu.downloadmanager.Model.DownloadController;
 import com.example.liangweiwu.downloadmanager.Model.DownloadParam;
+import com.example.liangweiwu.downloadmanager.Model.DownloadTask;
 import com.example.liangweiwu.downloadmanager.Model.GameInformation;
 import com.example.liangweiwu.downloadmanager.Services.FloatingService;
 import com.example.liangweiwu.downloadmanager.R;
@@ -26,14 +29,16 @@ import android.widget.ImageView;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "MainActivityTest";
 
-    private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
+    private ArrayList<DownloadController> mTask = new ArrayList<>();
+    private ArrayList<DownloadItemAdapter.UpdateParams> mUpdateParams = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,16 +55,57 @@ public class MainActivity extends AppCompatActivity {
         uiInit();
     }
     private void uiInit(){
-        mAdapter = new DownloadItemAdapter(GameInformationUtils.getInstance().getGameList());
-        mRecyclerView = (RecyclerView) findViewById(R.id.downloadList);
+        //startService(new Intent(MainActivity.this, FloatingService.class));
+    }
+    private void dataInit() {
+        String url = "http://mydata.xxzhushou.cn/web_server/upload/app/2016-03-04/com.DBGame.DiabloLOL.apk";
+        int thread_num = 5;
+        GameInformationUtils.getInstance().clear();
+        GameInformation info = GameInformationUtils.getInstance().createGameInfo(url,thread_num);
+        GameParamUtils.getInstance().createParams(info);
+
+
+
+        ArrayList<GameInformation> info_list = GameInformationUtils.getInstance().getGameList();
+        HashMap<Integer,DownloadParam[]> params_map = GameParamUtils.getInstance().getParamMap();
+        for(GameInformation info_temp : info_list){
+            final DownloadItemAdapter.UpdateParams pp = new DownloadItemAdapter.UpdateParams();
+            DownloadController task = new DownloadController(info_temp,params_map.get(info_temp.getID())) {
+                @Override
+                public void initViews(Integer... values) {
+                    int fileSize = values[0];
+                    int downloadedSize = values[1];
+                }
+
+                @Override
+                public void bindViews(Integer... values) {
+                    //int downloadedSize = values[0];
+                    //int speed = values[1];
+                    //int fileSize = values[2];
+                    pp.updateParams(values);
+                    mAdapter.notifyDataSetChanged();
+                }
+                @Override
+                public void onDownloadStop() {
+                    System.out.println("stop");
+                    pp.setFinished();
+                    mAdapter.notifyDataSetChanged();
+                }
+            };
+            pp.setController(task);
+            mUpdateParams.add(pp);
+            //task.start();
+            mTask.add(task);
+        }
+        mAdapter = new DownloadItemAdapter(mUpdateParams);
+        RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.downloadList);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(mAdapter);
         checkAnimInit();
-        //startService(new Intent(MainActivity.this, FloatingService.class));
 
-    }
-    private void dataInit() {
-        //GameParamUtils.getInstance().debug();
+
+        ApkInfoAccessor accessor = new ApkInfoAccessor(FileUtils.DIR_PACKAGE+"com.DBGame.DiabloLOL.apk",this);
+        accessor.drawPacks().debug();
     }
     private void checkAnimInit() {
         final Animation animation = new RotateAnimation(0, -89, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);

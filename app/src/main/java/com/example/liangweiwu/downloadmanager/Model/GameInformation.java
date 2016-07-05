@@ -3,6 +3,7 @@ package com.example.liangweiwu.downloadmanager.Model;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.support.v4.util.Pair;
 import android.util.Log;
 
@@ -16,10 +17,16 @@ import java.util.HashMap;
 public class GameInformation {
     private int mId;
     private String mName = "正在加载...";
-    private String mIcon = "default";
+    private Drawable mIcon = null;
     private HashMap<String,Object> mAttributeSet = new HashMap<>();
     public static int MAX_ID = 0;
 
+    public static String getFilename(String url){
+        if(url == null || url.equals("")){
+            return "";
+        }
+        return url.substring(url.lastIndexOf('/') + 1);
+    }
     public GameInformation(){
     }
     public GameInformation(String type){
@@ -27,23 +34,26 @@ public class GameInformation {
             this.mId = MAX_ID;
             MAX_ID++;
         }
-        mAttributeSet.put("thread_number",1);
+        onCreate();
     }
     public GameInformation(String url,int thread_num){
         this.mId = MAX_ID;
         MAX_ID++;
         mAttributeSet.put("url",url);
+        mAttributeSet.put("package",getFilename(url));
+        onCreate();
         if(thread_num > 1){
             mAttributeSet.put("thread_number",thread_num);
-        }else{
-            mAttributeSet.put("thread_number",1);
         }
     }
-    public GameInformation(int ID,String name,String icon){
+    public GameInformation(int ID,String name){
         this.mId = ID;
         this.mName = name;
-        this.mIcon = icon;
+        onCreate();
+    }
+    private void onCreate(){
         mAttributeSet.put("thread_number",1);
+        mAttributeSet.put("status",0);
     }
     public int getID(){
         return mId;
@@ -51,16 +61,7 @@ public class GameInformation {
     public String getName(){
         return mName;
     }
-    public Bitmap getIconBtimap(Context context){
-        Bitmap bitmap;
-        if(mIcon.equals("default")){
-            bitmap = FileUtils.getBitmap(context, R.drawable.default_icon);
-        }else{
-            bitmap = FileUtils.getBitmap(context, mIcon);
-        }
-        return bitmap;
-    }
-    public String getIcon(){
+    public Drawable getIcon(){
         return mIcon;
     }
     public int getThreadNumber(){
@@ -85,8 +86,7 @@ public class GameInformation {
             return;
         }
         if(field.equals("icon")){
-            this.mIcon = (String)value;
-            return;
+            this.mIcon = (Drawable)value;
         }
         mAttributeSet.put(field,value);
     }
@@ -104,7 +104,6 @@ public class GameInformation {
     public void debug(){
         Log.i("ID",String.valueOf(mId));
         Log.i("name",mName);
-        Log.i("icon",mIcon);
         for(String field:mAttributeSet.keySet()){
             Object value = mAttributeSet.get(field);
             if(value == null || String.valueOf(value).equals("")){

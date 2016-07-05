@@ -8,16 +8,23 @@ public abstract class DownloadController {
     private GameInformation info;
     private DownloadParam[] params;
     private View mItemView;
-    public DownloadController(){}
-    public DownloadController(String url, int threadNum) throws Exception{
-        mDownloadTask = newTask(url,threadNum);
-        info = mDownloadTask.getInfo();
-        params = mDownloadTask.getParams();
+    public DownloadController(String url, int threadNum){
+        try {
+            mDownloadTask = newTask(url,threadNum);
+            info = mDownloadTask.getInfo();
+            params = mDownloadTask.getParams();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
-    public DownloadController(GameInformation info, DownloadParam[] params) throws Exception{
-        mDownloadTask = newTask(info,params);
-        this.info = info;
-        this.params = params;
+    public DownloadController(GameInformation info, DownloadParam[] params){
+        try {
+            mDownloadTask = newTask(info,params);
+            this.info = info;
+            this.params = params;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
     /**
      *  开始下载任务，若已经开始，则不起作用
@@ -85,6 +92,13 @@ public abstract class DownloadController {
             }
         };
     }
+    public GameInformation getInfo(){
+        return info;
+    }
+    public int getDownloadState(){
+        return mDownloadTask.getDownloadState();
+    }
+
     public abstract void initViews(Integer... values);
     public abstract void bindViews(Integer... values);
     public abstract void onDownloadStop();

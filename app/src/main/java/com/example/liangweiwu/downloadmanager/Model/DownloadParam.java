@@ -49,12 +49,6 @@ public class DownloadParam {
     public void update(int downloadedLength){
         this.thread_downloadedLength += downloadedLength;
     }
-    public static String getFilename(String url){
-        if(url == null || url.equals("")){
-            return "";
-        }
-        return url.substring(url.lastIndexOf('/') + 1);
-    }
 
     public void debug(){
         Log.d("ID",String.valueOf(ID));

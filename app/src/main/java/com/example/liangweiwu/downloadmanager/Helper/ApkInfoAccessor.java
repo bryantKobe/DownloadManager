@@ -1,10 +1,12 @@
 package com.example.liangweiwu.downloadmanager.Helper;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 
 import com.example.liangweiwu.downloadmanager.Model.GameInformation;
 import com.example.liangweiwu.downloadmanager.Utils.GameInformationUtils;
@@ -36,7 +38,6 @@ public class ApkInfoAccessor {
     }
 
     public GameInformation drawPacks(){
-
         if(mInfo.getAttribution("package") != null){
             return mInfo;
         }
@@ -47,7 +48,6 @@ public class ApkInfoAccessor {
         if(mInfo != null){
             ApplicationInfo appInfo = packageInfo.applicationInfo;
             Drawable icon = pm.getApplicationIcon(appInfo);
-            int minSdkVersion = appInfo.minSdkVersion;
             int targetSdkVersion = appInfo.targetSdkVersion;
             int versionCode = packageInfo.versionCode;
             String permissions = appInfo.permission;
@@ -60,7 +60,6 @@ public class ApkInfoAccessor {
             mInfo.setAttribute("versionCode",versionCode);
             mInfo.setAttribute("versionName",versionName);
             mInfo.setAttribute("permissions",permissions);
-            mInfo.setAttribute("minSdkVersion",minSdkVersion);
             mInfo.setAttribute("targetSdkVersion",targetSdkVersion);
             mInfo.setAttribute("icon",icon);
         }
@@ -107,6 +106,23 @@ public class ApkInfoAccessor {
         return mPackItems;
 
     }
+    public void apkInstall(){
+        String command = "chmod 777 " + mFilePath;
+        Runtime runtime = Runtime.getRuntime();
+        try{
+            runtime.exec(command);
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setDataAndType(Uri.parse("file://" + mFilePath),"application/vnd.android.package-archive");
+            mContext.startActivity(intent);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
 
+    public void apkInstall(String filePath){
+        this.mFilePath = filePath;
+        apkInstall();
+    }
 
 }

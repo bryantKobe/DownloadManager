@@ -55,7 +55,7 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:gravity="center_vertical"
-                    android:id="@+id/stateText"
+                    android:id="@+id/speedText"
                     android:text="@string/default_process_speed"
                     android:textSize="12sp" />
 
@@ -65,7 +65,7 @@
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
                     android:gravity="center_vertical"
-                    android:id="@+id/speedText"
+                    android:id="@+id/stateText"
                     android:text="@string/default_process_size"
                     android:textSize="12sp" />
             </RelativeLayout>
@@ -80,7 +80,12 @@
                 android:visibility="visible"
                 android:max="100"
                 android:progress="50" />
-
+            <TextView
+                android:id="@+id/installText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="等待安装"
+                android:visibility="gone"/>
         </LinearLayout>
 
         <LinearLayout

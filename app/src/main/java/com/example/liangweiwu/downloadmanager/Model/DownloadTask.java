@@ -55,8 +55,6 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
         info = GameInformationUtils.getInstance().createGameInfo(downloadUrl,threadNum);
         info.setAttribute("url",downloadUrl);
         info.setAttribute("thread_number",threadNum);
-        info.setAttribute("package",DownloadParam.getFilename(downloadUrl));
-        info.setAttribute("status",0);
         init(downloadUrl,threadNum);
         params = new DownloadParam[threadNum];
         for(int i = 0 ; i < threadNum; i++){
