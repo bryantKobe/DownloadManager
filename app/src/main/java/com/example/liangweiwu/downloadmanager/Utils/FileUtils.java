@@ -32,6 +32,8 @@ public class FileUtils {
                 dir_package.mkdirs();
             }
         }
+    }
+    public void rename(String packageName,String fileName){
 
     }
     public static Bitmap getBitmap(Context context,int resId){

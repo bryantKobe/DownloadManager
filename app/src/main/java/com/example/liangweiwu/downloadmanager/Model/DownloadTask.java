@@ -2,6 +2,8 @@ package com.example.liangweiwu.downloadmanager.Model;
 
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.example.liangweiwu.downloadmanager.Activitys.MainActivity;
 import com.example.liangweiwu.downloadmanager.Utils.FileUtils;
 import com.example.liangweiwu.downloadmanager.Utils.GameInformationUtils;
 import com.example.liangweiwu.downloadmanager.Utils.GameParamUtils;
@@ -105,12 +107,15 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
     //在PreExcute执行后被启动AysncTask的后台线程调用，将结果返回给UI线程
     @Override
     protected String doInBackground(Integer... args){
+        System.out.println("background");
         if((int)info.getAttribution("status") == 1){
             download_states = DOWNLOAD_STATE_END;
             return null;
         }
         try {
+            System.out.println("opening");
             URLConnection connection = url.openConnection();                        //IOException
+            System.out.println("opened");
             fileSize = connection.getContentLength();
             if(fileSize <= 0){
                 download_states = DOWNLOAD_STATE_FAILED;
@@ -209,7 +214,7 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
             return;
         }
         download_states = DOWNLOAD_STATE_RUNNABLE;
-        execute();
+        executeOnExecutor(MainActivity.exec);
         Log.d("download","Running");
     }
     public void Pause(){

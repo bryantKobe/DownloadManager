@@ -62,7 +62,6 @@ public class FloatingBtnView extends LinearLayout {
      * 记录手指按下时在小悬浮窗的View上的横坐标的值
      */
     private float xInView;
-
     /**
      * 记录手指按下时在小悬浮窗的View上的纵坐标的值
      */

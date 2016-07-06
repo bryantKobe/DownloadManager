@@ -24,6 +24,8 @@
             android:layout_height="@dimen/bar_item_height"
             android:layout_margin="@dimen/bar_item_margin"
             android:layout_weight="1"
+            android:id="@+id/url_edit"
+            android:inputType="textUri"
             android:background="@color/white"
             android:hint="@string/url_hint"
             android:singleLine="true"

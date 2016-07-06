@@ -83,7 +83,7 @@ public class FloatingPopupWindowView extends LinearLayout {
     }
 
     private ArrayList<GameInformation> getDatas(){
-        return GameInformationUtils.getInstance().getGameList();
+        return GameInformationUtils.getInstance().getDownloadedGamelist();
     }
     @Override
     public boolean onTouchEvent(MotionEvent event){

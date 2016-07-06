@@ -72,11 +72,12 @@ public class ApkInfoAccessor {
         int versionCode = packageInfo.versionCode;
         String permissions = appInfo.permission;
         String versionName = packageInfo.versionName;
-        String packageName = packageInfo.packageName + ".apk";
+        String packageName = packageInfo.packageName;
+
         String appName = packageManager.getApplicationLabel(appInfo).toString();
 
         mInfo.setAttribute("name",appName);
-        mInfo.setAttribute("package",packageName);
+        mInfo.setAttribute("packageName",packageName);
         mInfo.setAttribute("versionCode",versionCode);
         mInfo.setAttribute("versionName",versionName);
         mInfo.setAttribute("permissions",permissions);

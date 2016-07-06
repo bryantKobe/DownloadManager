@@ -1,6 +1,7 @@
 package com.example.liangweiwu.downloadmanager.Helper;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
@@ -54,9 +55,10 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
         }else if(params.isFinish()){
             holder.onFinish();
         }else{
-            holder.updateProgressText(params.getDownloadProgress(),params.getSpeed());
-            holder.updateProgressBar(params.getFileSize(),params.getDownloadedSize());
-            if(params.isNew()){
+            if(holder.isStart()){
+                holder.updateProgressText(params.getDownloadProgress(),params.getSpeed());
+                holder.updateProgressBar(params.getFileSize(),params.getDownloadedSize());
+            }else{
                 holder.onCreate(params.getController().getDownloadedSize(),params.getController().getFileSize());
             }
         }
@@ -80,6 +82,7 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
         private DownloadController controller;
         private boolean isCompleted = false;
         private boolean isFailed = false;
+        private boolean isStart = false;
 
         public MyViewHolder(View v) {
             super(v);
@@ -105,17 +108,21 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
                     switch (controller.getDownloadState()){
                         case DownloadTask.DOWNLOAD_STATE_NEW:
                             controller.start();
+                            isStart = true;
                             break;
                         case DownloadTask.DOWNLOAD_STATE_RUNNABLE:
                         case DownloadTask.DOWNLOAD_STATE_RUNNING:
                             controller.pause();
+                            isStart = false;
                             break;
                         case DownloadTask.DOWNLOAD_STATE_PAUSED:
                             controller.resume();
+                            isStart = true;
                             break;
                         case DownloadTask.DOWNLOAD_STATE_TERMINATED:
                         case DownloadTask.DOWNLOAD_STATE_FAILED:
                             controller.restart();
+                            isStart = true;
                             break;
                         case DownloadTask.DOWNLOAD_STATE_END:
                             ApkInfoAccessor.getInstance().apkInstall((String) controller.getInfo().getAttribution("package"));
@@ -128,7 +135,12 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
             bar = (ProgressBar)v.findViewById(R.id.progressBar);
             deleteBtn = (ImageView)v.findViewById(R.id.dustIcon);
             dialog = new AlertDialog.Builder(v.getContext()).setTitle(R.string.dialog_title)
-                    .setMessage(R.string.dialog_message).setPositiveButton(R.string.dialog_ok,null)
+                    .setMessage(R.string.dialog_message).setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            System.out.println("delete");
+                        }
+                    })
                     .setNegativeButton(R.string.dialog_cancel,null).create();
             deleteBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -156,7 +168,9 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
             }
             switch (controller.getDownloadState()){
                 case DownloadTask.DOWNLOAD_STATE_NEW:
-                    btn.setText("等待中");
+                    if(isStart){
+                        btn.setText("等待中");
+                    }
                     break;
                 case DownloadTask.DOWNLOAD_STATE_RUNNABLE:
                 case DownloadTask.DOWNLOAD_STATE_RUNNING:
@@ -184,14 +198,19 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
             bar.setMax(fileSize);
             bar.setProgress(downloadedSize);
 
-            String str1 = String.format(Locale.CHINESE,"%.2f",downloadedSize/1024/1024.0) + "M/" +
+            String str = String.format(Locale.CHINESE,"%.2f",downloadedSize/1024/1024.0) + "M/" +
                     String.format(Locale.CHINESE,"%.2f",fileSize/1024/1024.0) + "M";
-            stateText.setText(str1);
+            stateText.setText(str);
+            str = "0KB/s";
+            speedText.setText(str);
+        }
+        public boolean isStart(){
+            return isStart;
         }
         public void onFinish(){
             isCompleted = true;
             btn.setText("安装");
-            bar.setVisibility(View.INVISIBLE);
+            bar.setVisibility(View.GONE);
             speedText.setVisibility(View.INVISIBLE);
             stateText.setVisibility(View.INVISIBLE);
             installText.setVisibility(View.VISIBLE);
@@ -201,13 +220,16 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
             // TODO
             // get package information
             //
-            GameInformation info = ApkInfoAccessor.getInstance().drawPackages("com.DBGame.DiabloLOL.apk",controller.getInfo());
+            GameInformation info = ApkInfoAccessor.getInstance().drawPackages(
+                    (String)controller.getInfo().getAttribution("package"),
+                    controller.getInfo());
+
             appIcon.setBackground(info.getIcon());
             appName.setText(info.getName());
         }
         public void onFailed(){
             isFailed = true;
-            bar.setVisibility(View.INVISIBLE);
+            bar.setVisibility(View.GONE);
             speedText.setVisibility(View.INVISIBLE);
             stateText.setVisibility(View.INVISIBLE);
             installText.setVisibility(View.VISIBLE);
@@ -231,7 +253,6 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
         private DownloadController controller = null;
         private Integer[] params = new Integer[PARAMS_LENGTH];
         private boolean isFinish = false;
-        private boolean isNew = true;
         public UpdateParams(){
             for(int i = 0 ; i < PARAMS_LENGTH; i++){
                 params[i] = 0;
@@ -254,11 +275,6 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
         }
         public boolean isFinish(){
             return isFinish || controller.isFinish();
-        }
-        public boolean isNew(){
-            boolean temp = isNew;
-            isNew = false;
-            return temp;
         }
         public boolean isFailed(){
             return controller.getDownloadState() == DownloadTask.DOWNLOAD_STATE_FAILED;

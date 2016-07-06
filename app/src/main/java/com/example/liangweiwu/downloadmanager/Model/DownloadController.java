@@ -1,7 +1,7 @@
 package com.example.liangweiwu.downloadmanager.Model;
 
-import android.view.View;
-
+import android.support.v7.widget.RecyclerView;
+import com.example.liangweiwu.downloadmanager.Helper.DownloadItemAdapter;
 import com.example.liangweiwu.downloadmanager.Utils.GameParamUtils;
 
 
@@ -9,6 +9,58 @@ public abstract class DownloadController {
     private DownloadTask mDownloadTask = null;
     private GameInformation info;
     private DownloadParam[] params;
+
+    public static DownloadItemAdapter.UpdateParams createInstance(
+            String url,int thread_number,final RecyclerView.Adapter mAdapter){
+
+        final DownloadItemAdapter.UpdateParams pp = new DownloadItemAdapter.UpdateParams();
+        DownloadController controller = new DownloadController(url,thread_number) {
+            @Override
+            public void initViews(Integer... values) {
+                pp.updateParams(values);
+                mAdapter.notifyDataSetChanged();
+            }
+            @Override
+            public void bindViews(Integer... values) {
+                pp.updateParams(values);
+                mAdapter.notifyDataSetChanged();
+            }
+            @Override
+            public void onDownloadStop() {
+                System.out.println("stop");
+                pp.setFinished();
+                mAdapter.notifyDataSetChanged();
+            }
+        };
+        pp.setController(controller);
+        return pp;
+    }
+    public static DownloadItemAdapter.UpdateParams createInstance(
+            GameInformation info, DownloadParam[] params, final RecyclerView.Adapter mAdapter){
+
+        final DownloadItemAdapter.UpdateParams pp = new DownloadItemAdapter.UpdateParams();
+        DownloadController controller = new DownloadController(info,params) {
+            @Override
+            public void initViews(Integer... values) {
+                pp.updateParams(values);
+                mAdapter.notifyDataSetChanged();
+            }
+            @Override
+            public void bindViews(Integer... values) {
+                pp.updateParams(values);
+                mAdapter.notifyDataSetChanged();
+            }
+            @Override
+            public void onDownloadStop() {
+                System.out.println("stop");
+                pp.setFinished();
+                mAdapter.notifyDataSetChanged();
+            }
+        };
+        pp.setController(controller);
+        return pp;
+    }
+
     public DownloadController(String url, int threadNum){
         try {
             mDownloadTask = newTask(url,threadNum);

@@ -53,6 +53,15 @@ public class GameInformationUtils {
     public ArrayList<GameInformation> getGameList(){
         return new ArrayList<>(mGameInfoMap.values());
     }
+    public ArrayList<GameInformation> getDownloadedGamelist(){
+        ArrayList<GameInformation> list = new ArrayList<>();
+        for(GameInformation info : mGameInfoMap.values()){
+            if(((Integer)info.getAttribution("status")) == 1){
+                list.add(info);
+            }
+        }
+        return list;
+    }
     private void initMaxId(){
         for(int key : mGameInfoMap.keySet()){
             if(key > GameInformation.MAX_ID){

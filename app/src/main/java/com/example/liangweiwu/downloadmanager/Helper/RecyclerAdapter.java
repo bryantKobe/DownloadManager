@@ -1,5 +1,6 @@
 package com.example.liangweiwu.downloadmanager.Helper;
 
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -32,7 +33,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     public void onBindViewHolder(final ViewHolder viewHolder, int position) {
         final GameInformation info = datas.get(position);
         viewHolder.mTextView.setText(info.getName());
-        viewHolder.mImageView.setBackground(info.getIcon());
+        Drawable icon = info.getIcon();
+        if(icon == null){
+            viewHolder.mImageView.setBackgroundResource(R.drawable.default_icon);
+        }else{
+            viewHolder.mImageView.setBackground(info.getIcon());
+        }
         viewHolder.mItemLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
