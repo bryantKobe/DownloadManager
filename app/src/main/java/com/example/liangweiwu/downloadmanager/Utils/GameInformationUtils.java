@@ -3,6 +3,7 @@ package com.example.liangweiwu.downloadmanager.Utils;
 import android.content.Context;
 import android.util.Log;
 import com.example.liangweiwu.downloadmanager.Helper.GmDBHelper;
+import com.example.liangweiwu.downloadmanager.Model.DownloadParam;
 import com.example.liangweiwu.downloadmanager.Model.GameInformation;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,11 +67,14 @@ public class GameInformationUtils {
     public GameInformation createGameInfo(String url,int thread_number){
         GameInformation info = new GameInformation(url,thread_number);
         mGameInfoMap.put(info.getID(),info);
+        GameParamUtils.getInstance().createParams(info);
         return info;
     }
-    public GameInformation createGameInfo(){
-        GameInformation info = new GameInformation("new");
-        mGameInfoMap.put(info.getID(),info);
+    public GameInformation createGameInfo(String type){
+        GameInformation info = new GameInformation(type);
+        if(info.getID() != GameInformation.EMPTY_ID){
+            mGameInfoMap.put(info.getID(),info);
+        }
         return info;
     }
     private void saveToStorage(){
@@ -78,10 +82,15 @@ public class GameInformationUtils {
         mDBHelper.insert(mGameInfoMap.values());
     }
     public void clear(){
-        for(int key : mGameInfoMap.keySet()){
-            mDBHelper.delete_param(key);
-            mDBHelper.delete(key);
-        }
+        mDBHelper.delete_all();
         mGameInfoMap.clear();
+    }
+    public void debug(){
+        mDBHelper.delete_param(1);
+        for(DownloadParam params[] : mDBHelper.query_param().values()){
+            for(DownloadParam param : params){
+                param.debug();
+            }
+        }
     }
 }

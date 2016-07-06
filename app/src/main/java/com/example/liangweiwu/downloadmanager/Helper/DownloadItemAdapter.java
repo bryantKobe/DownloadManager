@@ -1,6 +1,7 @@
 package com.example.liangweiwu.downloadmanager.Helper;
 
 import android.app.Dialog;
+import android.graphics.Color;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.example.liangweiwu.downloadmanager.Model.DownloadController;
@@ -44,14 +46,19 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         final UpdateParams params = mDatas.get(position);
-        if(!params.isFinish()){
-            holder.preProcess();
+        holder.preProcess();
+        holder.setController(params.getController());
+        holder.updateBtnState();
+        if(params.isFailed()){
+            holder.onFailed();
+        }else if(params.isFinish()){
+            holder.onFinish();
+        }else{
             holder.updateProgressText(params.getDownloadProgress(),params.getSpeed());
             holder.updateProgressBar(params.getFileSize(),params.getDownloadedSize());
-            holder.setController(params.getController());
-            holder.updateBtnState();
-        }else{
-            holder.onFinish();
+            if(params.isNew()){
+                holder.onCreate(params.getController().getDownloadedSize(),params.getController().getFileSize());
+            }
         }
     }
 
@@ -72,6 +79,7 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
         private Dialog dialog;
         private DownloadController controller;
         private boolean isCompleted = false;
+        private boolean isFailed = false;
 
         public MyViewHolder(View v) {
             super(v);
@@ -90,6 +98,10 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
                     if(controller == null){
                         return;
                     }
+                    if(controller.isFinish()){
+                        ApkInfoAccessor.getInstance().apkInstall((String) controller.getInfo().getAttribution("package"));
+                        return;
+                    }
                     switch (controller.getDownloadState()){
                         case DownloadTask.DOWNLOAD_STATE_NEW:
                             controller.start();
@@ -106,6 +118,7 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
                             controller.restart();
                             break;
                         case DownloadTask.DOWNLOAD_STATE_END:
+                            ApkInfoAccessor.getInstance().apkInstall((String) controller.getInfo().getAttribution("package"));
                             break;
                         default:
                             break;
@@ -125,8 +138,13 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
             });
         }
         public void updateProgressText(String state,String speed){
+            if(controller.getDownloadState() == DownloadTask.DOWNLOAD_STATE_PAUSED){
+                String str = "0KB/s";
+                speedText.setText(str);
+            }else{
+                speedText.setText(speed);
+            }
             stateText.setText(state);
-            speedText.setText(speed);
         }
         public void updateProgressBar(int fileSize,int downloadedSize){
             bar.setMax(fileSize);
@@ -159,26 +177,45 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
         public void setController(DownloadController controller){
             this.controller = controller;
         }
+        public void onCreate(int downloadedSize,int fileSize){
+            if(downloadedSize != 0){
+                btn.setText("继续");
+            }
+            bar.setMax(fileSize);
+            bar.setProgress(downloadedSize);
+
+            String str1 = String.format(Locale.CHINESE,"%.2f",downloadedSize/1024/1024.0) + "M/" +
+                    String.format(Locale.CHINESE,"%.2f",fileSize/1024/1024.0) + "M";
+            stateText.setText(str1);
+        }
         public void onFinish(){
+            isCompleted = true;
             btn.setText("安装");
             bar.setVisibility(View.INVISIBLE);
             speedText.setVisibility(View.INVISIBLE);
             stateText.setVisibility(View.INVISIBLE);
             installText.setVisibility(View.VISIBLE);
-            isCompleted = true;
+            installText.setText("等待安装");
+            installText.setTextColor(Color.GRAY);
             //
             // TODO
             // get package information
             //
-            GameInformation info = controller.getInfo();
-            String packagePath = FileUtils.DIR_PACKAGE + info.getAttribution("package");
-            System.out.println(packagePath);
-            ApkInfoAccessor accessor = new ApkInfoAccessor(packagePath,itemView.getContext());
-            System.out.println("accessor");
-            accessor.drawPacks().debug();
+            GameInformation info = ApkInfoAccessor.getInstance().drawPackages("com.DBGame.DiabloLOL.apk",controller.getInfo());
+            appIcon.setBackground(info.getIcon());
+            appName.setText(info.getName());
+        }
+        public void onFailed(){
+            isFailed = true;
+            bar.setVisibility(View.INVISIBLE);
+            speedText.setVisibility(View.INVISIBLE);
+            stateText.setVisibility(View.INVISIBLE);
+            installText.setVisibility(View.VISIBLE);
+            installText.setText("网络连接错误!");
+            installText.setTextColor(Color.RED);
         }
         public void preProcess(){
-            if(!isCompleted){
+            if(!(isCompleted || isFailed)){
                 return;
             }
             bar.setVisibility(View.VISIBLE);
@@ -194,6 +231,7 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
         private DownloadController controller = null;
         private Integer[] params = new Integer[PARAMS_LENGTH];
         private boolean isFinish = false;
+        private boolean isNew = true;
         public UpdateParams(){
             for(int i = 0 ; i < PARAMS_LENGTH; i++){
                 params[i] = 0;
@@ -208,10 +246,23 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
             }
         }
         public void setFinished(){
+            if(controller.getDownloadState() == DownloadTask.DOWNLOAD_STATE_FAILED
+                    || controller.getDownloadState() == DownloadTask.DOWNLOAD_STATE_TERMINATED){
+                return;
+            }
             isFinish = true;
         }
         public boolean isFinish(){
-            return isFinish;
+            return isFinish || controller.isFinish();
+        }
+        public boolean isNew(){
+            boolean temp = isNew;
+            isNew = false;
+            return temp;
+        }
+        public boolean isFailed(){
+            return controller.getDownloadState() == DownloadTask.DOWNLOAD_STATE_FAILED;
+
         }
         public DownloadController getController(){
             return controller;

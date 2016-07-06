@@ -82,7 +82,7 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        onStart(fileSize,downloadedSize);
+        onStart(downloadedSize,0,fileSize);
     }
     //doInBackground执行完后由UI线程调用，用于更新界面操作
     @Override

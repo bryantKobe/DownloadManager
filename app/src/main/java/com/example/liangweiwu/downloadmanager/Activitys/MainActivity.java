@@ -51,37 +51,33 @@ public class MainActivity extends AppCompatActivity {
         GameParamUtils.init(this);
         FileUtils.init(this);
         NetworkUtils.init(this);
+        ApkInfoAccessor.init(this);
         dataInit();
         uiInit();
     }
     private void uiInit(){
         //startService(new Intent(MainActivity.this, FloatingService.class));
     }
-    private void dataInit() {
+    private void dataInit(){
         String url = "http://mydata.xxzhushou.cn/web_server/upload/app/2016-03-04/com.DBGame.DiabloLOL.apk";
         int thread_num = 5;
         GameInformationUtils.getInstance().clear();
         GameInformation info = GameInformationUtils.getInstance().createGameInfo(url,thread_num);
-        GameParamUtils.getInstance().createParams(info);
-
+        //GameInformationUtils.getInstance().debug();
 
 
         ArrayList<GameInformation> info_list = GameInformationUtils.getInstance().getGameList();
         HashMap<Integer,DownloadParam[]> params_map = GameParamUtils.getInstance().getParamMap();
         for(GameInformation info_temp : info_list){
             final DownloadItemAdapter.UpdateParams pp = new DownloadItemAdapter.UpdateParams();
-            DownloadController task = new DownloadController(info_temp,params_map.get(info_temp.getID())) {
+            DownloadController task = new DownloadController(info_temp,params_map.get(info_temp.getID())){
                 @Override
                 public void initViews(Integer... values) {
-                    int fileSize = values[0];
-                    int downloadedSize = values[1];
+                    pp.updateParams(values);
+                    mAdapter.notifyDataSetChanged();
                 }
-
                 @Override
                 public void bindViews(Integer... values) {
-                    //int downloadedSize = values[0];
-                    //int speed = values[1];
-                    //int fileSize = values[2];
                     pp.updateParams(values);
                     mAdapter.notifyDataSetChanged();
                 }
@@ -102,10 +98,6 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(mAdapter);
         checkAnimInit();
-
-
-        ApkInfoAccessor accessor = new ApkInfoAccessor(FileUtils.DIR_PACKAGE+"com.DBGame.DiabloLOL.apk",this);
-        accessor.drawPacks().debug();
     }
     private void checkAnimInit() {
         final Animation animation = new RotateAnimation(0, -89, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);

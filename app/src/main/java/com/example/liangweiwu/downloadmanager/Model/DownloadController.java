@@ -2,12 +2,13 @@ package com.example.liangweiwu.downloadmanager.Model;
 
 import android.view.View;
 
+import com.example.liangweiwu.downloadmanager.Utils.GameParamUtils;
+
 
 public abstract class DownloadController {
     private DownloadTask mDownloadTask = null;
     private GameInformation info;
     private DownloadParam[] params;
-    private View mItemView;
     public DownloadController(String url, int threadNum){
         try {
             mDownloadTask = newTask(url,threadNum);
@@ -19,9 +20,15 @@ public abstract class DownloadController {
     }
     public DownloadController(GameInformation info, DownloadParam[] params){
         try {
-            mDownloadTask = newTask(info,params);
+            if((Integer)info.getAttribution("status") == 0){
+                mDownloadTask = newTask(info,params);
+                if(params == null){
+                    params = GameParamUtils.getInstance().createParams(info);
+                }
+            }
             this.info = info;
             this.params = params;
+
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -30,15 +37,27 @@ public abstract class DownloadController {
      *  开始下载任务，若已经开始，则不起作用
      */
     public void start(){
+        if(mDownloadTask == null){
+            return;
+        }
         mDownloadTask.Start();
     }
     public void pause(){
+        if(mDownloadTask == null){
+            return;
+        }
         mDownloadTask.Pause();
     }
     public void resume(){
+        if(mDownloadTask == null){
+            return;
+        }
         mDownloadTask.Resume();
     }
     public void stop(){
+        if(mDownloadTask == null){
+            return;
+        }
         mDownloadTask.Stop();
         /*
         info.debug();
@@ -48,6 +67,9 @@ public abstract class DownloadController {
         */
     }
     public void restart(){
+        if(mDownloadTask == null){
+            return;
+        }
         if(mDownloadTask.getDownloadState() != DownloadTask.DOWNLOAD_STATE_TERMINATED
                 && mDownloadTask.getDownloadState() != DownloadTask.DOWNLOAD_STATE_FAILED){
             return;
@@ -96,13 +118,36 @@ public abstract class DownloadController {
         return info;
     }
     public int getDownloadState(){
+        if(mDownloadTask == null){
+            return DownloadTask.DOWNLOAD_STATE_END;
+        }
         return mDownloadTask.getDownloadState();
+    }
+    public int getDownloadedSize(){
+        int downloadedSize = 0;
+        for(DownloadParam param : params){
+            downloadedSize += param.getThread_downloadedLength();
+        }
+        return downloadedSize;
+    }
+    public int getFileSize(){
+        String size = (String) info.getAttribution("size");
+        if(size == null || size.equals("")){
+            return 0;
+        }
+        return Integer.valueOf(size);
+    }
+    public boolean isFinish(){
+        return mDownloadTask == null;
     }
 
     public abstract void initViews(Integer... values);
     public abstract void bindViews(Integer... values);
     public abstract void onDownloadStop();
     public void debug(){
+        if(info == null){
+            return;
+        }
         info.debug();
         for(int i = 0 ; i < params.length; i++){
             params[i].debug();

@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 
 import com.example.liangweiwu.downloadmanager.Model.GameInformation;
+import com.example.liangweiwu.downloadmanager.Utils.FileUtils;
 import com.example.liangweiwu.downloadmanager.Utils.GameInformationUtils;
 
 import java.io.File;
@@ -16,11 +17,23 @@ import java.util.HashMap;
 
 
 public class ApkInfoAccessor {
-    String mFilePath;
-    Context mContext;
-    GameInformation mInfo;
-    HashMap<String,Object> mPackItems;
+    private static ApkInfoAccessor mAccessor;
+    private Context mContext;
+    private PackageManager packageManager;
 
+    private ApkInfoAccessor(Context context){
+        this.mContext = context;
+        this.packageManager = context.getPackageManager();
+    }
+    public static void init(Context context){
+        if(mAccessor == null){
+            mAccessor = new ApkInfoAccessor(context.getApplicationContext());
+        }
+    }
+    public static ApkInfoAccessor getInstance(){
+        return mAccessor;
+    }
+    /*
     public ApkInfoAccessor(String filePath, Context context) {
         this(filePath, context,null);
     }
@@ -36,43 +49,45 @@ public class ApkInfoAccessor {
             mPackItems = new HashMap<>();
         }
     }
-
-    public GameInformation drawPacks(){
-        if(mInfo.getAttribution("package") != null){
-            return mInfo;
+    */
+    /**
+     **  @param fileName: 文件名字
+     **  @param  mInfo: 更新的对象,可为null
+    ***/
+    public GameInformation drawPackages(String fileName,GameInformation mInfo){
+        String mFilePath = FileUtils.DIR_PACKAGE + fileName;
+        PackageInfo packageInfo = packageManager.getPackageArchiveInfo(mFilePath,PackageManager.GET_ACTIVITIES);
+        if(packageInfo == null){
+            return null;
+        }
+        if(mInfo == null){
+            mInfo = GameInformationUtils.getInstance().createGameInfo("local");
         }
 
-        PackageManager pm = mContext.getPackageManager();
-        PackageInfo packageInfo = pm.getPackageArchiveInfo(mFilePath,PackageManager.GET_ACTIVITIES);
+        ApplicationInfo appInfo = packageInfo.applicationInfo;
+        appInfo.publicSourceDir = mFilePath;
+        appInfo.sourceDir = mFilePath;
+        Drawable icon = packageManager.getApplicationIcon(appInfo);
+        int targetSdkVersion = appInfo.targetSdkVersion;
+        int versionCode = packageInfo.versionCode;
+        String permissions = appInfo.permission;
+        String versionName = packageInfo.versionName;
+        String packageName = packageInfo.packageName + ".apk";
+        String appName = packageManager.getApplicationLabel(appInfo).toString();
 
-        if(mInfo != null){
-            ApplicationInfo appInfo = packageInfo.applicationInfo;
-            Drawable icon = pm.getApplicationIcon(appInfo);
-            int targetSdkVersion = appInfo.targetSdkVersion;
-            int versionCode = packageInfo.versionCode;
-            String permissions = appInfo.permission;
-            String versionName = packageInfo.versionName;
-            String packageName = packageInfo.packageName;
-            String appName = pm.getApplicationLabel(appInfo).toString();
-
-            mInfo.setAttribute("name",appName);
-            mInfo.setAttribute("package",packageName);
-            mInfo.setAttribute("versionCode",versionCode);
-            mInfo.setAttribute("versionName",versionName);
-            mInfo.setAttribute("permissions",permissions);
-            mInfo.setAttribute("targetSdkVersion",targetSdkVersion);
-            mInfo.setAttribute("icon",icon);
-        }
-
+        mInfo.setAttribute("name",appName);
+        mInfo.setAttribute("package",packageName);
+        mInfo.setAttribute("versionCode",versionCode);
+        mInfo.setAttribute("versionName",versionName);
+        mInfo.setAttribute("permissions",permissions);
+        mInfo.setAttribute("targetSdkVersion",targetSdkVersion);
+        mInfo.setAttribute("icon",icon);
         return mInfo;
     }
-
-    public GameInformation drawPacks(String filePath){
-        this.mFilePath = filePath;
-        return drawPacks();
-    }
-
+    /*
     public HashMap<String,Object> drawPackItems(){
+        HashMap<String,Object> mPackItems = new HashMap<>();
+
         if(!mPackItems.isEmpty()){
             return mPackItems;
         }
@@ -106,7 +121,9 @@ public class ApkInfoAccessor {
         return mPackItems;
 
     }
-    public void apkInstall(){
+    */
+    public void apkInstall(String fileName){
+        String mFilePath = FileUtils.DIR_PACKAGE + fileName;
         String command = "chmod 777 " + mFilePath;
         Runtime runtime = Runtime.getRuntime();
         try{
@@ -119,10 +136,4 @@ public class ApkInfoAccessor {
             e.printStackTrace();
         }
     }
-
-    public void apkInstall(String filePath){
-        this.mFilePath = filePath;
-        apkInstall();
-    }
-
 }

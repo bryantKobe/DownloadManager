@@ -15,11 +15,12 @@ import java.util.HashMap;
 
 
 public class GameInformation {
-    private int mId;
+    private int mId = EMPTY_ID;
     private String mName = "正在加载...";
     private Drawable mIcon = null;
     private HashMap<String,Object> mAttributeSet = new HashMap<>();
     public static int MAX_ID = 0;
+    public final static int EMPTY_ID = -1;
 
     public static String getFilename(String url){
         if(url == null || url.equals("")){
@@ -30,11 +31,16 @@ public class GameInformation {
     public GameInformation(){
     }
     public GameInformation(String type){
-        if(!(type == null || type.equals("") || type.equals("empty"))){
+        onCreate();
+        if(type == null || type.equals("") || type.equals("empty")){
+
+        }else{
             this.mId = MAX_ID;
             MAX_ID++;
+            if(type.equals("local")){
+                mAttributeSet.put("status",1);
+            }
         }
-        onCreate();
     }
     public GameInformation(String url,int thread_num){
         this.mId = MAX_ID;
@@ -46,11 +52,7 @@ public class GameInformation {
             mAttributeSet.put("thread_number",thread_num);
         }
     }
-    public GameInformation(int ID,String name){
-        this.mId = ID;
-        this.mName = name;
-        onCreate();
-    }
+
     private void onCreate(){
         mAttributeSet.put("thread_number",1);
         mAttributeSet.put("status",0);

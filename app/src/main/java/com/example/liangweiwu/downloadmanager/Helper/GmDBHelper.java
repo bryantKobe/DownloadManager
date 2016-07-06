@@ -188,6 +188,7 @@ public class GmDBHelper extends SQLiteOpenHelper {
         db.close();
     }
     public void delete(int id){
+        System.out.println("delete info");
         SQLiteDatabase db = this.getWritableDatabase();
         try{
             String sql = "delete from DownloadManager where ID = ?";
@@ -236,10 +237,15 @@ public class GmDBHelper extends SQLiteOpenHelper {
                 int downloadedSize = cursor.getInt(cursor.getColumnIndex("thread_startOffset"));
                 DownloadParam param = new DownloadParam(id,thread_id,status,blockSize,downloadedSize);
                 if(map.get(id) == null){
-                    int thread_num = (Integer)query(id).getAttribution("thread_number");
-                    DownloadParam[] params = new DownloadParam[thread_num];
-                    params[thread_id] = param;
-                    map.put(id,params);
+                    GameInformation info = query(id);
+                    if(info == null){
+                        delete_param(id);
+                    }else{
+                        int thread_num = (Integer)info.getAttribution("thread_number");
+                        DownloadParam[] params = new DownloadParam[thread_num];
+                        params[thread_id] = param;
+                        map.put(id,params);
+                    }
                 }else{
                     map.get(id)[thread_id] = param;
                 }
@@ -322,6 +328,19 @@ public class GmDBHelper extends SQLiteOpenHelper {
         }catch (SQLException e){
             e.printStackTrace();
             Log.e("delete param",e.getMessage());
+        }
+        db.close();
+    }
+    public void delete_all(){
+        SQLiteDatabase db = getWritableDatabase();
+        try {
+            String sql = "delete from ThreadDetail";
+            db.execSQL(sql,new Object[]{});
+            String sql1 = "delete from DownloadManager";
+            db.execSQL(sql1,new Object[]{});
+        }catch (SQLException e){
+            e.printStackTrace();
+            Log.e("delete",e.getMessage());
         }
         db.close();
     }
