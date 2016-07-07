@@ -70,19 +70,38 @@ public class ApkInfoAccessor {
         Drawable icon = packageManager.getApplicationIcon(appInfo);
         int targetSdkVersion = appInfo.targetSdkVersion;
         int versionCode = packageInfo.versionCode;
-        String permissions = appInfo.permission;
         String versionName = packageInfo.versionName;
         String packageName = packageInfo.packageName;
 
         String appName = packageManager.getApplicationLabel(appInfo).toString();
 
+        mInfo.setAttribute("package",fileName);
         mInfo.setAttribute("name",appName);
         mInfo.setAttribute("packageName",packageName);
         mInfo.setAttribute("versionCode",versionCode);
         mInfo.setAttribute("versionName",versionName);
-        mInfo.setAttribute("permissions",permissions);
         mInfo.setAttribute("targetSdkVersion",targetSdkVersion);
         mInfo.setAttribute("icon",icon);
+
+        String[] pms = null;
+        try {
+            Intent query = new Intent(Intent.ACTION_MAIN);
+            query.addCategory("android.intent.category.LAUNCHER");
+            pms = packageManager.getPackageInfo(packageManager.queryIntentActivities(query, PackageManager
+                            .MATCH_DEFAULT_ONLY).get(0).activityInfo.packageName,
+                            PackageManager.GET_PERMISSIONS).requestedPermissions;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        StringBuilder sb = new StringBuilder();
+        if (pms != null) {
+            for (String str : pms) {
+                sb.append(str+"\n");
+            }
+        }
+        mInfo.setAttribute("permission",sb.toString());
+
+
         return mInfo;
     }
     /*

@@ -4,6 +4,9 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
+
+import com.example.liangweiwu.downloadmanager.Helper.ApkInfoAccessor;
+
 import java.io.File;
 
 
@@ -35,6 +38,14 @@ public class FileUtils {
     }
     public void rename(String packageName,String fileName){
 
+    }
+
+    public static boolean deleteApk(String fileName){
+        File apk = new File(DIR_PACKAGE + fileName);
+        if(apk.exists()){
+            return apk.delete();
+        }
+        return true;
     }
     public static Bitmap getBitmap(Context context,int resId){
         Bitmap bitmap = null;

@@ -23,6 +23,7 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
     public static final int DOWNLOAD_STATE_TERMINATED = 4;    //下载状态：终止
     public static final int DOWNLOAD_STATE_END = 5;           //下载状态：结束
     public static final int DOWNLOAD_STATE_FAILED = 6;        //下载状态：失败
+    public static final int DOWNLOAD_STATE_BLOCKED = 7;       //下载状态:阻塞
 
     private URL url;
     private int threadNum;                  // 开启的线程数
@@ -41,6 +42,9 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
      **  继续未完成的下载任务
      **/
     public DownloadTask(GameInformation info,DownloadParam[] params) throws Exception{
+        if(params == null){
+            params = GameParamUtils.getInstance().createParams(info);
+        }
         this.params = params;
         this.info = info;
         String url = (String)info.getAttribution("url");
@@ -57,10 +61,9 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
         info = GameInformationUtils.getInstance().createGameInfo(downloadUrl,threadNum);
         info.setAttribute("url",downloadUrl);
         info.setAttribute("thread_number",threadNum);
+        params = GameParamUtils.getInstance().createParams(info);
         init(downloadUrl,threadNum);
-        params = new DownloadParam[threadNum];
         for(int i = 0 ; i < threadNum; i++){
-            params[i] = new DownloadParam(info.getID(),i);
             threads[i] = new DownloadThread(params[i], file , downloadUrl);
             threads[i].setName("Thread:" + i);
         }
@@ -107,15 +110,12 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
     //在PreExcute执行后被启动AysncTask的后台线程调用，将结果返回给UI线程
     @Override
     protected String doInBackground(Integer... args){
-        System.out.println("background");
         if((int)info.getAttribution("status") == 1){
             download_states = DOWNLOAD_STATE_END;
             return null;
         }
         try {
-            System.out.println("opening");
             URLConnection connection = url.openConnection();                        //IOException
-            System.out.println("opened");
             fileSize = connection.getContentLength();
             if(fileSize <= 0){
                 download_states = DOWNLOAD_STATE_FAILED;
@@ -135,7 +135,7 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
                     && download_states != DOWNLOAD_STATE_END
                     && download_states != DOWNLOAD_STATE_FAILED){
                 while(download_states != DOWNLOAD_STATE_TERMINATED && download_states != DOWNLOAD_STATE_RUNNABLE){
-                    Log.d("download","waiting");
+                    //Log.d("download","waiting");
                     Thread.sleep(1000);
                 }
                 if(download_states == DOWNLOAD_STATE_TERMINATED){
@@ -214,7 +214,7 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
             return;
         }
         download_states = DOWNLOAD_STATE_RUNNABLE;
-        executeOnExecutor(MainActivity.exec);
+        executeOnExecutor(DownloadTaskPool.getExec());
         Log.d("download","Running");
     }
     public void Pause(){

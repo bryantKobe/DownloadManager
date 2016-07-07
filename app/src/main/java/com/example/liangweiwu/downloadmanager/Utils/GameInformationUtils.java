@@ -2,10 +2,15 @@ package com.example.liangweiwu.downloadmanager.Utils;
 
 import android.content.Context;
 import android.util.Log;
+
+import com.example.liangweiwu.downloadmanager.Helper.ApkInfoAccessor;
 import com.example.liangweiwu.downloadmanager.Helper.GmDBHelper;
 import com.example.liangweiwu.downloadmanager.Model.DownloadParam;
 import com.example.liangweiwu.downloadmanager.Model.GameInformation;
+
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 
@@ -18,7 +23,8 @@ public class GameInformationUtils {
 
     private GameInformationUtils(Context context){
         mContext = context;
-        onCreate();
+        mDBHelper = GmDBHelper.getGmDBhelper(mContext);
+        mGameInfoMap = new HashMap<>();
     }
     /*
      *  获取Util单例
@@ -34,11 +40,46 @@ public class GameInformationUtils {
             mGameInfoUtils = new GameInformationUtils(context.getApplicationContext());
         }
     }
-    private void onCreate(){
-        mDBHelper = GmDBHelper.getGmDBhelper(mContext);
+    public void onCreate(){
+        loadLocalApk();
         //initData();
+    }
+    public void loadLocalApk(){
         mGameInfoMap = mDBHelper.query();
+        for(GameInformation info : mGameInfoMap.values()){
+            int status = (int)info.getAttribution("status");
+            if(status == 1){
+                String fileName = (String)info.getAttribution("package");
+                ApkInfoAccessor.getInstance().drawPackages(fileName,info);
+            }
+        }
         initMaxId();
+        File dir = new File(FileUtils.DIR_PACKAGE);
+        if(dir.exists()){
+            File[] files = dir.listFiles();
+            for(File file : files){
+                boolean isFind = false;
+                for(GameInformation info : mGameInfoMap.values()){
+                    String fileName = (String) info.getAttribution("package");
+                    int status = (int) info.getAttribution("status");
+                    if(fileName.equals(file.getName()) && status == 1){
+                        isFind = true;
+                        break;
+                    }
+                }
+                if(!isFind){
+                    ApkInfoAccessor.getInstance().drawPackages(file.getName(),null);
+                }
+            }
+        }
+    }
+    private void initMaxId(){
+        for(int key : mGameInfoMap.keySet()){
+            if(key > GameInformation.MAX_ID){
+                GameInformation.MAX_ID = key;
+            }
+        }
+        GameInformation.MAX_ID += 1;
     }
     /*
      *  销毁
@@ -51,7 +92,36 @@ public class GameInformationUtils {
      *   TODO
      */
     public ArrayList<GameInformation> getGameList(){
-        return new ArrayList<>(mGameInfoMap.values());
+        ArrayList<GameInformation> list = new ArrayList<>();
+        for(GameInformation info : mGameInfoMap.values()){
+            if(list.size() == 0){
+                list.add(info);
+                continue;
+            }
+            if(((int)info.getAttribution("status")) == 1){
+                list.add(info);
+                continue;
+            }
+            boolean isInsert = false;
+            for(int i = 0 ; i < list.size(); i++){
+                if(((int)list.get(i).getAttribution("status")) == 1){
+                    list.add(i,info);
+                    isInsert = true;
+                    break;
+                }
+                if(info.getID() < list.get(i).getID()){
+                    list.add(i,info);
+                    isInsert = true;
+                    break;
+                }
+            }
+            if(!isInsert){
+                list.add(info);
+            }
+        }
+        return list;
+
+        //return new ArrayList<>(mGameInfoMap.values());
     }
     public ArrayList<GameInformation> getDownloadedGamelist(){
         ArrayList<GameInformation> list = new ArrayList<>();
@@ -61,14 +131,6 @@ public class GameInformationUtils {
             }
         }
         return list;
-    }
-    private void initMaxId(){
-        for(int key : mGameInfoMap.keySet()){
-            if(key > GameInformation.MAX_ID){
-                GameInformation.MAX_ID = key;
-            }
-        }
-        GameInformation.MAX_ID += 1;
     }
     public GameInformation getGameInfoByID(int id){
         return mGameInfoMap.get(id);
@@ -86,6 +148,20 @@ public class GameInformationUtils {
         }
         return info;
     }
+    public void onDownloadedFinish(GameInformation info){
+        if(info == null){
+            return;
+        }
+        if(info.getIcon() == null){
+            ApkInfoAccessor.getInstance().drawPackages((String)info.getAttribution("package"),info);
+        }
+        GameParamUtils.getInstance().delete(info.getID());
+    }
+    public void delete(int id){
+            GameParamUtils.getInstance().delete(id);
+            mGameInfoMap.remove(id);
+            mDBHelper.delete(id);
+    }
     private void saveToStorage(){
         System.out.println("store");
         mDBHelper.insert(mGameInfoMap.values());
@@ -95,11 +171,8 @@ public class GameInformationUtils {
         mGameInfoMap.clear();
     }
     public void debug(){
-        mDBHelper.delete_param(1);
-        for(DownloadParam params[] : mDBHelper.query_param().values()){
-            for(DownloadParam param : params){
-                param.debug();
-            }
+        for(GameInformation info : mGameInfoMap.values()){
+            info.debug();
         }
     }
 }

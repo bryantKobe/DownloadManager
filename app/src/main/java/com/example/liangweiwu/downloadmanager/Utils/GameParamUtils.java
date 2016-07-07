@@ -18,7 +18,7 @@ public class GameParamUtils {
 
     private GameParamUtils(Context context){
         this.mContext = context.getApplicationContext();
-        onCreate();
+        mDBHelper = GmDBHelper.getGmDBhelper(mContext);
     }
     public static void init(Context context){
         if(mGameParamUtils == null){
@@ -28,8 +28,7 @@ public class GameParamUtils {
     public static GameParamUtils getInstance(){
         return mGameParamUtils;
     }
-    private void onCreate(){
-        mDBHelper = GmDBHelper.getGmDBhelper(mContext);
+    public void onCreate(){
         mParamMap = mDBHelper.query_param();
     }
     public void onDestroy(){
@@ -66,6 +65,10 @@ public class GameParamUtils {
     private void saveToStorage(){
         System.out.println("store param");
         mDBHelper.insert_params(mParamMap.values());
+    }
+    public void delete(int id){
+        mParamMap.remove(id);
+        mDBHelper.delete_param(id);
     }
     public void clean(){
 

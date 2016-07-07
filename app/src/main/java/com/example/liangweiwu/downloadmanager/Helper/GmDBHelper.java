@@ -82,7 +82,7 @@ public class GmDBHelper extends SQLiteOpenHelper {
                         info.setAttribute(filed,cursor.getString(cursor.getColumnIndex(filed)));
                     }
                 }
-                info.debug();
+                //info.debug();
                 list.put(info.getID(),info);
             }
             Log.i("Query Size",String.valueOf(cursor.getCount()));
@@ -249,7 +249,7 @@ public class GmDBHelper extends SQLiteOpenHelper {
                 }else{
                     map.get(id)[thread_id] = param;
                 }
-                param.debug();
+                //param.debug();
             }
         }catch (SQLException e){
             e.printStackTrace();

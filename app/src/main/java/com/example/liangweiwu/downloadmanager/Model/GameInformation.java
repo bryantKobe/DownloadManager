@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.util.Pair;
 import android.util.Log;
 
+import com.example.liangweiwu.downloadmanager.Activitys.MainActivity;
 import com.example.liangweiwu.downloadmanager.R;
 import com.example.liangweiwu.downloadmanager.Utils.FileUtils;
 
@@ -20,7 +21,7 @@ public class GameInformation {
     private Drawable mIcon = null;
     private HashMap<String,Object> mAttributeSet = new HashMap<>();
     public static int MAX_ID = 0;
-    public final static int EMPTY_ID = -1;
+    public final static int EMPTY_ID = 0;
 
     public static String getFilename(String url){
         if(url == null || url.equals("")){
@@ -54,9 +55,10 @@ public class GameInformation {
     }
 
     private void onCreate(){
-        mAttributeSet.put("thread_number",1);
+        mAttributeSet.put("thread_number", MainActivity.DEFAULT_THREAD_COUNT);
         mAttributeSet.put("status",0);
     }
+
     public int getID(){
         return mId;
     }

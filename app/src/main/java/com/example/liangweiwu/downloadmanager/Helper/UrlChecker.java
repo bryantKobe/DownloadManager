@@ -1,14 +1,12 @@
 package com.example.liangweiwu.downloadmanager.Helper;
 
-import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
-import android.widget.Toast;
-
-import com.example.liangweiwu.downloadmanager.R;
-
+import com.example.liangweiwu.downloadmanager.Model.GameInformation;
+import com.example.liangweiwu.downloadmanager.Utils.GameInformationUtils;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 
 public class UrlChecker extends Thread {
     private Handler mHandler;
@@ -37,7 +35,7 @@ public class UrlChecker extends Thread {
     }
 
     public int urlCheck() {
-        if (duplicationCheck()) {
+        if (duplicationCheck() && memoryCheck()) {
             return validationCheck();
         } else {
             return -1;
@@ -59,7 +57,21 @@ public class UrlChecker extends Thread {
 
 
     public boolean duplicationCheck() {
+        boolean isDuplication = false;
+        ArrayList<GameInformation> list = GameInformationUtils.getInstance().getGameList();
+        for(GameInformation info : list){
+            String url = (String)info.getAttribution("url");
+            if(url == null){
+                continue;
+            }
+            if(url.trim().equals(mUrlStr.trim())){
+                isDuplication = true;
+                break;
+            }
+        }
+        return !isDuplication;
+    }
+    public boolean memoryCheck(){
         return true;
     }
-
 }
