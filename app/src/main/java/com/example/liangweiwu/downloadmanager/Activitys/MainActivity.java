@@ -155,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
                     DownloadItemAdapter.UpdateParams pp = DownloadController.createInstance(url,DEFAULT_THREAD_COUNT,mAdapter);
                     pp.getController().getInfo().setAttribute("size",String.valueOf(fileSize));
                     mUpdateParams.add(pp);
+                    mThread_pool.addTask(pp);
                     mAdapter.notifyDataSetChanged();
                     ((TextView)findViewById(R.id.url_edit)).setText("");
                     break;

@@ -16,6 +16,8 @@ import android.widget.ProgressBar;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.liangweiwu.downloadmanager.Activitys.MainActivity;
 import com.example.liangweiwu.downloadmanager.Model.DownloadController;
 import com.example.liangweiwu.downloadmanager.Model.DownloadTask;
 import com.example.liangweiwu.downloadmanager.Model.GameInformation;
@@ -44,9 +46,9 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         final UpdateParams params = mDatas.get(position);
-        holder.preProcess();
         holder.setController(params.getController());
         holder.setID(params.getInfoID());
+        /*
         if(params.isFailed()){
             holder.onFailed();
         }else if(params.isFinish()){
@@ -58,6 +60,31 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
                 //holder.onCreate();
             }
         }
+        */
+        int state = params.getController().getDownloadState();
+        switch (state){
+            case DownloadTask.DOWNLOAD_STATE_NEW:
+                holder.showWording("等待中","等待下载",Color.BLACK);
+                break;
+            case DownloadTask.DOWNLOAD_STATE_RUNNABLE:
+            case DownloadTask.DOWNLOAD_STATE_RUNNING:
+                holder.updateProgress(params.getDownloadedSize(),params.getSpeed(),params.getFileSize());
+                break;
+            case DownloadTask.DOWNLOAD_STATE_PAUSED:
+            case DownloadTask.DOWNLOAD_STATE_TERMINATED:
+                holder.showWording("继续","已暂停",Color.BLACK);
+                break;
+            case DownloadTask.DOWNLOAD_STATE_FAILED:
+                holder.showWording("重试","网络连接失败！",Color.RED);
+                break;
+            case DownloadTask.DOWNLOAD_STATE_END:
+                holder.showWording("安装","等待安装",Color.BLACK);
+                holder.onFinish();
+                break;
+            default:
+                break;
+        }
+
     }
 
     @Override
@@ -71,6 +98,7 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
         for(UpdateParams params : mDatas){
             if(params.getInfoID() == id){
                 mDatas.remove(params);
+                MainActivity.mThread_pool.cancelTask(params);
                 break;
             }
         }
@@ -90,9 +118,6 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
         private Dialog dialog;
         private DownloadController controller;
         private int InfoId = GameInformation.EMPTY_ID;
-        private boolean isCompleted = false;
-        private boolean isFailed = false;
-        private boolean isStart = false;
 
         public MyViewHolder(View v,DownloadItemAdapter adapter) {
             super(v);
@@ -112,28 +137,20 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
                     if(controller == null){
                         return;
                     }
-                    if(controller.isFinish()){
-                        ApkInfoAccessor.getInstance().apkInstall((String) controller.getInfo().getAttribution("package"));
-                        return;
-                    }
                     switch (controller.getDownloadState()){
                         case DownloadTask.DOWNLOAD_STATE_NEW:
                             controller.start();
-                            isStart = true;
                             break;
                         case DownloadTask.DOWNLOAD_STATE_RUNNABLE:
                         case DownloadTask.DOWNLOAD_STATE_RUNNING:
                             controller.stop();
-                            isStart = false;
                             break;
                         case DownloadTask.DOWNLOAD_STATE_PAUSED:
                             controller.restart();
-                            isStart = true;
                             break;
                         case DownloadTask.DOWNLOAD_STATE_TERMINATED:
                         case DownloadTask.DOWNLOAD_STATE_FAILED:
                             controller.restart();
-                            isStart = true;
                             break;
                         case DownloadTask.DOWNLOAD_STATE_END:
                             ApkInfoAccessor.getInstance().apkInstall((String) controller.getInfo().getAttribution("package"));
@@ -168,74 +185,46 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
                     dialog.show();
                 }
             });
-            showWording("等待下载",Color.BLACK);
-            btn.setText("等待中");
         }
         public void setID(int id){
             if(InfoId != id){
                 InfoId = id;
             }
         }
-        public void updateProgressText(String state,String speed){
-            btn.setText("暂停");
-            speedText.setText(speed);
-            stateText.setText(state);
-        }
-        public void updateProgressBar(int fileSize,int downloadedSize){
-            bar.setMax(fileSize);
-            bar.setProgress(downloadedSize);
-        }
-
         public void setController(DownloadController controller){
             this.controller = controller;
         }
-        public void onCreate(){
-            if(controller.getDownloadedSize() == 0) {
-                btn.setText("等待中");
-                showWording("等待下载", Color.BLACK);
-            }else{
-                btn.setText("继续");
-                showWording("已暂停",Color.BLACK);
-            }
-        }
-        public boolean isStart(){
-            boolean temp = isStart;
-            isStart = true;
-            return temp;
-        }
-        public void onFinish(){
-            isCompleted = true;
-            btn.setText("安装");
-            showWording("等待安装",Color.BLACK);
-            //
-            // TODO
-            // get package information
-            //
-            GameInformationUtils.getInstance().onDownloadedFinish(controller.getInfo());
-            appIcon.setBackground(controller.getInfo().getIcon());
-            appName.setText(controller.getInfo().getName());
-        }
-        public void onFailed(){
-            isFailed = true;
-            btn.setText("重试");
-            showWording("网络连接错误!",Color.RED);
-        }
-        private void showWording(String str,int color){
-            bar.setVisibility(View.GONE);
-            speedText.setVisibility(View.INVISIBLE);
-            stateText.setVisibility(View.INVISIBLE);
-            installText.setVisibility(View.VISIBLE);
-            installText.setText(str);
-            installText.setTextColor(color);
-        }
-        public void preProcess(){
+
+        public void updateProgress(int downloadedSize,int speed,int fileSize){
             bar.setVisibility(View.VISIBLE);
             speedText.setVisibility(View.VISIBLE);
             stateText.setVisibility(View.VISIBLE);
             installText.setVisibility(View.GONE);
+            String s_fileSize = String.format(Locale.CHINESE,"%.2f",fileSize/1024/1024.0);
+            String s_downloadedSize = String.format(Locale.CHINESE,"%.2f",downloadedSize/1024/1024.0);
+            String state = s_downloadedSize+"M/"+s_fileSize+"M";
+            stateText.setText(state);
+            String s_speed = String.valueOf(speed/1024)+"KB/s";
+            speedText.setText(s_speed);
+            bar.setMax(fileSize);
+            bar.setProgress(downloadedSize);
+            btn.setText("暂停");
+        }
+        public void onFinish(){
+            GameInformationUtils.getInstance().onDownloadedFinish(controller.getInfo());
+            appIcon.setBackground(controller.getInfo().getIcon());
+            appName.setText(controller.getInfo().getName());
         }
 
-
+        private void showWording(String btnText,String wording,int color){
+            btn.setText(btnText);
+            bar.setVisibility(View.GONE);
+            speedText.setVisibility(View.INVISIBLE);
+            stateText.setVisibility(View.INVISIBLE);
+            installText.setVisibility(View.VISIBLE);
+            installText.setText(wording);
+            installText.setTextColor(color);
+        }
     }
     public static class UpdateParams{
         public static final int PARAMS_LENGTH = 3;
@@ -255,36 +244,17 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
                 this.params[i] = params[i];
             }
         }
-        public void setFinished(){
-            if(controller.getDownloadState() == DownloadTask.DOWNLOAD_STATE_FAILED
-                    || controller.getDownloadState() == DownloadTask.DOWNLOAD_STATE_TERMINATED){
-                return;
-            }
-            isFinish = true;
-        }
-        public boolean isFinish(){
-            return isFinish || controller.isFinish();
-        }
-        public boolean isFailed(){
-            return controller.getDownloadState() == DownloadTask.DOWNLOAD_STATE_FAILED;
-
-        }
         public DownloadController getController(){
             return controller;
         }
-        public String getDownloadProgress(){
-            String fileSize = String.format(Locale.CHINESE,"%.2f",params[2]/1024/1024.0);
-            String downloadedSize = String.format(Locale.CHINESE,"%.2f",params[0]/1024/1024.0);
-            return downloadedSize + "M/" + fileSize + "M";
+        public int getDownloadedSize(){
+            return params[0];
         }
-        public String getSpeed(){
-            return String.valueOf(params[1]/1024) + "KB/s";
+        public int getSpeed(){
+            return params[1];
         }
         public int getFileSize(){
             return params[2];
-        }
-        public int getDownloadedSize(){
-            return params[0];
         }
         public int getInfoID(){
             return controller.getInfo().getID();

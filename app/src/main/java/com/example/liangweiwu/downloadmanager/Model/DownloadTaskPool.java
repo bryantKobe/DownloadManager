@@ -34,13 +34,13 @@ public class DownloadTaskPool extends Thread{
         current_downloadTask_count = 0;
     }
     public void addTask(DownloadItemAdapter.UpdateParams params){
-        if(params.isFinish()){
+        if(params.getController().isFinish()){
             return;
         }
         mBlockingQueue.add(params);
     }
     public void cancelTask(DownloadItemAdapter.UpdateParams params){
-        if(params.isFinish()){
+        if(params.getController().isFinish()){
             return;
         }
         mBlockingQueue.remove(params);
@@ -51,8 +51,8 @@ public class DownloadTaskPool extends Thread{
         while(isRunning){
             try {
                 for(Iterator<DownloadItemAdapter.UpdateParams> it = mRunningQueue.iterator();it.hasNext();){
-                    if(it.next().isFinish()){
-                        mRunningQueue.remove(it.next());
+                    if(it.next().getController().isFinish()){
+                        it.remove();
                         current_downloadTask_count --;
                     }
                 }

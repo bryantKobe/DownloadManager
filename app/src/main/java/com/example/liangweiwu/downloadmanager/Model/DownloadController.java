@@ -1,5 +1,6 @@
 package com.example.liangweiwu.downloadmanager.Model;
 
+import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import com.example.liangweiwu.downloadmanager.Helper.DownloadItemAdapter;
 import com.example.liangweiwu.downloadmanager.Utils.GameParamUtils;
@@ -28,7 +29,6 @@ public abstract class DownloadController {
             @Override
             public void onDownloadStop() {
                 System.out.println("stop");
-                pp.setFinished();
                 mAdapter.notifyDataSetChanged();
             }
         };
@@ -53,7 +53,6 @@ public abstract class DownloadController {
             @Override
             public void onDownloadStop() {
                 System.out.println("stop");
-                pp.setFinished();
                 mAdapter.notifyDataSetChanged();
             }
         };
@@ -190,7 +189,7 @@ public abstract class DownloadController {
         return Integer.valueOf(size);
     }
     public boolean isFinish(){
-        return mDownloadTask == null;
+        return mDownloadTask == null || mDownloadTask.getStatus().equals(AsyncTask.Status.FINISHED);
     }
 
     public abstract void initViews(Integer... values);
