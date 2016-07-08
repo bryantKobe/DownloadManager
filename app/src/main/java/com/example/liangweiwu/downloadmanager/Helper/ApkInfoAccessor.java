@@ -111,12 +111,15 @@ public class ApkInfoAccessor {
     }
 
     public void apkInstallAttempt(String fileName){
+        apkInstall(fileName);
+        /*
         if(!AccessibilityServiceUtils.checkAccessibilitySettingState(mContext,serviceStr)){
             onOpenSmart();
         }
         else{
             apkInstall(fileName);
         }
+        */
     }
 
     public void onOpenSmart(){
