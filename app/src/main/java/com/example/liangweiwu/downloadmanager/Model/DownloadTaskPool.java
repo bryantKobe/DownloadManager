@@ -1,7 +1,10 @@
 package com.example.liangweiwu.downloadmanager.model;
 
 import android.os.Handler;
+import android.util.Log;
+import android.widget.Toast;
 
+import com.example.liangweiwu.downloadmanager.utils.FileUtils;
 import com.example.liangweiwu.downloadmanager.utils.GameInformationUtils;
 
 import java.util.ArrayList;
@@ -46,7 +49,18 @@ public class DownloadTaskPool extends Thread{
         if(controller.isFinish()){
             return;
         }
+        controller.stop();
+        mStoppingQueue.add(controller);
         mBlockingQueue.remove(controller);
+    }
+    public void deleteTask(DownloadController controller){
+        cancelTask(controller);
+        GameInformation info = controller.getInfo();
+        String fileName = info.getFileName();
+        if(FileUtils.deleteApk(fileName)){
+            GameInformationUtils.getInstance().delete(info.getID());
+            mHandler.sendMessage(mHandler.obtainMessage(400,info.getID()));
+        }
     }
     public void onTaskFinish(DownloadController controller){
         mHandler.sendMessage(mHandler.obtainMessage(200,controller));
@@ -75,6 +89,11 @@ public class DownloadTaskPool extends Thread{
             try {
                 for(Iterator<DownloadController> it = mRunningQueue.iterator();it.hasNext();){
                     DownloadController controller = it.next();
+                    if(mStoppingQueue.contains(controller) && !controller.isFinish()){
+                        it.remove();
+                        current_downloadTask_count --;
+                        continue;
+                    }
                     if(controller.isFinish()){
                         if(controller.getInfo().isDownloaded()
                                 && !controller.getInfo().isInstalled()){
@@ -85,13 +104,20 @@ public class DownloadTaskPool extends Thread{
                         current_downloadTask_count --;
                     }
                 }
-
+                //Log.d("blocked","" + mBlockingQueue.size());
+                //Log.d("running","" + mRunningQueue.size());
                 if(current_downloadTask_count < MAX_PARALLEL_THREAD_COUNT){
                     if(mBlockingQueue.size() > 0){
                         DownloadController controller = mBlockingQueue.remove(0);
                         mHandler.sendMessage(mHandler.obtainMessage(100,controller));
                         mRunningQueue.add(controller);
                         current_downloadTask_count++;
+                    }
+                }
+                for(Iterator<DownloadController> it = mStoppingQueue.iterator();it.hasNext();){
+                    DownloadController controller = it.next();
+                    if(controller.isFinish()){
+                        it.remove();
                     }
                 }
                 Thread.sleep(1000);
@@ -102,9 +128,9 @@ public class DownloadTaskPool extends Thread{
     }
     public void Stop(){
         for(DownloadController controller : mRunningQueue){
-            controller.stop();
+            cancelTask(controller);
+            addTask(controller);
         }
-        isRunning = false;
     }
 
 }

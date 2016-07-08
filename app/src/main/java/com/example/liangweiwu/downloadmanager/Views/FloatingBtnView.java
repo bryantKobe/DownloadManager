@@ -1,11 +1,14 @@
 package com.example.liangweiwu.downloadmanager.views;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.LinearLayout;
 
 import com.example.liangweiwu.downloadmanager.utils.FloatingWindowManager;
@@ -33,6 +36,10 @@ public class FloatingBtnView extends LinearLayout {
      * 用于更新小悬浮窗的位置
      */
     private WindowManager windowManager;
+    /**
+     * 用于获取横竖屏状态
+     */
+    private Configuration configuration;
 
     /**
      * 小悬浮窗的参数
@@ -79,15 +86,12 @@ public class FloatingBtnView extends LinearLayout {
     public FloatingBtnView(Context context) {
         super(context);
         windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        configuration = context.getResources().getConfiguration();
         LayoutInflater.from(context).inflate(R.layout.floating_btn, this);
         View view = findViewById(R.id.floating_layout);
         view.measure(0,0);
         viewWidth = view.getMeasuredWidth();
         viewHeight = view.getMeasuredWidth();
-        DisplayMetrics metrics = new DisplayMetrics();
-        windowManager.getDefaultDisplay().getMetrics(metrics);
-        screenWidth = metrics.widthPixels;
-        screenHeight = metrics.heightPixels;
     }
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -143,14 +147,55 @@ public class FloatingBtnView extends LinearLayout {
     /**
      * 更新小悬浮窗在屏幕中的位置。
      */
+    private void setScreenSize(){
+        DisplayMetrics metrics = new DisplayMetrics();
+        windowManager.getDefaultDisplay().getMetrics(metrics);
+        screenWidth = metrics.widthPixels;
+        screenHeight = metrics.heightPixels;
+        /*
+        if(configuration.orientation == Configuration.ORIENTATION_PORTRAIT){
+            screenWidth = metrics.widthPixels;
+            screenHeight = metrics.heightPixels;
+        }else if(configuration.orientation == Configuration.ORIENTATION_LANDSCAPE){
+            System.out.println(metrics.heightPixels);
+            System.out.println(metrics.widthPixels);
+            screenWidth = metrics.heightPixels;
+            screenHeight = metrics.widthPixels;
+        }
+        */
+    }
     private void slideToSide(){
-        // TODO Animation
+        setScreenSize();
         if(xInScreen > screenWidth/2){
             mParams.x = screenWidth - viewHeight;
         }else{
             mParams.x = 0;
         }
-        windowManager.updateViewLayout(this, mParams);
+        /*
+        Animation animation = new TranslateAnimation(0,500,0,0);
+        animation.setFillAfter(true);
+        animation.setDuration(1000);
+        animation.setStartOffset(1000);
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                updateLayout(mParams);
+            }
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        this.setAnimation(animation);
+        */
+        updateLayout(mParams);
+    }
+    private void updateLayout(WindowManager.LayoutParams params){
+        windowManager.updateViewLayout(this,params);
     }
     /**
      * 打开大悬浮窗，同时关闭小悬浮窗。

@@ -92,6 +92,12 @@ public class GameInformation {
     public boolean isInstalled(){
         return (int)mAttributeSet.get("status") == PACKAGE_STATUS_INSTALLED;
     }
+    public String getFileName(){
+        return (String) mAttributeSet.get("package");
+    }
+    public String getPackageName(){
+        return (String) mAttributeSet.get("packageName");
+    }
     public void setAttribute(String field,Object value){
         if(value == null){
             return;

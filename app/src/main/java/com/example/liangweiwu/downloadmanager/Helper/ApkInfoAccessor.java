@@ -156,4 +156,9 @@ public class ApkInfoAccessor {
             e.printStackTrace();
         }
     }
+    public void launchApp(String packageName){
+        Intent intent = packageManager.getLaunchIntentForPackage(packageName);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(intent);
+    }
 }

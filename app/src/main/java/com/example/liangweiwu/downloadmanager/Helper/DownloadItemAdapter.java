@@ -83,16 +83,6 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
     public void sendMessage(Message msg){
         handler.sendMessage(msg);
     }
-    public void deleteTask(int id){
-        for(UpdateParams params : mDatas){
-            if(params.getInfoID() == id){
-                mDatas.remove(params);
-                MainActivity.mThread_pool.cancelTask(params.getController());
-                break;
-            }
-        }
-        notifyDataSetChanged();
-    }
 
     class MyViewHolder extends RecyclerView.ViewHolder {
         private DownloadItemAdapter itemAdapter;
@@ -106,7 +96,6 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
         private ImageView deleteBtn;
         private Dialog dialog;
         private DownloadController controller;
-        private int InfoId = GameInformation.EMPTY_ID;
 
         public MyViewHolder(View v,DownloadItemAdapter adapter) {
             super(v);
@@ -129,11 +118,10 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
                     switch (controller.getDownloadState()){
                         case DownloadTask.DOWNLOAD_STATE_NEW:
                             controller.addTask();
-                            //controller.start();
                             break;
                         case DownloadTask.DOWNLOAD_STATE_RUNNABLE:
                         case DownloadTask.DOWNLOAD_STATE_RUNNING:
-                            controller.stop();
+                            controller.pauseTask();
                             break;
                         case DownloadTask.DOWNLOAD_STATE_PAUSED:
                             controller.restart();
@@ -143,9 +131,12 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
                             controller.restart();
                             break;
                         case DownloadTask.DOWNLOAD_STATE_END:
-                            ApkInfoAccessor.getInstance().apkInstall((String) controller.getInfo().getAttribution("package"));
+                            ApkInfoAccessor.getInstance().apkInstall(controller.getInfo().getFileName());
                             break;
                         case DownloadTask.DOWNLOAD_STATE_BLOCKED:
+                            break;
+                        case DownloadTask.DOWNLOAD_STATE_INSTALLED:
+                            ApkInfoAccessor.getInstance().launchApp(controller.getInfo().getPackageName());
                             break;
                         default:
                             break;
@@ -158,14 +149,7 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
                     .setMessage(R.string.dialog_message).setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            controller.stop();
-                            String fileName = (String) GameInformationUtils.getInstance().getGameInfoByID(InfoId).getAttribution("package");
-                            if(FileUtils.deleteApk(fileName)){
-                                GameInformationUtils.getInstance().delete(InfoId);
-                            }else{
-                                Toast.makeText(itemView.getContext(),"删除失败",Toast.LENGTH_SHORT).show();
-                            }
-                            itemAdapter.deleteTask(InfoId);
+                            MainActivity.mThread_pool.deleteTask(controller);
                         }
                     })
                     .setNegativeButton(R.string.dialog_cancel,null).create();
@@ -179,7 +163,6 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
 
         public void setParamTag(UpdateParams params){
             controller = params.getController();
-            InfoId = params.getInfoID();
             itemView.setTag(params);
         }
 

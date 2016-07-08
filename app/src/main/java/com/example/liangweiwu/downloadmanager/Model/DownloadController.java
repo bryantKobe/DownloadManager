@@ -57,7 +57,6 @@ public abstract class DownloadController {
             }
             @Override
             public void onDownloadStop() {
-                System.out.println("stop");
                 mAdapter.notifyDataSetChanged();
             }
         };
@@ -98,6 +97,9 @@ public abstract class DownloadController {
     public void addTask(){
         MainActivity.mThread_pool.addTask(this);
     }
+    public void pauseTask(){
+        MainActivity.mThread_pool.cancelTask(this);
+    }
     public void start(){
         if(mDownloadTask == null){
             return;
@@ -132,7 +134,6 @@ public abstract class DownloadController {
         }
         try{
             mDownloadTask = newTask(info,params);
-            //mDownloadTask.Start();
             addTask();
         }catch (Exception e){
             e.printStackTrace();

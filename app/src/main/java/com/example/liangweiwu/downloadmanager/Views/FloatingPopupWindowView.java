@@ -65,12 +65,11 @@ public class FloatingPopupWindowView extends LinearLayout {
                         @Override
                         public void onClick(View view) {
                             if(info.isInstalled()){
-                                // TODO
-                                // open app
+                                ApkInfoAccessor.getInstance().launchApp(info.getPackageName());
                             }else{
                                 FloatingWindowManager.removePopupWindow(getContext());
                                 FloatingWindowManager.createFloatingIcon(getContext());
-                                ApkInfoAccessor.getInstance().apkInstall((String) info.getAttribution("package"));
+                                ApkInfoAccessor.getInstance().apkInstall(info.getFileName());
                             }
                         }
                     });

@@ -9,5 +9,5 @@
         android:layout_width="@dimen/floating_btn_size"
         android:layout_height="@dimen/floating_btn_size"
         android:id="@+id/floating_btn"
-        android:background="@drawable/floating" />
+        android:background="@drawable/default_icon" />
 </LinearLayout>

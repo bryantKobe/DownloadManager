@@ -1,10 +1,14 @@
 package com.example.liangweiwu.downloadmanager.activitys;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -53,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         onLaunch();
     }
     private void onLaunch(){
+        checkDrawOverlayPermission();
         FileUtils.init(this);
         ApkInfoAccessor.init(this);
         NetworkUtils.init(this);
@@ -64,6 +69,32 @@ public class MainActivity extends AppCompatActivity {
         uiInit();
         startDownloadTask();
     }
+
+    public final static int REQUEST_CODE = 10010;
+
+    @TargetApi(23)
+    public void checkDrawOverlayPermission() {
+        int api_level = Build.VERSION.SDK_INT;
+        if (api_level >= Build.VERSION_CODES.M){
+            if (!Settings.canDrawOverlays(this)) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, REQUEST_CODE);
+            }
+        }
+
+    }
+
+    @TargetApi(23)
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode,  Intent data) {
+        if (requestCode == REQUEST_CODE) {
+            if (!Settings.canDrawOverlays(this)) {
+                Toast.makeText(this,"悬浮窗功能未打开,请在app->permission中打开悬浮窗功能",Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
     private void uiInit(){
         startService(new Intent(MainActivity.this, FloatingService.class));
     }
@@ -72,11 +103,15 @@ public class MainActivity extends AppCompatActivity {
         mThread_pool = new DownloadTaskPool(mHandler);
         String url1 = "http://mydata.xxzhushou.cn/web_server/upload/app/2016-03-04/com.DBGame.DiabloLOL.apk";
         String url2 = "http://mydata.xxzhushou.cn/web_server/upload/app/2016-05-10/Super_Cat_v1.101x.apk";
+        String url3 = "http://mydata.xxzhushou.cn/web_server/upload/app/2016-01-31/com.tencent.tmgp.hse_000000_jh.apk";
+        String url4 = "http://cdn.guopan.cn/web_server/upload/app/2016-04-12/com.yaowan.wszzl.guopan.1.0.1.s.apk";
         //int thread_num = 5;
         //GameInformationUtils.getInstance().clear();
         if(GameInformationUtils.getInstance().getGameList().size() == 0){
             GameInformation info1 = GameInformationUtils.getInstance().createGameInfo(url1,DEFAULT_THREAD_COUNT);
             GameInformation info2 = GameInformationUtils.getInstance().createGameInfo(url2,DEFAULT_THREAD_COUNT);
+            GameInformation info3 = GameInformationUtils.getInstance().createGameInfo(url3,DEFAULT_THREAD_COUNT);
+            GameInformation info4 = GameInformationUtils.getInstance().createGameInfo(url4,DEFAULT_THREAD_COUNT);
         }
         //GameInformationUtils.getInstance().debug();
         ((TextView)findViewById(R.id.url_edit)).setText("http://mydata.xxzhushou.cn/web_server/upload/app/2016-03-04/com.DBGame.DiabloLOL.apk");
@@ -171,6 +206,16 @@ public class MainActivity extends AppCompatActivity {
                     FloatingWindowManager.updateFloatIcon(drawable);
                     break;
                 case 300:
+                    mAdapter.notifyDataSetChanged();
+                    break;
+                case 400:
+                    int id = (int) msg.obj;
+                    for(DownloadItemAdapter.UpdateParams params : mUpdateParams){
+                        if(params.getInfoID() == id){
+                            mUpdateParams.remove(params);
+                            break;
+                        }
+                    }
                     mAdapter.notifyDataSetChanged();
                     break;
                 default:
