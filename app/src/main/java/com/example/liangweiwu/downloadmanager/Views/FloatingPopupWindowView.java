@@ -10,9 +10,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.liangweiwu.downloadmanager.helper.ApkInfoAccessor;
 import com.example.liangweiwu.downloadmanager.model.GameInformation;
 import com.example.liangweiwu.downloadmanager.utils.FloatingWindowManager;
 import com.example.liangweiwu.downloadmanager.utils.GameInformationUtils;
@@ -49,10 +51,19 @@ public class FloatingPopupWindowView extends LinearLayout {
                     rootLayout.addView(view);
                     LinearLayout itemLayout = (LinearLayout) view.findViewById(R.id.detail_layout);
                     int id = (int)msg.obj;
-                    GameInformation info = GameInformationUtils.getInstance().getGameInfoByID(id);
+                    final GameInformation info = GameInformationUtils.getInstance().getGameInfoByID(id);
                     for(Pair<String,String> pair : info.getAttributions()){
                         addField(itemLayout,pair);
                     }
+                    Button installBtn = (Button) view.findViewById(R.id.install_btn);
+                    installBtn.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            FloatingWindowManager.removePopupWindow(getContext());
+                            FloatingWindowManager.createFloatingIcon(getContext());
+                            ApkInfoAccessor.getInstance().apkInstall((String) info.getAttribution("package"));
+                        }
+                    });
                     break;
                 default:
                     break;

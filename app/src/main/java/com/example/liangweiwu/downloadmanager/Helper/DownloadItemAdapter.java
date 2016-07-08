@@ -208,7 +208,6 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
             btn.setText("暂停");
         }
         public void onFinish(){
-            GameInformationUtils.getInstance().onDownloadedFinish(controller.getInfo());
             appIcon.setBackground(controller.getInfo().getIcon());
             appName.setText(controller.getInfo().getName());
         }

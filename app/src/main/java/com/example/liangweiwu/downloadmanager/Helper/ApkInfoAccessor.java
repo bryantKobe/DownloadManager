@@ -140,6 +140,9 @@ public class ApkInfoAccessor {
     }
     */
     public void apkInstall(String fileName){
+        if(fileName == null || fileName.equals("")){
+            return;
+        }
         String mFilePath = FileUtils.DIR_PACKAGE + fileName;
         String command = "chmod 777 " + mFilePath;
         Runtime runtime = Runtime.getRuntime();

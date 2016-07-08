@@ -2,6 +2,7 @@ package com.example.liangweiwu.downloadmanager.activitys;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +18,7 @@ import com.example.liangweiwu.downloadmanager.model.GameInformation;
 import com.example.liangweiwu.downloadmanager.services.FloatingService;
 import com.example.liangweiwu.downloadmanager.R;
 import com.example.liangweiwu.downloadmanager.utils.FileUtils;
+import com.example.liangweiwu.downloadmanager.utils.FloatingWindowManager;
 import com.example.liangweiwu.downloadmanager.utils.GameInformationUtils;
 import com.example.liangweiwu.downloadmanager.utils.GameParamUtils;
 import com.example.liangweiwu.downloadmanager.utils.NetworkUtils;
@@ -74,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         //GameInformation info1 = GameInformationUtils.getInstance().createGameInfo(url1,DEFAULT_THREAD_COUNT);
         //GameInformation info2 = GameInformationUtils.getInstance().createGameInfo(url2,DEFAULT_THREAD_COUNT);
         //GameInformationUtils.getInstance().debug();
-        ((TextView)findViewById(R.id.url_edit)).setText("http://mydata.xxzhushou.cn/web_server/upload/app/2016-01-31/com.tencent.tmgp.hse_000000_jh.apk");
+        ((TextView)findViewById(R.id.url_edit)).setText("http://mydata.xxzhushou.cn/web_server/upload/app/2016-03-04/com.DBGame.DiabloLOL.apk");
 
 
         mAdapter = new DownloadItemAdapter(mUpdateParams,mHandler);
@@ -160,6 +162,10 @@ public class MainActivity extends AppCompatActivity {
                 case 100:
                     DownloadController controller = (DownloadController) msg.obj;
                     controller.start();
+                    break;
+                case 200:
+                    Drawable drawable = ((DownloadController) msg.obj).getInfo().getIcon();
+                    FloatingWindowManager.updateFloatIcon(drawable);
                     break;
                 default:
                     break;

@@ -1,6 +1,7 @@
 package com.example.liangweiwu.downloadmanager.views;
 
 import android.content.Context;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -66,6 +67,14 @@ public class FloatingBtnView extends LinearLayout {
      * 记录手指按下时在小悬浮窗的View上的纵坐标的值
      */
     private float yInView;
+    /**
+     * 屏幕宽度
+     */
+    private int screenWidth;
+    /**
+     * 屏幕高度
+     */
+    private int screenHeight;
 
     public FloatingBtnView(Context context) {
         super(context);
@@ -75,6 +84,10 @@ public class FloatingBtnView extends LinearLayout {
         view.measure(0,0);
         viewWidth = view.getMeasuredWidth();
         viewHeight = view.getMeasuredWidth();
+        DisplayMetrics metrics = new DisplayMetrics();
+        windowManager.getDefaultDisplay().getMetrics(metrics);
+        screenWidth = metrics.widthPixels;
+        screenHeight = metrics.heightPixels;
     }
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -99,6 +112,8 @@ public class FloatingBtnView extends LinearLayout {
                 // 如果手指离开屏幕时，xDownInScreen和xInScreen相等，且yDownInScreen和yInScreen相等，则视为触发了单击事件。
                 if (xDownInScreen == xInScreen && yDownInScreen == yInScreen) {
                     openBigWindow();
+                }else{
+                    slideToSide();
                 }
                 break;
             default:
@@ -125,7 +140,18 @@ public class FloatingBtnView extends LinearLayout {
         mParams.y = (int) (yInScreen - yInView);
         windowManager.updateViewLayout(this, mParams);
     }
-
+    /**
+     * 更新小悬浮窗在屏幕中的位置。
+     */
+    private void slideToSide(){
+        // TODO Animation
+        if(xInScreen > screenWidth/2){
+            mParams.x = screenWidth - viewHeight;
+        }else{
+            mParams.x = 0;
+        }
+        windowManager.updateViewLayout(this, mParams);
+    }
     /**
      * 打开大悬浮窗，同时关闭小悬浮窗。
      */

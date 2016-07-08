@@ -3,7 +3,9 @@ package com.example.liangweiwu.downloadmanager.model;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.example.liangweiwu.downloadmanager.activitys.MainActivity;
 import com.example.liangweiwu.downloadmanager.utils.FileUtils;
+import com.example.liangweiwu.downloadmanager.utils.FloatingWindowManager;
 import com.example.liangweiwu.downloadmanager.utils.GameInformationUtils;
 import com.example.liangweiwu.downloadmanager.utils.GameParamUtils;
 
@@ -197,6 +199,8 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
         }
         if(download_states == DOWNLOAD_STATE_FAILED){
             onThreadFailed();
+        }else if(download_states == DOWNLOAD_STATE_END){
+            onDownloadFinished();
         }
         return null;
     }
@@ -206,6 +210,9 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
                 threads[i].Stop();
             }
         }
+    }
+    private void onDownloadFinished(){
+        GameInformationUtils.getInstance().onDownloadedFinish(info);
     }
     public void Start(){
         if(download_states != DOWNLOAD_STATE_NEW){

@@ -1,6 +1,7 @@
 package com.example.liangweiwu.downloadmanager.utils;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 
 import com.example.liangweiwu.downloadmanager.helper.ApkInfoAccessor;
 import com.example.liangweiwu.downloadmanager.helper.GmDBHelper;
@@ -131,6 +132,23 @@ public class GameInformationUtils {
     }
     public GameInformation getGameInfoByID(int id){
         return mGameInfoMap.get(id);
+    }
+    public Drawable getLatestDownloadedApkIcon(){
+        int curMaxID = GameInformation.EMPTY_ID;
+        Drawable drawable = null;
+        for(GameInformation info : mGameInfoMap.values()){
+            if(((int)info.getAttribution("status")) == 0){
+                continue;
+            }
+            if(info.getIcon() == null){
+                continue;
+            }
+            if(info.getID() > curMaxID){
+                curMaxID = info.getID();
+                drawable = info.getIcon();
+            }
+        }
+        return drawable;
     }
     public GameInformation createGameInfo(String url,int thread_number){
         GameInformation info = new GameInformation(url,thread_number);

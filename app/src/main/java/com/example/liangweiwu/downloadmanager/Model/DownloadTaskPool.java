@@ -1,15 +1,11 @@
 package com.example.liangweiwu.downloadmanager.model;
 
 import android.os.Handler;
-import com.example.liangweiwu.downloadmanager.helper.DownloadItemAdapter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/**
- * Created by liangwei.wu on 16/7/7.
- */
 public class DownloadTaskPool extends Thread{
     public static final int MAX_PARALLEL_THREAD_COUNT = 2;
 
@@ -41,13 +37,18 @@ public class DownloadTaskPool extends Thread{
         }
         mBlockingQueue.remove(controller);
     }
+    public void onTaskFinish(DownloadController controller){
+        mHandler.sendMessage(mHandler.obtainMessage(200,controller));
+    }
 
     @Override
     public void run(){
         while(isRunning){
             try {
                 for(Iterator<DownloadController> it = mRunningQueue.iterator();it.hasNext();){
-                    if(it.next().isFinish()){
+                    DownloadController controller = it.next();
+                    if(controller.isFinish()){
+                        onTaskFinish(controller);
                         it.remove();
                         current_downloadTask_count --;
                     }
@@ -55,7 +56,7 @@ public class DownloadTaskPool extends Thread{
                 if(current_downloadTask_count < MAX_PARALLEL_THREAD_COUNT){
                     if(mBlockingQueue.size() > 0){
                         DownloadController controller = mBlockingQueue.remove(0);
-                        sendMessage(controller);
+                        mHandler.sendMessage(mHandler.obtainMessage(100,controller));
                         mRunningQueue.add(controller);
                         current_downloadTask_count++;
                     }
@@ -69,7 +70,5 @@ public class DownloadTaskPool extends Thread{
     public void Stop(){
         isRunning = false;
     }
-    private void sendMessage(DownloadController controller){
-        mHandler.sendMessage(mHandler.obtainMessage(100,controller));
-    }
+
 }
