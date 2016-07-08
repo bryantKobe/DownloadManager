@@ -55,13 +55,23 @@ public class FloatingPopupWindowView extends LinearLayout {
                     for(Pair<String,String> pair : info.getAttributions()){
                         addField(itemLayout,pair);
                     }
-                    Button installBtn = (Button) view.findViewById(R.id.install_btn);
+                    final Button installBtn = (Button) view.findViewById(R.id.install_btn);
+                    if(info.isInstalled()){
+                        installBtn.setText("打开");
+                    }else{
+                        installBtn.setText("安装");
+                    }
                     installBtn.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            FloatingWindowManager.removePopupWindow(getContext());
-                            FloatingWindowManager.createFloatingIcon(getContext());
-                            ApkInfoAccessor.getInstance().apkInstall((String) info.getAttribution("package"));
+                            if(info.isInstalled()){
+                                // TODO
+                                // open app
+                            }else{
+                                FloatingWindowManager.removePopupWindow(getContext());
+                                FloatingWindowManager.createFloatingIcon(getContext());
+                                ApkInfoAccessor.getInstance().apkInstall((String) info.getAttribution("package"));
+                            }
                         }
                     });
                     break;

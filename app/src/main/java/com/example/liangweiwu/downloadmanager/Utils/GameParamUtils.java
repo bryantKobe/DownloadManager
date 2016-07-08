@@ -2,6 +2,7 @@ package com.example.liangweiwu.downloadmanager.utils;
 
 
 import android.content.Context;
+import android.util.Log;
 
 import com.example.liangweiwu.downloadmanager.helper.GmDBHelper;
 import com.example.liangweiwu.downloadmanager.model.DownloadParam;
@@ -36,7 +37,7 @@ public class GameParamUtils {
     }
 
     public DownloadParam[] createParams(GameInformation info){
-        if((Integer)info.getAttribution("status") == 1){
+        if(info.isDownloaded()){
             return null;
         }
         int id = info.getID();
@@ -62,7 +63,7 @@ public class GameParamUtils {
         return mParamMap.get(id);
     }
     private void saveToStorage(){
-        System.out.println("store param");
+        Log.d("app","parameters save");
         mDBHelper.insert_params(mParamMap.values());
     }
     public void delete(int id){

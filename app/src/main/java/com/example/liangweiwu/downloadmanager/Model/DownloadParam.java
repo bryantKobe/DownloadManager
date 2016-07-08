@@ -38,6 +38,12 @@ public class DownloadParam {
     public int getThread_status(){
         return thread_status;
     }
+    public boolean isCompleted(){
+        return thread_status == THREAD_STATUS_COMPLETED;
+    }
+    public void setCompleted(){
+        thread_status = THREAD_STATUS_COMPLETED;
+    }
     public void setThreadStatus(int status){
         this.thread_status = status;
     }

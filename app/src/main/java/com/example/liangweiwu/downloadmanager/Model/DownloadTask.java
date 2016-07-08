@@ -24,6 +24,7 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
     public static final int DOWNLOAD_STATE_END = 5;           //下载状态：结束
     public static final int DOWNLOAD_STATE_FAILED = 6;        //下载状态：失败
     public static final int DOWNLOAD_STATE_BLOCKED = 7;       //下载状态:阻塞
+    public static final int DOWNLOAD_STATE_INSTALLED = 8;     //下载状态:已安装
 
     private URL url;
     private int threadNum;                  // 开启的线程数
@@ -110,7 +111,7 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
     //在PreExcute执行后被启动AysncTask的后台线程调用，将结果返回给UI线程
     @Override
     protected String doInBackground(Integer... args){
-        if((int)info.getAttribution("status") == 1){
+        if(info.isDownloaded()){
             download_states = DOWNLOAD_STATE_END;
             return null;
         }
@@ -183,7 +184,7 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
                     // 判断文件是否写入
 
                     download_states = DOWNLOAD_STATE_END;
-                    info.setAttribute("status",1);
+                    info.setDownloaded();
 
                     // TODO
                     //
@@ -262,8 +263,8 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
     private void saveParams(){
         GameParamUtils.getInstance().saveParams(params);
     }
-    public int getID(){
-        return info.getID();
+    public boolean isFinished(){
+        return getStatus().equals(Status.FINISHED);
     }
     public GameInformation getInfo(){
         return info;
@@ -273,5 +274,11 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
     }
     public int getDownloadState(){
         return download_states;
+    }
+    public void setApkInstalled(){
+        if(download_states != DOWNLOAD_STATE_END){
+            return;
+        }
+        download_states = DOWNLOAD_STATE_INSTALLED;
     }
 }

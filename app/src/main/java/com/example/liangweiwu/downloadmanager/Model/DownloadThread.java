@@ -50,7 +50,7 @@ public class DownloadThread extends Thread {
     }
     @Override
     public void run() {
-        if(param.getThread_status()==DownloadParam.THREAD_STATUS_COMPLETED){
+        if(param.isCompleted()){
             Log.d("Thread "+param.getThread_id(), "Completed");
             return;
         }
@@ -118,7 +118,7 @@ public class DownloadThread extends Thread {
                     }
                 }
                 if(isCompleted || thread_state == THREAD_STATE_COMPLETED){
-                    param.setThreadStatus(DownloadParam.THREAD_STATUS_COMPLETED);
+                    param.setCompleted();
                     thread_state = THREAD_STATE_END;
                 }
                 if(isInterrupted || thread_state == THREAD_STATE_INTERRUPTED){

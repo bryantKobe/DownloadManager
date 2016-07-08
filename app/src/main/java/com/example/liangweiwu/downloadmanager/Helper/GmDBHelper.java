@@ -39,7 +39,7 @@ public class GmDBHelper extends SQLiteOpenHelper {
             sb.append("size VARCHAR(20),");
             sb.append("category VARCHAR(20),");
             sb.append("detail VARCHAR(200),");
-            sb.append("status numeric(0,1),");
+            sb.append("status INTEGER DEFAULT 0,");
             sb.append("thread_number INTEGER DEFAULT 1 )");
             db.execSQL(sb.toString());
 

@@ -18,6 +18,11 @@ public class GameInformation {
     public static int MAX_ID = 0;
     public final static int EMPTY_ID = 0;
 
+    public static final int PACKAGE_STATUS_DOWNLOADING = 0;
+    public static final int PACKAGE_STATUS_DOWNLOADED = 1;
+    public static final int PACKAGE_STATUS_INSTALLED = 2;
+
+
     public static String getFilename(String url){
         if(url == null || url.equals("")){
             return "";
@@ -34,7 +39,7 @@ public class GameInformation {
             this.mId = MAX_ID;
             MAX_ID++;
             if(type.equals("local")){
-                mAttributeSet.put("status",1);
+                mAttributeSet.put("status",PACKAGE_STATUS_DOWNLOADED);
             }
         }
     }
@@ -51,7 +56,7 @@ public class GameInformation {
 
     private void onCreate(){
         mAttributeSet.put("thread_number", MainActivity.DEFAULT_THREAD_COUNT);
-        mAttributeSet.put("status",0);
+        mAttributeSet.put("status",PACKAGE_STATUS_DOWNLOADING);
     }
 
     public int getID(){
@@ -68,6 +73,24 @@ public class GameInformation {
     }
     public String getUrl(){
         return (String)mAttributeSet.get("url");
+    }
+    public void setStatus(int st){
+        mAttributeSet.put("status",st);
+    }
+    public int getStatus(){
+        return (int)mAttributeSet.get("status");
+    }
+    public void setDownloaded(){
+        mAttributeSet.put("status",PACKAGE_STATUS_DOWNLOADED);
+    }
+    public void setInstalled(){
+        mAttributeSet.put("status",PACKAGE_STATUS_INSTALLED);
+    }
+    public boolean isDownloaded(){
+        return (int)mAttributeSet.get("status") > 0;
+    }
+    public boolean isInstalled(){
+        return (int)mAttributeSet.get("status") == PACKAGE_STATUS_INSTALLED;
     }
     public void setAttribute(String field,Object value){
         if(value == null){

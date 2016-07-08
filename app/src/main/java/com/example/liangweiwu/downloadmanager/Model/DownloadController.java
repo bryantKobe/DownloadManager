@@ -1,5 +1,6 @@
 package com.example.liangweiwu.downloadmanager.model;
 
+import android.content.pm.ProviderInfo;
 import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 
@@ -12,6 +13,7 @@ public abstract class DownloadController {
     private DownloadTask mDownloadTask = null;
     private GameInformation info;
     private DownloadParam[] params;
+    private boolean isInstalled = false;
 
     public static DownloadItemAdapter.UpdateParams createInstance(
             String url,int thread_number,final RecyclerView.Adapter mAdapter){
@@ -75,14 +77,16 @@ public abstract class DownloadController {
     }
     public DownloadController(GameInformation info, DownloadParam[] params){
         try {
-            if((Integer)info.getAttribution("status") == 0){
+            if(!info.isDownloaded()){
                 mDownloadTask = newTask(info,params);
                 if(params == null){
                     params = GameParamUtils.getInstance().createParams(info);
                 }
             }
+            isInstalled = info.isInstalled();
             this.info = info;
             this.params = params;
+
 
         }catch (Exception e){
             e.printStackTrace();
@@ -92,9 +96,6 @@ public abstract class DownloadController {
      *  开始下载任务，若已经开始，则不起作用
      */
     public void addTask(){
-        if(isFinish()){
-            return;
-        }
         MainActivity.mThread_pool.addTask(this);
     }
     public void start(){
@@ -174,10 +175,20 @@ public abstract class DownloadController {
         return info;
     }
     public int getDownloadState(){
+        if(isInstalled){
+            return DownloadTask.DOWNLOAD_STATE_INSTALLED;
+        }
         if(mDownloadTask == null){
             return DownloadTask.DOWNLOAD_STATE_END;
         }
         return mDownloadTask.getDownloadState();
+    }
+    public void setApkInstall(){
+        isInstalled = true;
+        if(mDownloadTask == null){
+            return;
+        }
+        mDownloadTask.setApkInstalled();
     }
     /*
     public int getDownloadedSize(){
@@ -196,7 +207,7 @@ public abstract class DownloadController {
     }
     */
     public boolean isFinish(){
-        return mDownloadTask == null || mDownloadTask.getStatus().equals(AsyncTask.Status.FINISHED);
+        return mDownloadTask == null || mDownloadTask.isFinished();
     }
 
     public abstract void initViews(Integer... values);

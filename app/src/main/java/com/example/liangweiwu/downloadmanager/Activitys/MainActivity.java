@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import com.example.liangweiwu.downloadmanager.helper.ApkInfoAccessor;
 import com.example.liangweiwu.downloadmanager.helper.DownloadItemAdapter;
@@ -73,8 +74,10 @@ public class MainActivity extends AppCompatActivity {
         String url2 = "http://mydata.xxzhushou.cn/web_server/upload/app/2016-05-10/Super_Cat_v1.101x.apk";
         //int thread_num = 5;
         //GameInformationUtils.getInstance().clear();
-        //GameInformation info1 = GameInformationUtils.getInstance().createGameInfo(url1,DEFAULT_THREAD_COUNT);
-        //GameInformation info2 = GameInformationUtils.getInstance().createGameInfo(url2,DEFAULT_THREAD_COUNT);
+        if(GameInformationUtils.getInstance().getGameList().size() == 0){
+            GameInformation info1 = GameInformationUtils.getInstance().createGameInfo(url1,DEFAULT_THREAD_COUNT);
+            GameInformation info2 = GameInformationUtils.getInstance().createGameInfo(url2,DEFAULT_THREAD_COUNT);
+        }
         //GameInformationUtils.getInstance().debug();
         ((TextView)findViewById(R.id.url_edit)).setText("http://mydata.xxzhushou.cn/web_server/upload/app/2016-03-04/com.DBGame.DiabloLOL.apk");
 
@@ -112,11 +115,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onStop(){
-        System.out.println("stop");
         super.onStop();
-        GameParamUtils.getInstance().debug();
+        mThread_pool.Stop();
         GameInformationUtils.getInstance().onDestroy();
         GameParamUtils.getInstance().onDestroy();
+        Log.d("app","stop");
     }
     @Override
     protected void onDestroy(){
@@ -166,6 +169,9 @@ public class MainActivity extends AppCompatActivity {
                 case 200:
                     Drawable drawable = ((DownloadController) msg.obj).getInfo().getIcon();
                     FloatingWindowManager.updateFloatIcon(drawable);
+                    break;
+                case 300:
+                    mAdapter.notifyDataSetChanged();
                     break;
                 default:
                     break;

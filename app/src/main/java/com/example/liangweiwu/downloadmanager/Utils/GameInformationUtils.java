@@ -2,6 +2,7 @@ package com.example.liangweiwu.downloadmanager.utils;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import com.example.liangweiwu.downloadmanager.helper.ApkInfoAccessor;
 import com.example.liangweiwu.downloadmanager.helper.GmDBHelper;
@@ -45,8 +46,7 @@ public class GameInformationUtils {
     public void loadLocalApk(){
         mGameInfoMap = mDBHelper.query();
         for(GameInformation info : mGameInfoMap.values()){
-            int status = (int)info.getAttribution("status");
-            if(status == 1){
+            if(info.isDownloaded()){
                 String fileName = (String)info.getAttribution("package");
                 ApkInfoAccessor.getInstance().drawPackages(fileName,info);
             }
@@ -59,8 +59,7 @@ public class GameInformationUtils {
                 boolean isFind = false;
                 for(GameInformation info : mGameInfoMap.values()){
                     String fileName = (String) info.getAttribution("package");
-                    int status = (int) info.getAttribution("status");
-                    if(fileName.equals(file.getName()) && status == 1){
+                    if(fileName.equals(file.getName()) && info.isDownloaded()){
                         isFind = true;
                         break;
                     }
@@ -96,13 +95,13 @@ public class GameInformationUtils {
                 list.add(info);
                 continue;
             }
-            if(((int)info.getAttribution("status")) == 1){
+            if(info.isDownloaded()){
                 list.add(info);
                 continue;
             }
             boolean isInsert = false;
             for(int i = 0 ; i < list.size(); i++){
-                if(((int)list.get(i).getAttribution("status")) == 1){
+                if(list.get(i).isDownloaded()){
                     list.add(i,info);
                     isInsert = true;
                     break;
@@ -124,7 +123,7 @@ public class GameInformationUtils {
     public ArrayList<GameInformation> getDownloadedGamelist(){
         ArrayList<GameInformation> list = new ArrayList<>();
         for(GameInformation info : mGameInfoMap.values()){
-            if(((Integer)info.getAttribution("status")) == 1){
+            if(info.isDownloaded()){
                 list.add(info);
             }
         }
@@ -137,7 +136,7 @@ public class GameInformationUtils {
         int curMaxID = GameInformation.EMPTY_ID;
         Drawable drawable = null;
         for(GameInformation info : mGameInfoMap.values()){
-            if(((int)info.getAttribution("status")) == 0){
+            if(!info.isDownloaded()){
                 continue;
             }
             if(info.getIcon() == null){
@@ -149,6 +148,25 @@ public class GameInformationUtils {
             }
         }
         return drawable;
+    }
+    public int setApkInstalled(String packageName){
+        int id = GameInformation.EMPTY_ID;
+        if(packageName == null || packageName.equals("")){
+            return id;
+        }
+        ArrayList<GameInformation> list = getDownloadedGamelist();
+        for(GameInformation info : list){
+            String temp = (String) info.getAttribution("packageName");
+            if(temp == null || temp.equals("")){
+                continue;
+            }
+            if(temp.trim().equals(packageName.trim())){
+                info.setInstalled();
+                id = info.getID();
+                break;
+            }
+        }
+        return id;
     }
     public GameInformation createGameInfo(String url,int thread_number){
         GameInformation info = new GameInformation(url,thread_number);
@@ -178,7 +196,7 @@ public class GameInformationUtils {
             mDBHelper.delete(id);
     }
     private void saveToStorage(){
-        System.out.println("store");
+        Log.d("app","save");
         mDBHelper.insert(mGameInfoMap.values());
     }
     public void clear(){

@@ -46,19 +46,6 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
     public void onBindViewHolder(MyViewHolder holder, int position) {
         final UpdateParams params = mDatas.get(position);
         holder.setParamTag(params);
-        /*
-        if(params.isFailed()){
-            holder.onFailed();
-        }else if(params.isFinish()){
-            holder.onFinish();
-        }else{
-            holder.updateProgressText(params.getDownloadProgress(),params.getSpeed());
-            holder.updateProgressBar(params.getFileSize(),params.getDownloadedSize());
-            if(holder.isStart()){
-                //holder.onCreate();
-            }
-        }
-        */
         int state = params.getController().getDownloadState();
         switch (state){
             case DownloadTask.DOWNLOAD_STATE_NEW:
@@ -77,6 +64,10 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
                 break;
             case DownloadTask.DOWNLOAD_STATE_END:
                 holder.showWording("安装","等待安装",Color.BLACK);
+                holder.onFinish();
+                break;
+            case DownloadTask.DOWNLOAD_STATE_INSTALLED:
+                holder.showWording("打开","",Color.BLACK);
                 holder.onFinish();
                 break;
             default:
