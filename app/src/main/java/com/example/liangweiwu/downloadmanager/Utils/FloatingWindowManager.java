@@ -1,4 +1,4 @@
-package com.example.liangweiwu.downloadmanager.Utils;
+package com.example.liangweiwu.downloadmanager.utils;
 
 import android.content.Context;
 import android.graphics.PixelFormat;
@@ -7,8 +7,8 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.WindowManager;
 
-import com.example.liangweiwu.downloadmanager.Views.FloatingBtnView;
-import com.example.liangweiwu.downloadmanager.Views.FloatingPopupWindowView;
+import com.example.liangweiwu.downloadmanager.views.FloatingBtnView;
+import com.example.liangweiwu.downloadmanager.views.FloatingPopupWindowView;
 
 
 public class FloatingWindowManager {

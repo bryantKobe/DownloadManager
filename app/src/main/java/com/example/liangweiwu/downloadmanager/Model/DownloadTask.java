@@ -1,18 +1,16 @@
-package com.example.liangweiwu.downloadmanager.Model;
+package com.example.liangweiwu.downloadmanager.model;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.example.liangweiwu.downloadmanager.Activitys.MainActivity;
-import com.example.liangweiwu.downloadmanager.Utils.FileUtils;
-import com.example.liangweiwu.downloadmanager.Utils.GameInformationUtils;
-import com.example.liangweiwu.downloadmanager.Utils.GameParamUtils;
+import com.example.liangweiwu.downloadmanager.utils.FileUtils;
+import com.example.liangweiwu.downloadmanager.utils.GameInformationUtils;
+import com.example.liangweiwu.downloadmanager.utils.GameParamUtils;
 
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.HashMap;
 
 
 public class DownloadTask extends AsyncTask<Integer,Integer,String> {

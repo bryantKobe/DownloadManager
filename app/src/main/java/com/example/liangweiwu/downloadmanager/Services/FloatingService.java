@@ -1,11 +1,11 @@
-package com.example.liangweiwu.downloadmanager.Services;
+package com.example.liangweiwu.downloadmanager.services;
 
 import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
 
-import com.example.liangweiwu.downloadmanager.Utils.FloatingWindowManager;
+import com.example.liangweiwu.downloadmanager.utils.FloatingWindowManager;
 
 import java.util.Timer;
 

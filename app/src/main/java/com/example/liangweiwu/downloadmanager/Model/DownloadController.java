@@ -1,9 +1,11 @@
-package com.example.liangweiwu.downloadmanager.Model;
+package com.example.liangweiwu.downloadmanager.model;
 
 import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
-import com.example.liangweiwu.downloadmanager.Helper.DownloadItemAdapter;
-import com.example.liangweiwu.downloadmanager.Utils.GameParamUtils;
+
+import com.example.liangweiwu.downloadmanager.activitys.MainActivity;
+import com.example.liangweiwu.downloadmanager.helper.DownloadItemAdapter;
+import com.example.liangweiwu.downloadmanager.utils.GameParamUtils;
 
 
 public abstract class DownloadController {
@@ -32,6 +34,7 @@ public abstract class DownloadController {
                 mAdapter.notifyDataSetChanged();
             }
         };
+        controller.addTask();
         pp.setController(controller);
         return pp;
     }
@@ -56,6 +59,7 @@ public abstract class DownloadController {
                 mAdapter.notifyDataSetChanged();
             }
         };
+        controller.addTask();
         pp.setController(controller);
         return pp;
     }
@@ -87,6 +91,12 @@ public abstract class DownloadController {
     /**
      *  开始下载任务，若已经开始，则不起作用
      */
+    public void addTask(){
+        if(isFinish()){
+            return;
+        }
+        MainActivity.mThread_pool.addTask(this);
+    }
     public void start(){
         if(mDownloadTask == null){
             return;
@@ -110,12 +120,6 @@ public abstract class DownloadController {
             return;
         }
         mDownloadTask.Stop();
-        /*
-        info.debug();
-        for(int i = 0 ; i < params.length; i++){
-            params[i].debug();
-        }
-        */
     }
     public void restart(){
         if(mDownloadTask == null){
@@ -127,7 +131,8 @@ public abstract class DownloadController {
         }
         try{
             mDownloadTask = newTask(info,params);
-            mDownloadTask.Start();
+            //mDownloadTask.Start();
+            addTask();
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -174,6 +179,7 @@ public abstract class DownloadController {
         }
         return mDownloadTask.getDownloadState();
     }
+    /*
     public int getDownloadedSize(){
         int downloadedSize = 0;
         for(DownloadParam param : params){
@@ -188,6 +194,7 @@ public abstract class DownloadController {
         }
         return Integer.valueOf(size);
     }
+    */
     public boolean isFinish(){
         return mDownloadTask == null || mDownloadTask.getStatus().equals(AsyncTask.Status.FINISHED);
     }

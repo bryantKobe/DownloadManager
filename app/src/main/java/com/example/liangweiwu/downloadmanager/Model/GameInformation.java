@@ -1,15 +1,10 @@
-package com.example.liangweiwu.downloadmanager.Model;
+package com.example.liangweiwu.downloadmanager.model;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.support.v4.util.Pair;
 import android.util.Log;
 
-import com.example.liangweiwu.downloadmanager.Activitys.MainActivity;
-import com.example.liangweiwu.downloadmanager.R;
-import com.example.liangweiwu.downloadmanager.Utils.FileUtils;
+import com.example.liangweiwu.downloadmanager.activitys.MainActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;

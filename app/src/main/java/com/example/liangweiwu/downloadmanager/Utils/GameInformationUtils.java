@@ -1,16 +1,13 @@
-package com.example.liangweiwu.downloadmanager.Utils;
+package com.example.liangweiwu.downloadmanager.utils;
 
 import android.content.Context;
-import android.util.Log;
 
-import com.example.liangweiwu.downloadmanager.Helper.ApkInfoAccessor;
-import com.example.liangweiwu.downloadmanager.Helper.GmDBHelper;
-import com.example.liangweiwu.downloadmanager.Model.DownloadParam;
-import com.example.liangweiwu.downloadmanager.Model.GameInformation;
+import com.example.liangweiwu.downloadmanager.helper.ApkInfoAccessor;
+import com.example.liangweiwu.downloadmanager.helper.GmDBHelper;
+import com.example.liangweiwu.downloadmanager.model.GameInformation;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 
 

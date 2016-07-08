@@ -1,4 +1,4 @@
-package com.example.liangweiwu.downloadmanager.Helper;
+package com.example.liangweiwu.downloadmanager.helper;
 
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
@@ -10,9 +10,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import com.example.liangweiwu.downloadmanager.Model.GameInformation;
+import com.example.liangweiwu.downloadmanager.model.GameInformation;
 import com.example.liangweiwu.downloadmanager.R;
-import com.example.liangweiwu.downloadmanager.Views.FloatingPopupWindowView;
+import com.example.liangweiwu.downloadmanager.views.FloatingPopupWindowView;
 import java.util.ArrayList;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder>{

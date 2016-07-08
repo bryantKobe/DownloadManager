@@ -1,18 +1,12 @@
-package com.example.liangweiwu.downloadmanager.Model;
+package com.example.liangweiwu.downloadmanager.model;
 
-import android.os.Handler;
 import android.util.Log;
-
-import com.example.liangweiwu.downloadmanager.Model.DownloadParam;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.io.RandomAccessFile;
-import java.net.MalformedURLException;
-import java.net.SocketException;
 import java.net.URL;
 import java.net.URLConnection;
 

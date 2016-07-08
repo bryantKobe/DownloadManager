@@ -1,26 +1,25 @@
-package com.example.liangweiwu.downloadmanager.Activitys;
+package com.example.liangweiwu.downloadmanager.activitys;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import com.example.liangweiwu.downloadmanager.Helper.ApkInfoAccessor;
-import com.example.liangweiwu.downloadmanager.Helper.DownloadItemAdapter;
-import com.example.liangweiwu.downloadmanager.Helper.UrlChecker;
-import com.example.liangweiwu.downloadmanager.Model.DownloadController;
-import com.example.liangweiwu.downloadmanager.Model.DownloadParam;
-import com.example.liangweiwu.downloadmanager.Model.DownloadTaskPool;
-import com.example.liangweiwu.downloadmanager.Model.GameInformation;
-import com.example.liangweiwu.downloadmanager.Services.FloatingService;
+import com.example.liangweiwu.downloadmanager.helper.ApkInfoAccessor;
+import com.example.liangweiwu.downloadmanager.helper.DownloadItemAdapter;
+import com.example.liangweiwu.downloadmanager.helper.UrlChecker;
+import com.example.liangweiwu.downloadmanager.model.DownloadController;
+import com.example.liangweiwu.downloadmanager.model.DownloadParam;
+import com.example.liangweiwu.downloadmanager.model.DownloadTaskPool;
+import com.example.liangweiwu.downloadmanager.model.GameInformation;
+import com.example.liangweiwu.downloadmanager.services.FloatingService;
 import com.example.liangweiwu.downloadmanager.R;
-import com.example.liangweiwu.downloadmanager.Utils.FileUtils;
-import com.example.liangweiwu.downloadmanager.Utils.GameInformationUtils;
-import com.example.liangweiwu.downloadmanager.Utils.GameParamUtils;
-import com.example.liangweiwu.downloadmanager.Utils.NetworkUtils;
+import com.example.liangweiwu.downloadmanager.utils.FileUtils;
+import com.example.liangweiwu.downloadmanager.utils.GameInformationUtils;
+import com.example.liangweiwu.downloadmanager.utils.GameParamUtils;
+import com.example.liangweiwu.downloadmanager.utils.NetworkUtils;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.animation.Animation;
@@ -31,8 +30,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -108,9 +105,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
     private void startDownloadTask(){
-        for(DownloadItemAdapter.UpdateParams params : mUpdateParams){
-            mThread_pool.addTask(params);
-        }
         mThread_pool.start();
     }
 
@@ -155,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
                     DownloadItemAdapter.UpdateParams pp = DownloadController.createInstance(url,DEFAULT_THREAD_COUNT,mAdapter);
                     pp.getController().getInfo().setAttribute("size",String.valueOf(fileSize));
                     mUpdateParams.add(pp);
-                    mThread_pool.addTask(pp);
+                    mThread_pool.addTask(pp.getController());
                     mAdapter.notifyDataSetChanged();
                     ((TextView)findViewById(R.id.url_edit)).setText("");
                     break;
@@ -164,13 +158,8 @@ public class MainActivity extends AppCompatActivity {
                     toast.show();
                     break;
                 case 100:
-                    int id = (int) msg.obj;
-                    for(DownloadItemAdapter.UpdateParams params : mUpdateParams){
-                        if(params.getInfoID() == id){
-                            params.getController().start();
-                            break;
-                        }
-                    }
+                    DownloadController controller = (DownloadController) msg.obj;
+                    controller.start();
                     break;
                 default:
                     break;

@@ -1,4 +1,4 @@
-package com.example.liangweiwu.downloadmanager.Helper;
+package com.example.liangweiwu.downloadmanager.helper;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -7,14 +7,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.example.liangweiwu.downloadmanager.Model.DownloadParam;
-import com.example.liangweiwu.downloadmanager.Model.GameInformation;
+import com.example.liangweiwu.downloadmanager.model.DownloadParam;
+import com.example.liangweiwu.downloadmanager.model.GameInformation;
 
-import java.security.PrivilegedAction;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.PriorityQueue;
 
 
 public class GmDBHelper extends SQLiteOpenHelper {

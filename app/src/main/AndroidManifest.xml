@@ -14,7 +14,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activitys.MainActivity">
+        <activity android:name=".activitys.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,11 +23,11 @@
         </activity>
 
         <service
-            android:name=".Services.FloatingService"
+            android:name=".services.FloatingService"
             android:enabled="true"
             android:exported="true">
         </service>
-        <receiver android:name=".Receiver.NetworkStateReceiver">
+        <receiver android:name=".receiver.NetworkStateReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
             </intent-filter>

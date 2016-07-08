@@ -1,4 +1,4 @@
-package com.example.liangweiwu.downloadmanager.Utils;
+package com.example.liangweiwu.downloadmanager.utils;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

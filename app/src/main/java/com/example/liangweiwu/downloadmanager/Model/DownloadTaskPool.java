@@ -1,11 +1,7 @@
-package com.example.liangweiwu.downloadmanager.Model;
+package com.example.liangweiwu.downloadmanager.model;
 
 import android.os.Handler;
-
-import com.example.liangweiwu.downloadmanager.Activitys.MainActivity;
-import com.example.liangweiwu.downloadmanager.Helper.DownloadItemAdapter;
-
-import java.lang.reflect.Array;
+import com.example.liangweiwu.downloadmanager.helper.DownloadItemAdapter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
@@ -18,8 +14,8 @@ public class DownloadTaskPool extends Thread{
     public static final int MAX_PARALLEL_THREAD_COUNT = 2;
 
     private static ExecutorService exec = Executors.newFixedThreadPool(MAX_PARALLEL_THREAD_COUNT);
-    private ArrayList<DownloadItemAdapter.UpdateParams> mBlockingQueue;
-    private ArrayList<DownloadItemAdapter.UpdateParams> mRunningQueue;
+    private ArrayList<DownloadController> mBlockingQueue;
+    private ArrayList<DownloadController> mRunningQueue;
     private Handler mHandler;
     private int current_downloadTask_count;
     private boolean isRunning = true;
@@ -33,40 +29,37 @@ public class DownloadTaskPool extends Thread{
         this.mHandler = handler;
         current_downloadTask_count = 0;
     }
-    public void addTask(DownloadItemAdapter.UpdateParams params){
-        if(params.getController().isFinish()){
+    public void addTask(DownloadController controller){
+        if(controller.isFinish()){
             return;
         }
-        mBlockingQueue.add(params);
+        mBlockingQueue.add(controller);
     }
-    public void cancelTask(DownloadItemAdapter.UpdateParams params){
-        if(params.getController().isFinish()){
+    public void cancelTask(DownloadController controller){
+        if(controller.isFinish()){
             return;
         }
-        mBlockingQueue.remove(params);
+        mBlockingQueue.remove(controller);
     }
 
     @Override
     public void run(){
         while(isRunning){
             try {
-                for(Iterator<DownloadItemAdapter.UpdateParams> it = mRunningQueue.iterator();it.hasNext();){
-                    if(it.next().getController().isFinish()){
+                for(Iterator<DownloadController> it = mRunningQueue.iterator();it.hasNext();){
+                    if(it.next().isFinish()){
                         it.remove();
                         current_downloadTask_count --;
                     }
                 }
                 if(current_downloadTask_count < MAX_PARALLEL_THREAD_COUNT){
                     if(mBlockingQueue.size() > 0){
-                        DownloadItemAdapter.UpdateParams params = mBlockingQueue.remove(0);
-                        //params.getController().start();
-                        sendMessage(params.getInfoID());
-                        mRunningQueue.add(params);
+                        DownloadController controller = mBlockingQueue.remove(0);
+                        sendMessage(controller);
+                        mRunningQueue.add(controller);
                         current_downloadTask_count++;
                     }
                 }
-                //System.out.println(mBlockingQueue.size());
-                //System.out.println(mRunningQueue.size());
                 Thread.sleep(1000);
             }catch (Exception e){
                 e.printStackTrace();
@@ -76,7 +69,7 @@ public class DownloadTaskPool extends Thread{
     public void Stop(){
         isRunning = false;
     }
-    private void sendMessage(int id){
-        mHandler.sendMessage(mHandler.obtainMessage(100,id));
+    private void sendMessage(DownloadController controller){
+        mHandler.sendMessage(mHandler.obtainMessage(100,controller));
     }
 }

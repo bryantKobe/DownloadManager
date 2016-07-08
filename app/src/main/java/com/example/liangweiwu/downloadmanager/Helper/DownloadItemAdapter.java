@@ -1,4 +1,4 @@
-package com.example.liangweiwu.downloadmanager.Helper;
+package com.example.liangweiwu.downloadmanager.helper;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -13,17 +13,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.liangweiwu.downloadmanager.Activitys.MainActivity;
-import com.example.liangweiwu.downloadmanager.Model.DownloadController;
-import com.example.liangweiwu.downloadmanager.Model.DownloadTask;
-import com.example.liangweiwu.downloadmanager.Model.GameInformation;
+import com.example.liangweiwu.downloadmanager.activitys.MainActivity;
+import com.example.liangweiwu.downloadmanager.model.DownloadController;
+import com.example.liangweiwu.downloadmanager.model.DownloadTask;
+import com.example.liangweiwu.downloadmanager.model.GameInformation;
 import com.example.liangweiwu.downloadmanager.R;
-import com.example.liangweiwu.downloadmanager.Utils.FileUtils;
-import com.example.liangweiwu.downloadmanager.Utils.GameInformationUtils;
+import com.example.liangweiwu.downloadmanager.utils.FileUtils;
+import com.example.liangweiwu.downloadmanager.utils.GameInformationUtils;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -46,8 +45,7 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         final UpdateParams params = mDatas.get(position);
-        holder.setController(params.getController());
-        holder.setID(params.getInfoID());
+        holder.setParamTag(params);
         /*
         if(params.isFailed()){
             holder.onFailed();
@@ -98,7 +96,7 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
         for(UpdateParams params : mDatas){
             if(params.getInfoID() == id){
                 mDatas.remove(params);
-                MainActivity.mThread_pool.cancelTask(params);
+                MainActivity.mThread_pool.cancelTask(params.getController());
                 break;
             }
         }
@@ -139,7 +137,8 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
                     }
                     switch (controller.getDownloadState()){
                         case DownloadTask.DOWNLOAD_STATE_NEW:
-                            controller.start();
+                            controller.addTask();
+                            //controller.start();
                             break;
                         case DownloadTask.DOWNLOAD_STATE_RUNNABLE:
                         case DownloadTask.DOWNLOAD_STATE_RUNNING:
@@ -186,13 +185,11 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
                 }
             });
         }
-        public void setID(int id){
-            if(InfoId != id){
-                InfoId = id;
-            }
-        }
-        public void setController(DownloadController controller){
-            this.controller = controller;
+
+        public void setParamTag(UpdateParams params){
+            controller = params.getController();
+            InfoId = params.getInfoID();
+            itemView.setTag(params);
         }
 
         public void updateProgress(int downloadedSize,int speed,int fileSize){

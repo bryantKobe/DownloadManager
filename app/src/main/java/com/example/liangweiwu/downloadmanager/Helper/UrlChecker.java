@@ -1,9 +1,9 @@
-package com.example.liangweiwu.downloadmanager.Helper;
+package com.example.liangweiwu.downloadmanager.helper;
 
 import android.os.Handler;
 import android.os.Message;
-import com.example.liangweiwu.downloadmanager.Model.GameInformation;
-import com.example.liangweiwu.downloadmanager.Utils.GameInformationUtils;
+import com.example.liangweiwu.downloadmanager.model.GameInformation;
+import com.example.liangweiwu.downloadmanager.utils.GameInformationUtils;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;

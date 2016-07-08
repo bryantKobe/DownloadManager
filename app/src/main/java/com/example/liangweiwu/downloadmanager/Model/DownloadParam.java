@@ -1,9 +1,7 @@
-package com.example.liangweiwu.downloadmanager.Model;
+package com.example.liangweiwu.downloadmanager.model;
 
 
 import android.util.Log;
-
-import com.example.liangweiwu.downloadmanager.Utils.GameInformationUtils;
 
 public class DownloadParam {
     public static final int THREAD_STATUS_UNCOMPLETED = 0;

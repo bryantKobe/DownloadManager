@@ -1,4 +1,4 @@
-package com.example.liangweiwu.downloadmanager.Views;
+package com.example.liangweiwu.downloadmanager.views;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
-import com.example.liangweiwu.downloadmanager.Utils.FloatingWindowManager;
+import com.example.liangweiwu.downloadmanager.utils.FloatingWindowManager;
 import com.example.liangweiwu.downloadmanager.R;
 
 import java.lang.reflect.Field;

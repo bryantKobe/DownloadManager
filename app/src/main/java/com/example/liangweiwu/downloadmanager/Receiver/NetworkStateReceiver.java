@@ -1,10 +1,10 @@
-package com.example.liangweiwu.downloadmanager.Receiver;
+package com.example.liangweiwu.downloadmanager.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
-import com.example.liangweiwu.downloadmanager.Utils.NetworkUtils;
+import com.example.liangweiwu.downloadmanager.utils.NetworkUtils;
 
 
 public class NetworkStateReceiver extends BroadcastReceiver {

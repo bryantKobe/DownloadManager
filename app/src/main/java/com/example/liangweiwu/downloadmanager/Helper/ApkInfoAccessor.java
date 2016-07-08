@@ -1,4 +1,4 @@
-package com.example.liangweiwu.downloadmanager.Helper;
+package com.example.liangweiwu.downloadmanager.helper;
 
 import android.content.Context;
 import android.content.Intent;
@@ -8,12 +8,9 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 
-import com.example.liangweiwu.downloadmanager.Model.GameInformation;
-import com.example.liangweiwu.downloadmanager.Utils.FileUtils;
-import com.example.liangweiwu.downloadmanager.Utils.GameInformationUtils;
-
-import java.io.File;
-import java.util.HashMap;
+import com.example.liangweiwu.downloadmanager.model.GameInformation;
+import com.example.liangweiwu.downloadmanager.utils.FileUtils;
+import com.example.liangweiwu.downloadmanager.utils.GameInformationUtils;
 
 
 public class ApkInfoAccessor {

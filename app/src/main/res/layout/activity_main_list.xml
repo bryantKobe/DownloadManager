@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent"
-    tools:context="com.example.liangweiwu.downloadmanager.Activitys.MainActivity">
+    tools:context="com.example.liangweiwu.downloadmanager.activitys.MainActivity">
 
     <include layout="@layout/download_manager_title_layout"/>
 

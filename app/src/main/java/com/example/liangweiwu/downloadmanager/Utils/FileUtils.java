@@ -1,11 +1,9 @@
-package com.example.liangweiwu.downloadmanager.Utils;
+package com.example.liangweiwu.downloadmanager.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
-
-import com.example.liangweiwu.downloadmanager.Helper.ApkInfoAccessor;
 
 import java.io.File;
 
