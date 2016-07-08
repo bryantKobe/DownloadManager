@@ -104,14 +104,12 @@ public class MainActivity extends AppCompatActivity {
         String url1 = "http://mydata.xxzhushou.cn/web_server/upload/app/2016-03-04/com.DBGame.DiabloLOL.apk";
         String url2 = "http://mydata.xxzhushou.cn/web_server/upload/app/2016-05-10/Super_Cat_v1.101x.apk";
         String url3 = "http://mydata.xxzhushou.cn/web_server/upload/app/2016-01-31/com.tencent.tmgp.hse_000000_jh.apk";
-        String url4 = "http://cdn.guopan.cn/web_server/upload/app/2016-04-12/com.yaowan.wszzl.guopan.1.0.1.s.apk";
         //int thread_num = 5;
         //GameInformationUtils.getInstance().clear();
         if(GameInformationUtils.getInstance().getGameList().size() == 0){
             GameInformation info1 = GameInformationUtils.getInstance().createGameInfo(url1,DEFAULT_THREAD_COUNT);
             GameInformation info2 = GameInformationUtils.getInstance().createGameInfo(url2,DEFAULT_THREAD_COUNT);
             GameInformation info3 = GameInformationUtils.getInstance().createGameInfo(url3,DEFAULT_THREAD_COUNT);
-            GameInformation info4 = GameInformationUtils.getInstance().createGameInfo(url4,DEFAULT_THREAD_COUNT);
         }
         //GameInformationUtils.getInstance().debug();
         //((TextView)findViewById(R.id.url_edit)).setText("http://mydata.xxzhushou.cn/web_server/upload/app/2016-03-04/com.DBGame.DiabloLOL.apk");

@@ -30,6 +30,8 @@ public class DownloadThread extends Thread {
     private String url;
     /** 当前下载文件长度 */
     private int downloadLength = 0;
+    /** 总下载长度 */
+    private int total_downloadLength = 0;
     /** 线程状态变量 */
     private int thread_state = THREAD_STATE_NEW;
     private boolean isInterrupted = false;
@@ -47,6 +49,7 @@ public class DownloadThread extends Thread {
         this.file = file;
         this.param = param;
         this.url = downloadUrl;
+        total_downloadLength = param.getThread_downloadedLength();
     }
     @Override
     public void run() {
@@ -88,6 +91,7 @@ public class DownloadThread extends Thread {
                 while (((len = bis.read(buffer, 0, 1024)) != -1) && thread_state != THREAD_STATE_INTERRUPTED) {
                     raf.write(buffer, 0, len);
                     downloadLength += len;
+                    save();
                 }
                 if(thread_state != THREAD_STATE_INTERRUPTED){
                     isCompleted = true;
@@ -130,7 +134,7 @@ public class DownloadThread extends Thread {
             }
         }
         Log.d("Thread:"+param.getThread_id(), "Finished,all size:" + downloadLength);
-        param.update(downloadLength);
+        param.update(total_downloadLength + downloadLength);
     }
     /**
      *
@@ -161,5 +165,8 @@ public class DownloadThread extends Thread {
      */
     public int getDownloadLength() {
         return downloadLength;
+    }
+    private void save(){
+        param.update(total_downloadLength + downloadLength);
     }
 }

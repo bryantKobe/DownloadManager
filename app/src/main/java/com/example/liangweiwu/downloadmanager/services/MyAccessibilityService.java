@@ -28,11 +28,13 @@ public class MyAccessibilityService extends AccessibilityService {
         if(nodeInfo != null){
             if("android.widget.Button".equals(nodeInfo.getClassName())){
                 String nodeContent = nodeInfo.getText().toString();
-                if("安装".equals(nodeContent)
-                        || "完成".equals(nodeContent)
-                        || "确定".equals(nodeContent)){
-                    nodeInfo.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+                String[] btnStrs = new String[]{"确定","完成","安装","OK","FINISH","INSTALL","NEXT","下一步"};
+                for(String str:btnStrs){
+                    if(nodeContent.equalsIgnoreCase(str)){
+                        nodeInfo.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+                    }
                 }
+
             }else if("android.widget.ScrollView".equals(nodeInfo.getClassName())){
                 nodeInfo.performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
             }

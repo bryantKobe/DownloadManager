@@ -51,7 +51,7 @@ public class DownloadParam {
         this.thread_blockSize = blockSize;
     }
     public void update(int downloadedLength){
-        this.thread_downloadedLength += downloadedLength;
+        this.thread_downloadedLength = downloadedLength;
     }
 
     public void debug(){
