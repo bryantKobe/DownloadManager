@@ -69,7 +69,7 @@ public class FloatingPopupWindowView extends LinearLayout {
                             }else{
                                 FloatingWindowManager.removePopupWindow(getContext());
                                 FloatingWindowManager.createFloatingIcon(getContext());
-                                ApkInfoAccessor.getInstance().apkInstall(info.getFileName());
+                                ApkInfoAccessor.getInstance().apkInstallAttempt(info.getFileName());
                             }
                         }
                     });

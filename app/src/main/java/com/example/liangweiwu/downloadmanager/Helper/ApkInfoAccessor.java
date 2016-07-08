@@ -7,8 +7,11 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.provider.Settings;
 
 import com.example.liangweiwu.downloadmanager.model.GameInformation;
+import com.example.liangweiwu.downloadmanager.services.MyAccessibilityService;
+import com.example.liangweiwu.downloadmanager.utils.AccessibilityServiceUtils;
 import com.example.liangweiwu.downloadmanager.utils.FileUtils;
 import com.example.liangweiwu.downloadmanager.utils.GameInformationUtils;
 
@@ -17,6 +20,7 @@ public class ApkInfoAccessor {
     private static ApkInfoAccessor mAccessor;
     private Context mContext;
     private PackageManager packageManager;
+    private static String serviceStr;
 
     private ApkInfoAccessor(Context context){
         this.mContext = context;
@@ -26,27 +30,12 @@ public class ApkInfoAccessor {
         if(mAccessor == null){
             mAccessor = new ApkInfoAccessor(context.getApplicationContext());
         }
+        serviceStr = context.getPackageName()+"/"+ MyAccessibilityService.class.getCanonicalName();
     }
     public static ApkInfoAccessor getInstance(){
         return mAccessor;
     }
-    /*
-    public ApkInfoAccessor(String filePath, Context context) {
-        this(filePath, context,null);
-    }
-
-    public ApkInfoAccessor(String filePath, Context context, GameInformation info) {
-        this.mFilePath = filePath;
-        this.mContext = context;
-        this.mInfo = info;
-        if(this.mInfo == null){
-            this.mInfo = GameInformationUtils.getInstance().createGameInfo();
-        }
-        if(mPackItems == null){
-            mPackItems = new HashMap<>();
-        }
-    }
-    */
+    
     /**
      **  @param fileName: 文件名字
      **  @param  mInfo: 更新的对象,可为null
@@ -101,44 +90,8 @@ public class ApkInfoAccessor {
 
         return mInfo;
     }
-    /*
-    public HashMap<String,Object> drawPackItems(){
-        HashMap<String,Object> mPackItems = new HashMap<>();
+    
 
-        if(!mPackItems.isEmpty()){
-            return mPackItems;
-        }
-
-        PackageManager pm = mContext.getPackageManager();
-        PackageInfo packageInfo = pm.getPackageArchiveInfo(mFilePath,PackageManager.GET_ACTIVITIES);
-
-        if(mInfo!=null){
-            ApplicationInfo appInfo = packageInfo.applicationInfo;
-            Drawable icon = pm.getApplicationIcon(appInfo);
-            int targetSdkVersion = appInfo.targetSdkVersion;
-            int minSdkVersion = appInfo.minSdkVersion;
-            int versionCode = packageInfo.versionCode;
-            long appSize = new File(appInfo.publicSourceDir).length();
-            String appSizeStr = String.format("%.2f",1.0*appSize/(1024*1024));
-            String permission = appInfo.permission;
-            String versionName = packageInfo.versionName;
-            String packageName = packageInfo.packageName;
-            String appName = pm.getApplicationLabel(appInfo).toString();
-
-            mPackItems.put("名称",appName);
-            mPackItems.put("包名",packageName);
-            mPackItems.put("VersionCode",Integer.toString(versionCode));
-            mPackItems.put("VersionName",versionName);
-            mPackItems.put("大小",appSizeStr);
-            mPackItems.put("TargetSdkVersion",Integer.toString(targetSdkVersion));
-            mPackItems.put("MinSdkVersion",Integer.toString(minSdkVersion));
-            mPackItems.put("Permission",permission);
-        }
-
-        return mPackItems;
-
-    }
-    */
     public void apkInstall(String fileName){
         if(fileName == null || fileName.equals("")){
             return;
@@ -156,6 +109,21 @@ public class ApkInfoAccessor {
             e.printStackTrace();
         }
     }
+
+    public void apkInstallAttempt(String fileName){
+        if(!AccessibilityServiceUtils.checkAccessibilitySettingState(mContext,serviceStr)){
+            onOpenSmart();
+        }
+        else{
+            apkInstall(fileName);
+        }
+    }
+
+    public void onOpenSmart(){
+        Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+        mContext.startActivity(intent);
+    }
+
     public void launchApp(String packageName){
         Intent intent = packageManager.getLaunchIntentForPackage(packageName);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

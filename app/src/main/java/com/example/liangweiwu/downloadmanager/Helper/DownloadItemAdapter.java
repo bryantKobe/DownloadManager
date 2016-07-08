@@ -14,15 +14,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.liangweiwu.downloadmanager.activitys.MainActivity;
 import com.example.liangweiwu.downloadmanager.model.DownloadController;
 import com.example.liangweiwu.downloadmanager.model.DownloadTask;
-import com.example.liangweiwu.downloadmanager.model.GameInformation;
 import com.example.liangweiwu.downloadmanager.R;
-import com.example.liangweiwu.downloadmanager.utils.FileUtils;
-import com.example.liangweiwu.downloadmanager.utils.GameInformationUtils;
+
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -131,7 +128,7 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
                             controller.restart();
                             break;
                         case DownloadTask.DOWNLOAD_STATE_END:
-                            ApkInfoAccessor.getInstance().apkInstall(controller.getInfo().getFileName());
+                            ApkInfoAccessor.getInstance().apkInstallAttempt(controller.getInfo().getFileName());
                             break;
                         case DownloadTask.DOWNLOAD_STATE_BLOCKED:
                             break;
