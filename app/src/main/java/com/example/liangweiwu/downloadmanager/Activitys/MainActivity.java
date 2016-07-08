@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
             GameInformation info4 = GameInformationUtils.getInstance().createGameInfo(url4,DEFAULT_THREAD_COUNT);
         }
         //GameInformationUtils.getInstance().debug();
-        ((TextView)findViewById(R.id.url_edit)).setText("http://mydata.xxzhushou.cn/web_server/upload/app/2016-03-04/com.DBGame.DiabloLOL.apk");
+        //((TextView)findViewById(R.id.url_edit)).setText("http://mydata.xxzhushou.cn/web_server/upload/app/2016-03-04/com.DBGame.DiabloLOL.apk");
 
 
         mAdapter = new DownloadItemAdapter(mUpdateParams,mHandler);

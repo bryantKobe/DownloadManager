@@ -37,7 +37,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         if(icon == null){
             viewHolder.mImageView.setBackgroundResource(R.drawable.default_icon);
         }else{
-            viewHolder.mImageView.setBackground(info.getIcon());
+            viewHolder.mImageView.setBackground(info.getIcon().getConstantState().newDrawable());
         }
         viewHolder.mItemLayout.setOnClickListener(new View.OnClickListener() {
             @Override
