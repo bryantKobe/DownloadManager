@@ -108,8 +108,8 @@ public class FloatingPopupWindowView extends LinearLayout {
     @Override
     public boolean onTouchEvent(MotionEvent event){
         switch (event.getAction()){
-            case MotionEvent.ACTION_OUTSIDE:
-                Log.i("motion","touch outside");
+            case MotionEvent.ACTION_DOWN:
+                Log.i("motion","touch");
                 FloatingWindowManager.createFloatingIcon(getContext());
                 FloatingWindowManager.removePopupWindow(getContext());
                 break;

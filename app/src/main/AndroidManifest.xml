@@ -25,7 +25,8 @@
         <service
             android:name=".services.FloatingService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true">
+        </service>
 
         <receiver android:name=".receiver.NetworkStateReceiver">
             <intent-filter>

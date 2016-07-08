@@ -120,9 +120,8 @@ public class FloatingWindowManager {
             if (bigWindowParams == null) {
                 bigWindowParams = new WindowManager.LayoutParams();
                 bigWindowParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
-                bigWindowParams.flags =    WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
-                      | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-                      |WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+                bigWindowParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                      | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
 
                 bigWindowParams.format = PixelFormat.RGBA_8888;
                 bigWindowParams.gravity = Gravity.CENTER;

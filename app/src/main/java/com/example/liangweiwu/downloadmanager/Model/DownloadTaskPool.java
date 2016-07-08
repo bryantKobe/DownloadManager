@@ -14,6 +14,8 @@ import java.util.concurrent.Executors;
 
 public class DownloadTaskPool extends Thread{
     public static final int MAX_PARALLEL_THREAD_COUNT = 2;
+    public static final int TASK_PRIORITY_NORMAL = 0;
+    public static final int TASK_PRIORITY_HIGHEST = 1;
 
     private static ExecutorService exec = Executors.newFixedThreadPool(MAX_PARALLEL_THREAD_COUNT);
     private ArrayList<DownloadController> mBlockingQueue;
@@ -23,6 +25,7 @@ public class DownloadTaskPool extends Thread{
     private Handler mHandler;
     private int current_downloadTask_count;
     private boolean isRunning = true;
+    private boolean isBlocked = false;
 
     public static ExecutorService getExec(){
         return exec;
@@ -35,7 +38,7 @@ public class DownloadTaskPool extends Thread{
         this.mHandler = handler;
         current_downloadTask_count = 0;
     }
-    public void addTask(DownloadController controller){
+    public void addTask(DownloadController controller,int priority){
         if(controller.isFinish()){
             if(!controller.getInfo().isInstalled()){
                 mFinishedQueue.add(controller);
@@ -43,7 +46,14 @@ public class DownloadTaskPool extends Thread{
             }
             return;
         }
-        mBlockingQueue.add(controller);
+        if(priority == TASK_PRIORITY_NORMAL){
+            mBlockingQueue.add(controller);
+        }else if(priority == TASK_PRIORITY_HIGHEST){
+            mBlockingQueue.add(0,controller);
+        }
+    }
+    public void addTask(DownloadController controller){
+        addTask(controller,TASK_PRIORITY_NORMAL);
     }
     public void cancelTask(DownloadController controller){
         if(controller.isFinish()){
@@ -106,7 +116,7 @@ public class DownloadTaskPool extends Thread{
                 }
                 //Log.d("blocked","" + mBlockingQueue.size());
                 //Log.d("running","" + mRunningQueue.size());
-                if(current_downloadTask_count < MAX_PARALLEL_THREAD_COUNT){
+                if(current_downloadTask_count < MAX_PARALLEL_THREAD_COUNT && !isBlocked){
                     if(mBlockingQueue.size() > 0){
                         DownloadController controller = mBlockingQueue.remove(0);
                         mHandler.sendMessage(mHandler.obtainMessage(100,controller));
@@ -127,10 +137,12 @@ public class DownloadTaskPool extends Thread{
         }
     }
     public void Stop(){
+        //isBlocked = true;
         for(DownloadController controller : mRunningQueue){
-            cancelTask(controller);
-            addTask(controller);
+            //cancelTask(controller);
+            //addTask(controller,TASK_PRIORITY_HIGHEST);
         }
+        //isBlocked = false;
     }
 
 }
