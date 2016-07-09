@@ -45,7 +45,7 @@ public class FloatingPopupWindowView extends LinearLayout {
         public void handleMessage(Message msg){
             switch (msg.what){
                 case SHOW_GAME_DETAIL:
-                    LinearLayout rootLayout = (LinearLayout) findViewById(R.id.floating_popWin_layout);
+                    LinearLayout rootLayout = (LinearLayout) findViewById(R.id.floating_popWin_content);
                     rootLayout.removeAllViews();
                     View view = LayoutInflater.from(getContext()).inflate(R.layout.game_information_layout,null);
                     rootLayout.addView(view);
