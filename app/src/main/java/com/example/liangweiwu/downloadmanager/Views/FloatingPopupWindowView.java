@@ -45,7 +45,7 @@ public class FloatingPopupWindowView extends LinearLayout {
         public void handleMessage(Message msg){
             switch (msg.what){
                 case SHOW_GAME_DETAIL:
-                    LinearLayout rootLayout = (LinearLayout) findViewById(R.id.floating_popWin_content);
+                    LinearLayout rootLayout = (LinearLayout) findViewById(R.id.floating_popWin_layout);
                     rootLayout.removeAllViews();
                     View view = LayoutInflater.from(getContext()).inflate(R.layout.game_information_layout,null);
                     rootLayout.addView(view);
@@ -91,7 +91,6 @@ public class FloatingPopupWindowView extends LinearLayout {
         View view = findViewById(R.id.floating_popWin_layout);
         viewWidth = view.getLayoutParams().width;
         viewHeight = view.getLayoutParams().height;
-        Log.d("view",String.valueOf(viewHeight));
         mRecyclerView = (RecyclerView)findViewById(R.id.floating_recycler);
         mLayoutManager = new GridLayoutManager(context,GRID_COLUMNS);
         mRecyclerView.setLayoutManager(mLayoutManager);
