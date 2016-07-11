@@ -12,7 +12,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.example.liangweiwu.downloadmanager.activitys.events.ViewController;
-import com.example.liangweiwu.downloadmanager.activitys.events.MainUiEvent;
+import com.example.liangweiwu.downloadmanager.activitys.adapters.MainUiEvent;
 import com.example.liangweiwu.downloadmanager.model.thread.DownloadMainThread;
 import com.example.liangweiwu.downloadmanager.utils.ApkInfoAccessor;
 import com.example.liangweiwu.downloadmanager.activitys.adapters.DownloadItemAdapter;

@@ -1,9 +1,6 @@
 package com.example.liangweiwu.downloadmanager.utils;
 
-import android.os.Handler;
-import android.os.Message;
-
-import com.example.liangweiwu.downloadmanager.activitys.events.MainUiEvent;
+import com.example.liangweiwu.downloadmanager.activitys.adapters.MainUiEvent;
 import com.example.liangweiwu.downloadmanager.model.ApkInformation;
 
 import java.net.URL;
