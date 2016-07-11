@@ -3,8 +3,6 @@ package com.example.liangweiwu.downloadmanager.activitys.adapters;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.liangweiwu.downloadmanager.activitys.MainActivity;
+import com.example.liangweiwu.downloadmanager.activitys.events.ViewController;
 import com.example.liangweiwu.downloadmanager.utils.ApkInfoAccessor;
 import com.example.liangweiwu.downloadmanager.model.DownloadTaskController;
 import com.example.liangweiwu.downloadmanager.model.thread.DownloadMainThread;

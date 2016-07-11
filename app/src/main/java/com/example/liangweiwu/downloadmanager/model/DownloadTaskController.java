@@ -1,17 +1,12 @@
 package com.example.liangweiwu.downloadmanager.model;
 
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
-import com.example.liangweiwu.downloadmanager.activitys.MainActivity;
-import com.example.liangweiwu.downloadmanager.activitys.adapters.DownloadItemAdapter;
-import com.example.liangweiwu.downloadmanager.activitys.adapters.ViewController;
+import com.example.liangweiwu.downloadmanager.activitys.events.ViewController;
 import com.example.liangweiwu.downloadmanager.activitys.events.MainUiEvent;
 import com.example.liangweiwu.downloadmanager.model.thread.DownloadMainThread;
 import com.example.liangweiwu.downloadmanager.utils.DownloadTaskPool;
 import com.example.liangweiwu.downloadmanager.utils.GameParamUtils;
-
-import de.greenrobot.event.EventBus;
 
 
 public abstract class DownloadTaskController {

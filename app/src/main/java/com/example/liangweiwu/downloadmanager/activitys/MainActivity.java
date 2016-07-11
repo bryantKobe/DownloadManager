@@ -1,20 +1,17 @@
 package com.example.liangweiwu.downloadmanager.activitys;
 
 import android.annotation.TargetApi;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Message;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import com.example.liangweiwu.downloadmanager.activitys.adapters.ViewController;
+import com.example.liangweiwu.downloadmanager.activitys.events.ViewController;
 import com.example.liangweiwu.downloadmanager.activitys.events.MainUiEvent;
 import com.example.liangweiwu.downloadmanager.model.thread.DownloadMainThread;
 import com.example.liangweiwu.downloadmanager.utils.ApkInfoAccessor;

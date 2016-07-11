@@ -1,4 +1,4 @@
-package com.example.liangweiwu.downloadmanager.activitys.adapters;
+package com.example.liangweiwu.downloadmanager.activitys.events;
 
 import com.example.liangweiwu.downloadmanager.model.DownloadTaskController;
 
@@ -13,7 +13,6 @@ public class ViewController{
     public ViewController(){
         for(int i = 0 ; i < PARAMS_LENGTH; i++){
             params[i] = 0;
-            int j = 0;
         }
     }
     public void setController(DownloadTaskController controller){
