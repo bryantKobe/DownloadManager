@@ -1,6 +1,8 @@
-package com.example.liangweiwu.downloadmanager.model;
+package com.example.liangweiwu.downloadmanager.model.thread;
 
 import android.util.Log;
+
+import com.example.liangweiwu.downloadmanager.model.DownloadParameter;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -11,7 +13,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 
-public class DownloadThread extends Thread {
+public class DownloadSubThread extends Thread {
     public static int MAX_LOOP_TIMES = 2;
 
     public static final int THREAD_STATE_NEW = 0;                   //线程状态:新建
@@ -25,7 +27,7 @@ public class DownloadThread extends Thread {
     /** 文件保存路径 */
     private File file;
     /** 下载参数 */
-    private DownloadParam param;
+    private DownloadParameter param;
     /** 下载参数 */
     private String url;
     /** 当前下载文件长度 */
@@ -45,7 +47,7 @@ public class DownloadThread extends Thread {
      *  threadId:线程ID
      *  startOffset:开始位置偏移量
      */
-    public DownloadThread(DownloadParam param,File file,String downloadUrl){
+    public DownloadSubThread(DownloadParameter param, File file, String downloadUrl){
         this.file = file;
         this.param = param;
         this.url = downloadUrl;

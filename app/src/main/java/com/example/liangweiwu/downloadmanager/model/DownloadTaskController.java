@@ -4,20 +4,21 @@ import android.support.v7.widget.RecyclerView;
 
 import com.example.liangweiwu.downloadmanager.activitys.MainActivity;
 import com.example.liangweiwu.downloadmanager.activitys.adapters.DownloadItemAdapter;
+import com.example.liangweiwu.downloadmanager.model.thread.DownloadMainThread;
 import com.example.liangweiwu.downloadmanager.utils.GameParamUtils;
 
 
-public abstract class DownloadController {
-    private DownloadTask mDownloadTask = null;
-    private GameInformation info;
-    private DownloadParam[] params;
+public abstract class DownloadTaskController {
+    private DownloadMainThread mDownloadTask = null;
+    private ApkInformation info;
+    private DownloadParameter[] params;
     private boolean isInstalled = false;
 
     public static DownloadItemAdapter.UpdateParams createInstance(
             String url,int thread_number,final RecyclerView.Adapter mAdapter){
 
         final DownloadItemAdapter.UpdateParams pp = new DownloadItemAdapter.UpdateParams();
-        DownloadController controller = new DownloadController(url,thread_number) {
+        DownloadTaskController controller = new DownloadTaskController(url,thread_number) {
             @Override
             public void initViews(Integer... values) {
                 pp.updateParams(values);
@@ -39,10 +40,10 @@ public abstract class DownloadController {
         return pp;
     }
     public static DownloadItemAdapter.UpdateParams createInstance(
-            GameInformation info, DownloadParam[] params, final RecyclerView.Adapter mAdapter){
+            ApkInformation info, DownloadParameter[] params, final RecyclerView.Adapter mAdapter){
 
         final DownloadItemAdapter.UpdateParams pp = new DownloadItemAdapter.UpdateParams();
-        DownloadController controller = new DownloadController(info,params) {
+        DownloadTaskController controller = new DownloadTaskController(info,params) {
             @Override
             public void initViews(Integer... values) {
                 pp.updateParams(values);
@@ -63,7 +64,7 @@ public abstract class DownloadController {
         return pp;
     }
 
-    public DownloadController(String url, int threadNum){
+    public DownloadTaskController(String url, int threadNum){
         try {
             mDownloadTask = newTask(url,threadNum);
             info = mDownloadTask.getInfo();
@@ -72,7 +73,7 @@ public abstract class DownloadController {
             e.printStackTrace();
         }
     }
-    public DownloadController(GameInformation info, DownloadParam[] params){
+    public DownloadTaskController(ApkInformation info, DownloadParameter[] params){
         try {
             if(!info.isDownloaded()){
                 mDownloadTask = newTask(info,params);
@@ -126,8 +127,8 @@ public abstract class DownloadController {
         if(mDownloadTask == null){
             return;
         }
-        if(mDownloadTask.getDownloadState() != DownloadTask.DOWNLOAD_STATE_TERMINATED
-                && mDownloadTask.getDownloadState() != DownloadTask.DOWNLOAD_STATE_FAILED){
+        if(mDownloadTask.getDownloadState() != DownloadMainThread.DOWNLOAD_STATE_TERMINATED
+                && mDownloadTask.getDownloadState() != DownloadMainThread.DOWNLOAD_STATE_FAILED){
             return;
         }
         try{
@@ -138,8 +139,8 @@ public abstract class DownloadController {
         }
     }
 
-    private DownloadTask newTask(String url, int threadNum) throws Exception{
-        return new DownloadTask(url,threadNum){
+    private DownloadMainThread newTask(String url, int threadNum) throws Exception{
+        return new DownloadMainThread(url,threadNum){
             @Override
             protected void onStart(Integer... values){
                 initViews(values);
@@ -154,8 +155,8 @@ public abstract class DownloadController {
             }
         };
     }
-    private DownloadTask newTask(GameInformation info, DownloadParam[] params)throws Exception{
-        return new DownloadTask(info,params){
+    private DownloadMainThread newTask(ApkInformation info, DownloadParameter[] params)throws Exception{
+        return new DownloadMainThread(info,params){
             @Override
             protected void onStart(Integer... values){
                 initViews(values);
@@ -170,15 +171,15 @@ public abstract class DownloadController {
             }
         };
     }
-    public GameInformation getInfo(){
+    public ApkInformation getInfo(){
         return info;
     }
     public int getDownloadState(){
         if(isInstalled){
-            return DownloadTask.DOWNLOAD_STATE_INSTALLED;
+            return DownloadMainThread.DOWNLOAD_STATE_INSTALLED;
         }
         if(mDownloadTask == null){
-            return DownloadTask.DOWNLOAD_STATE_END;
+            return DownloadMainThread.DOWNLOAD_STATE_END;
         }
         return mDownloadTask.getDownloadState();
     }
@@ -192,7 +193,7 @@ public abstract class DownloadController {
     /*
     public int getDownloadedSize(){
         int downloadedSize = 0;
-        for(DownloadParam param : params){
+        for(DownloadParameter param : params){
             downloadedSize += param.getThread_downloadedLength();
         }
         return downloadedSize;

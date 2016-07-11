@@ -1,11 +1,12 @@
-package com.example.liangweiwu.downloadmanager.model;
+package com.example.liangweiwu.downloadmanager.model.thread;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.example.liangweiwu.downloadmanager.activitys.MainActivity;
+import com.example.liangweiwu.downloadmanager.model.DownloadParameter;
+import com.example.liangweiwu.downloadmanager.utils.DownloadTaskPool;
+import com.example.liangweiwu.downloadmanager.model.ApkInformation;
 import com.example.liangweiwu.downloadmanager.utils.FileUtils;
-import com.example.liangweiwu.downloadmanager.utils.FloatingWindowManager;
 import com.example.liangweiwu.downloadmanager.utils.GameInformationUtils;
 import com.example.liangweiwu.downloadmanager.utils.GameParamUtils;
 
@@ -15,7 +16,9 @@ import java.net.URL;
 import java.net.URLConnection;
 
 
-public class DownloadTask extends AsyncTask<Integer,Integer,String> {
+public class DownloadMainThread extends AsyncTask<Integer,Integer,String> {
+    public static final int DEFAULT_THREAD_COUNT = 5;
+
     public static final int DOWNLOAD_STATE_NEW = 0;           //下载状态：新线程
     public static final int DOWNLOAD_STATE_RUNNABLE = 1;      //下载状态：准备运行
     public static final int DOWNLOAD_STATE_RUNNING = 2;       //下载状态：运行中
@@ -33,50 +36,47 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
     private int blockSize;                  // 每一个线程的下载量
     private int fileSize;                   // 下载文件的大小
     private int downloadedSize = 0;         //已下载的文件大小
-    private DownloadThread[] threads;       //线程池
-    private DownloadParam[] params;         //参数池
-    private GameInformation info;
+    private DownloadSubThread[] threads;       //线程池
+    private DownloadParameter[] params;         //参数池
+    private ApkInformation info;
     private int download_states = DOWNLOAD_STATE_NEW;
 
 
     /**
      **  继续未完成的下载任务
      **/
-    public DownloadTask(GameInformation info,DownloadParam[] params) throws Exception{
+    public DownloadMainThread(ApkInformation info, DownloadParameter[] params) throws Exception{
         if(params == null){
             params = GameParamUtils.getInstance().createParams(info);
         }
         this.params = params;
         this.info = info;
-        String url = (String)info.getAttribution("url");
-        init(url,(Integer)info.getAttribution("thread_number"));
+        String url = info.getUrl();
+        init(url,info.getThreadNumber());
         for(int i = 0 ; i < threadNum ; i++){
-            threads[i] = new DownloadThread(params[i], file, url);
+            threads[i] = new DownloadSubThread(params[i], file, url);
             threads[i].setName("Thread:" + i);
         }
     }
     /**
      **  新建下载任务
      **/
-    public DownloadTask(String downloadUrl, int threadNum) throws Exception{
+    public DownloadMainThread(String downloadUrl, int threadNum) throws Exception{
         info = GameInformationUtils.getInstance().createGameInfo(downloadUrl,threadNum);
         info.setAttribute("url",downloadUrl);
         info.setAttribute("thread_number",threadNum);
         params = GameParamUtils.getInstance().createParams(info);
         init(downloadUrl,threadNum);
         for(int i = 0 ; i < threadNum; i++){
-            threads[i] = new DownloadThread(params[i], file , downloadUrl);
+            threads[i] = new DownloadSubThread(params[i], file , downloadUrl);
             threads[i].setName("Thread:" + i);
         }
     }
     private void init(String downloadUrl, int threadNum) throws Exception{
         this.threadNum = threadNum;
-        Object size = info.getAttribution("size");
-        if(size != null){
-            this.fileSize = Integer.valueOf((String)size);
-        }
-        file = new File(FileUtils.DIR_PACKAGE + info.getAttribution("package"));
-        this.threads = new DownloadThread[threadNum];
+        this.fileSize = info.getSize();
+        file = new File(FileUtils.DIR_PACKAGE + info.getFileName());
+        this.threads = new DownloadSubThread[threadNum];
         url = new URL(downloadUrl);
         if(params != null){
             for(int i = 0 ; i < threadNum; i++){
@@ -146,7 +146,7 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
                 download_states = DOWNLOAD_STATE_RUNNING;
                 for (int i = 0; i < threadNum; i++) {
                     if(threads[i].isStop()){
-                        threads[i] = new DownloadThread(params[i],file,(String)info.getAttribution("url"));
+                        threads[i] = new DownloadSubThread(params[i],file,info.getUrl());
                         threads[i].setName("Thread:" + i);
                     }
                     threads[i].start();
@@ -266,10 +266,10 @@ public class DownloadTask extends AsyncTask<Integer,Integer,String> {
     public boolean isFinished(){
         return getStatus().equals(Status.FINISHED);
     }
-    public GameInformation getInfo(){
+    public ApkInformation getInfo(){
         return info;
     }
-    public DownloadParam[] getParams(){
+    public DownloadParameter[] getParams(){
         return params;
     }
     public int getDownloadState(){

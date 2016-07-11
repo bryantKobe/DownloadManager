@@ -1,9 +1,9 @@
-package com.example.liangweiwu.downloadmanager.model;
+package com.example.liangweiwu.downloadmanager.utils;
 
 import android.os.Handler;
-import android.util.Log;
-import android.widget.Toast;
 
+import com.example.liangweiwu.downloadmanager.model.ApkInformation;
+import com.example.liangweiwu.downloadmanager.model.DownloadTaskController;
 import com.example.liangweiwu.downloadmanager.utils.FileUtils;
 import com.example.liangweiwu.downloadmanager.utils.GameInformationUtils;
 
@@ -18,10 +18,10 @@ public class DownloadTaskPool extends Thread{
     public static final int TASK_PRIORITY_HIGHEST = 1;
 
     private static ExecutorService exec = Executors.newFixedThreadPool(MAX_PARALLEL_THREAD_COUNT);
-    private ArrayList<DownloadController> mBlockingQueue;
-    private ArrayList<DownloadController> mRunningQueue;
-    private ArrayList<DownloadController> mStoppingQueue;
-    private ArrayList<DownloadController> mFinishedQueue;
+    private ArrayList<DownloadTaskController> mBlockingQueue;
+    private ArrayList<DownloadTaskController> mRunningQueue;
+    private ArrayList<DownloadTaskController> mStoppingQueue;
+    private ArrayList<DownloadTaskController> mFinishedQueue;
     private Handler mHandler;
     private int current_downloadTask_count;
     private boolean isRunning = true;
@@ -38,7 +38,7 @@ public class DownloadTaskPool extends Thread{
         this.mHandler = handler;
         current_downloadTask_count = 0;
     }
-    public void addTask(DownloadController controller,int priority){
+    public void addTask(DownloadTaskController controller, int priority){
         if(controller.isFinish()){
             if(!controller.getInfo().isInstalled()){
                 mFinishedQueue.add(controller);
@@ -52,10 +52,10 @@ public class DownloadTaskPool extends Thread{
             mBlockingQueue.add(0,controller);
         }
     }
-    public void addTask(DownloadController controller){
+    public void addTask(DownloadTaskController controller){
         addTask(controller,TASK_PRIORITY_NORMAL);
     }
-    public void cancelTask(DownloadController controller){
+    public void cancelTask(DownloadTaskController controller){
         if(controller.isFinish()){
             return;
         }
@@ -63,24 +63,24 @@ public class DownloadTaskPool extends Thread{
         mStoppingQueue.add(controller);
         mBlockingQueue.remove(controller);
     }
-    public void deleteTask(DownloadController controller){
+    public void deleteTask(DownloadTaskController controller){
         cancelTask(controller);
-        GameInformation info = controller.getInfo();
+        ApkInformation info = controller.getInfo();
         String fileName = info.getFileName();
         if(FileUtils.deleteApk(fileName)){
             GameInformationUtils.getInstance().delete(info.getID());
             mHandler.sendMessage(mHandler.obtainMessage(400,info.getID()));
         }
     }
-    public void onTaskFinish(DownloadController controller){
+    public void onTaskFinish(DownloadTaskController controller){
         mHandler.sendMessage(mHandler.obtainMessage(200,controller));
     }
     public String setApkInstalled(String packageName){
         int id = GameInformationUtils.getInstance().setApkInstalled(packageName);
         String appName = null;
-        if(id != GameInformation.EMPTY_ID){
-            for(Iterator<DownloadController> it = mFinishedQueue.iterator();it.hasNext();) {
-                DownloadController controller = it.next();
+        if(id != ApkInformation.EMPTY_ID){
+            for(Iterator<DownloadTaskController> it = mFinishedQueue.iterator(); it.hasNext();) {
+                DownloadTaskController controller = it.next();
                 if (controller.getInfo().getID() == id) {
                     appName = controller.getInfo().getName();
                     controller.setApkInstall();
@@ -97,8 +97,8 @@ public class DownloadTaskPool extends Thread{
     public void run(){
         while(isRunning){
             try {
-                for(Iterator<DownloadController> it = mRunningQueue.iterator();it.hasNext();){
-                    DownloadController controller = it.next();
+                for(Iterator<DownloadTaskController> it = mRunningQueue.iterator(); it.hasNext();){
+                    DownloadTaskController controller = it.next();
                     if(mStoppingQueue.contains(controller) && !controller.isFinish()){
                         it.remove();
                         current_downloadTask_count --;
@@ -118,14 +118,14 @@ public class DownloadTaskPool extends Thread{
                 //Log.d("running","" + mRunningQueue.size());
                 if(current_downloadTask_count < MAX_PARALLEL_THREAD_COUNT && !isBlocked){
                     if(mBlockingQueue.size() > 0){
-                        DownloadController controller = mBlockingQueue.remove(0);
+                        DownloadTaskController controller = mBlockingQueue.remove(0);
                         mHandler.sendMessage(mHandler.obtainMessage(100,controller));
                         mRunningQueue.add(controller);
                         current_downloadTask_count++;
                     }
                 }
-                for(Iterator<DownloadController> it = mStoppingQueue.iterator();it.hasNext();){
-                    DownloadController controller = it.next();
+                for(Iterator<DownloadTaskController> it = mStoppingQueue.iterator(); it.hasNext();){
+                    DownloadTaskController controller = it.next();
                     if(controller.isFinish()){
                         it.remove();
                     }
@@ -138,7 +138,7 @@ public class DownloadTaskPool extends Thread{
     }
     public void Stop(){
         //isBlocked = true;
-        for(DownloadController controller : mRunningQueue){
+        for(DownloadTaskController controller : mRunningQueue){
             //cancelTask(controller);
             //addTask(controller,TASK_PRIORITY_HIGHEST);
         }

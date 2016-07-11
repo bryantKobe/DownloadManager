@@ -3,7 +3,7 @@ package com.example.liangweiwu.downloadmanager.model;
 
 import android.util.Log;
 
-public class DownloadParam {
+public class DownloadParameter {
     public static final int THREAD_STATUS_UNCOMPLETED = 0;
     public static final int THREAD_STATUS_COMPLETED = 1;
     private int ID = -1;
@@ -12,11 +12,11 @@ public class DownloadParam {
     private int thread_downloadedLength = 0;
     private int thread_status = THREAD_STATUS_UNCOMPLETED;
 
-    public DownloadParam(int id,int thread_id){
+    public DownloadParameter(int id, int thread_id){
         this.ID = id;
         this.thread_id = thread_id;
     }
-    public DownloadParam(int id,int thread_id,int thread_status,int thread_blockSize,int thread_downloadedLength){
+    public DownloadParameter(int id, int thread_id, int thread_status, int thread_blockSize, int thread_downloadedLength){
         this.ID = id;
         this.thread_id = thread_id;
         this.thread_status = thread_status;
