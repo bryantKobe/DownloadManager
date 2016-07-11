@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.Settings;
+import android.widget.Toast;
 
 import com.example.liangweiwu.downloadmanager.model.ApkInformation;
 import com.example.liangweiwu.downloadmanager.services.MyAccessibilityService;
@@ -127,7 +128,12 @@ public class ApkInfoAccessor {
 
     public void launchApp(String packageName){
         Intent intent = packageManager.getLaunchIntentForPackage(packageName);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mContext.startActivity(intent);
+        if(intent != null){
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mContext.startActivity(intent);
+        }else{
+            Toast.makeText(mContext,"应用已经被卸载！",Toast.LENGTH_LONG).show();
+            // TODO
+        }
     }
 }

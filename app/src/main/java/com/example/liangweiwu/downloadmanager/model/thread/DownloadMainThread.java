@@ -220,7 +220,7 @@ public class DownloadMainThread extends AsyncTask<Integer,Integer,String> {
             return;
         }
         download_states = DOWNLOAD_STATE_RUNNABLE;
-        executeOnExecutor(DownloadTaskPool.getExec());
+        DownloadTaskPool.getInstance().executeTask(this);
         Log.d("download","Running");
     }
     public void Pause(){

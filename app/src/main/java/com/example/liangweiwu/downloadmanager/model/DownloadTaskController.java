@@ -1,11 +1,17 @@
 package com.example.liangweiwu.downloadmanager.model;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import com.example.liangweiwu.downloadmanager.activitys.MainActivity;
 import com.example.liangweiwu.downloadmanager.activitys.adapters.DownloadItemAdapter;
+import com.example.liangweiwu.downloadmanager.activitys.adapters.ViewController;
+import com.example.liangweiwu.downloadmanager.activitys.events.MainUiEvent;
 import com.example.liangweiwu.downloadmanager.model.thread.DownloadMainThread;
+import com.example.liangweiwu.downloadmanager.utils.DownloadTaskPool;
 import com.example.liangweiwu.downloadmanager.utils.GameParamUtils;
+
+import de.greenrobot.event.EventBus;
 
 
 public abstract class DownloadTaskController {
@@ -14,56 +20,57 @@ public abstract class DownloadTaskController {
     private DownloadParameter[] params;
     private boolean isInstalled = false;
 
-    public static DownloadItemAdapter.UpdateParams createInstance(
-            String url,int thread_number,final RecyclerView.Adapter mAdapter){
+    public static ViewController createInstance(
+            String url,int thread_number){
 
-        final DownloadItemAdapter.UpdateParams pp = new DownloadItemAdapter.UpdateParams();
+        final ViewController viewController = new ViewController();
         DownloadTaskController controller = new DownloadTaskController(url,thread_number) {
             @Override
             public void initViews(Integer... values) {
-                pp.updateParams(values);
-                mAdapter.notifyDataSetChanged();
+                viewController.updateParams(values);
+                updateProgress();
             }
             @Override
             public void bindViews(Integer... values) {
-                pp.updateParams(values);
-                mAdapter.notifyDataSetChanged();
+                viewController.updateParams(values);
+                updateProgress();
             }
             @Override
             public void onDownloadStop() {
-                System.out.println("stop");
-                mAdapter.notifyDataSetChanged();
+                Log.d("download","stop");
+                updateProgress();
             }
         };
         controller.addTask();
-        pp.setController(controller);
-        return pp;
+        viewController.setController(controller);
+        return viewController;
     }
-    public static DownloadItemAdapter.UpdateParams createInstance(
-            ApkInformation info, DownloadParameter[] params, final RecyclerView.Adapter mAdapter){
-
-        final DownloadItemAdapter.UpdateParams pp = new DownloadItemAdapter.UpdateParams();
+    public static ViewController createInstance(
+            ApkInformation info, DownloadParameter[] params){
+        final ViewController viewController = new ViewController();
         DownloadTaskController controller = new DownloadTaskController(info,params) {
             @Override
             public void initViews(Integer... values) {
-                pp.updateParams(values);
-                mAdapter.notifyDataSetChanged();
+                viewController.updateParams(values);
+                updateProgress();
             }
             @Override
             public void bindViews(Integer... values) {
-                pp.updateParams(values);
-                mAdapter.notifyDataSetChanged();
+                viewController.updateParams(values);
+                updateProgress();
             }
             @Override
             public void onDownloadStop() {
-                mAdapter.notifyDataSetChanged();
+                updateProgress();
             }
         };
         controller.addTask();
-        pp.setController(controller);
-        return pp;
+        viewController.setController(controller);
+        return viewController;
     }
-
+    private static void updateProgress(){
+        MainUiEvent.postDownloadItemAdapterEvent(MainUiEvent.EVENT_TASK_UPDATE,null);
+    }
     public DownloadTaskController(String url, int threadNum){
         try {
             mDownloadTask = newTask(url,threadNum);
@@ -94,10 +101,10 @@ public abstract class DownloadTaskController {
      *  开始下载任务，若已经开始，则不起作用
      */
     public void addTask(){
-        MainActivity.mThread_pool.addTask(this);
+        DownloadTaskPool.getInstance().addTask(this);
     }
     public void pauseTask(){
-        MainActivity.mThread_pool.cancelTask(this);
+        DownloadTaskPool.getInstance().cancelTask(this);
     }
     public void start(){
         if(mDownloadTask == null){

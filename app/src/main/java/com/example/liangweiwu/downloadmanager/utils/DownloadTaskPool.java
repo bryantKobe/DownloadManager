@@ -1,9 +1,12 @@
 package com.example.liangweiwu.downloadmanager.utils;
 
 import android.os.Handler;
+import android.util.Log;
 
+import com.example.liangweiwu.downloadmanager.activitys.events.MainUiEvent;
 import com.example.liangweiwu.downloadmanager.model.ApkInformation;
 import com.example.liangweiwu.downloadmanager.model.DownloadTaskController;
+import com.example.liangweiwu.downloadmanager.model.thread.DownloadMainThread;
 import com.example.liangweiwu.downloadmanager.utils.FileUtils;
 import com.example.liangweiwu.downloadmanager.utils.GameInformationUtils;
 
@@ -12,31 +15,40 @@ import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import de.greenrobot.event.EventBus;
+
 public class DownloadTaskPool extends Thread{
     public static final int MAX_PARALLEL_THREAD_COUNT = 2;
     public static final int TASK_PRIORITY_NORMAL = 0;
     public static final int TASK_PRIORITY_HIGHEST = 1;
 
-    private static ExecutorService exec = Executors.newFixedThreadPool(MAX_PARALLEL_THREAD_COUNT);
+    private static DownloadTaskPool mDownloadTaskPool;
+    private ExecutorService exec;
     private ArrayList<DownloadTaskController> mBlockingQueue;
     private ArrayList<DownloadTaskController> mRunningQueue;
     private ArrayList<DownloadTaskController> mStoppingQueue;
     private ArrayList<DownloadTaskController> mFinishedQueue;
-    private Handler mHandler;
     private int current_downloadTask_count;
     private boolean isRunning = true;
     private boolean isBlocked = false;
 
-    public static ExecutorService getExec(){
-        return exec;
+    public static DownloadTaskPool getInstance(){
+        if(mDownloadTaskPool == null){
+            mDownloadTaskPool = new DownloadTaskPool();
+        }
+        return mDownloadTaskPool;
     }
-    public DownloadTaskPool(Handler handler){
+
+    public DownloadTaskPool(){
+        exec = Executors.newFixedThreadPool(MAX_PARALLEL_THREAD_COUNT);
         mBlockingQueue = new ArrayList<>();
         mRunningQueue = new ArrayList<>();
         mStoppingQueue = new ArrayList<>();
         mFinishedQueue = new ArrayList<>();
-        this.mHandler = handler;
         current_downloadTask_count = 0;
+    }
+    public void executeTask(DownloadMainThread task){
+        task.executeOnExecutor(exec);
     }
     public void addTask(DownloadTaskController controller, int priority){
         if(controller.isFinish()){
@@ -69,11 +81,13 @@ public class DownloadTaskPool extends Thread{
         String fileName = info.getFileName();
         if(FileUtils.deleteApk(fileName)){
             GameInformationUtils.getInstance().delete(info.getID());
-            mHandler.sendMessage(mHandler.obtainMessage(400,info.getID()));
+            MainUiEvent event = new MainUiEvent(MainUiEvent.EVENT_TASK_DELETE,info.getID());
+            postEvent(event);
         }
     }
     public void onTaskFinish(DownloadTaskController controller){
-        mHandler.sendMessage(mHandler.obtainMessage(200,controller));
+        MainUiEvent event = new MainUiEvent(MainUiEvent.EVENT_TASK_UPDATE_FLOAT_ICON,controller);
+        postEvent(event);
     }
     public String setApkInstalled(String packageName){
         int id = GameInformationUtils.getInstance().setApkInstalled(packageName);
@@ -84,7 +98,8 @@ public class DownloadTaskPool extends Thread{
                 if (controller.getInfo().getID() == id) {
                     appName = controller.getInfo().getName();
                     controller.setApkInstall();
-                    mHandler.sendMessage(mHandler.obtainMessage(300));
+                    MainUiEvent event = new MainUiEvent(MainUiEvent.EVENT_TASK_UPDATE);
+                    postEvent(event);
                     it.remove();
                     break;
                 }
@@ -92,7 +107,9 @@ public class DownloadTaskPool extends Thread{
         }
         return appName;
     }
-
+    private void postEvent(MainUiEvent event){
+        EventBus.getDefault().post(event);
+    }
     @Override
     public void run(){
         while(isRunning){
@@ -119,7 +136,8 @@ public class DownloadTaskPool extends Thread{
                 if(current_downloadTask_count < MAX_PARALLEL_THREAD_COUNT && !isBlocked){
                     if(mBlockingQueue.size() > 0){
                         DownloadTaskController controller = mBlockingQueue.remove(0);
-                        mHandler.sendMessage(mHandler.obtainMessage(100,controller));
+                        MainUiEvent event = new MainUiEvent(MainUiEvent.EVENT_TASK_START,controller);
+                        postEvent(event);
                         mRunningQueue.add(controller);
                         current_downloadTask_count++;
                     }

@@ -2,20 +2,22 @@ package com.example.liangweiwu.downloadmanager.utils;
 
 import android.os.Handler;
 import android.os.Message;
+
+import com.example.liangweiwu.downloadmanager.activitys.events.MainUiEvent;
 import com.example.liangweiwu.downloadmanager.model.ApkInformation;
 
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 
+import de.greenrobot.event.EventBus;
+
 public class UrlChecker extends Thread {
-    private Handler mHandler;
     private String mUrlStr;
     public static final int URL_VALID = 1;
     public static final int URL_INVALID = 2;
 
-    public UrlChecker(Handler mHandler, String mUrlStr) {
-        this.mHandler = mHandler;
+    public UrlChecker( String mUrlStr) {
         this.mUrlStr = mUrlStr;
     }
 
@@ -23,15 +25,9 @@ public class UrlChecker extends Thread {
     public void run() {
         int length = urlCheck();
 
-        Message msg = Message.obtain();
-        if(length >= 0){
-            msg.what = URL_VALID;
-            msg.arg1 = length;
-            msg.obj = mUrlStr;
-        }else{
-            msg.what = URL_INVALID;
-        }
-        mHandler.sendMessage(msg);
+        int what = (length >= 0 ? MainUiEvent.EVENT_URL_VALID : MainUiEvent.EVENT_URL_INVALID);
+        MainUiEvent event = MainUiEvent.createUrlCheckEvent(what,mUrlStr,length);
+        EventBus.getDefault().post(event);
     }
 
     public int urlCheck() {

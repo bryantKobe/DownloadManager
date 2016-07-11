@@ -124,9 +124,10 @@ public class ApkInformation {
             mThread_number = (int)value;
         }else if(field.equals("size")){
             mSize = Integer.valueOf((String)value);
-        }else{
-            mAttributeSet.put(field,value);
+        }else if(field.equals("packageName")){
+            mPackageName = (String)value;
         }
+        mAttributeSet.put(field,value);
     }
     public Object getAttribution(String field){
         return mAttributeSet.get(field);

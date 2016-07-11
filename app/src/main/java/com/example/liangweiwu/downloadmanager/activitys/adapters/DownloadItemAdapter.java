@@ -20,6 +20,7 @@ import com.example.liangweiwu.downloadmanager.utils.ApkInfoAccessor;
 import com.example.liangweiwu.downloadmanager.model.DownloadTaskController;
 import com.example.liangweiwu.downloadmanager.model.thread.DownloadMainThread;
 import com.example.liangweiwu.downloadmanager.R;
+import com.example.liangweiwu.downloadmanager.utils.DownloadTaskPool;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -27,12 +28,10 @@ import java.util.Locale;
 
 public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapter.MyViewHolder> {
 
-    private ArrayList<UpdateParams> mDatas;
-    private Handler handler = null;
+    private ArrayList<ViewController> mDatas;
 
-    public DownloadItemAdapter(ArrayList<UpdateParams> mDatas, Handler handler) {
+    public DownloadItemAdapter(ArrayList<ViewController> mDatas) {
         this.mDatas = mDatas;
-        this.handler = handler;
     }
 
     @Override
@@ -42,16 +41,16 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        final UpdateParams params = mDatas.get(position);
-        holder.setParamTag(params);
-        int state = params.getController().getDownloadState();
+        final ViewController viewController = mDatas.get(position);
+        holder.setParamTag(viewController);
+        int state = viewController.getController().getDownloadState();
         switch (state){
             case DownloadMainThread.DOWNLOAD_STATE_NEW:
                 holder.showWording("等待中","等待下载",Color.BLACK);
                 break;
             case DownloadMainThread.DOWNLOAD_STATE_RUNNABLE:
             case DownloadMainThread.DOWNLOAD_STATE_RUNNING:
-                holder.updateProgress(params.getDownloadedSize(),params.getSpeed(),params.getFileSize());
+                holder.updateProgress(viewController.getDownloadedSize(),viewController.getSpeed(),viewController.getFileSize());
                 break;
             case DownloadMainThread.DOWNLOAD_STATE_PAUSED:
             case DownloadMainThread.DOWNLOAD_STATE_TERMINATED:
@@ -71,15 +70,10 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
             default:
                 break;
         }
-
     }
-
     @Override
     public int getItemCount() {
         return mDatas.size();
-    }
-    public void sendMessage(Message msg){
-        handler.sendMessage(msg);
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {
@@ -147,7 +141,7 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
                     .setMessage(R.string.dialog_message).setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            MainActivity.mThread_pool.deleteTask(controller);
+                            DownloadTaskPool.getInstance().deleteTask(controller);
                         }
                     })
                     .setNegativeButton(R.string.dialog_cancel,null).create();
@@ -158,12 +152,10 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
                 }
             });
         }
-
-        public void setParamTag(UpdateParams params){
+        public void setParamTag(ViewController params){
             controller = params.getController();
             itemView.setTag(params);
         }
-
         public void updateProgress(int downloadedSize,int speed,int fileSize){
             bar.setVisibility(View.VISIBLE);
             speedText.setVisibility(View.VISIBLE);
@@ -183,7 +175,6 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
             appIcon.setBackground(controller.getInfo().getIcon());
             appName.setText(controller.getInfo().getName());
         }
-
         private void showWording(String btnText,String wording,int color){
             btn.setText(btnText);
             bar.setVisibility(View.GONE);
@@ -192,40 +183,6 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
             installText.setVisibility(View.VISIBLE);
             installText.setText(wording);
             installText.setTextColor(color);
-        }
-    }
-    public static class UpdateParams{
-        public static final int PARAMS_LENGTH = 3;
-        private DownloadTaskController controller = null;
-        private Integer[] params = new Integer[PARAMS_LENGTH];
-        private boolean isFinish = false;
-        public UpdateParams(){
-            for(int i = 0 ; i < PARAMS_LENGTH; i++){
-                params[i] = 0;
-            }
-        }
-        public void setController(DownloadTaskController controller){
-            this.controller = controller;
-        }
-        public void updateParams(Integer[] params){
-            for(int i = 0 ; i < PARAMS_LENGTH; i++){
-                this.params[i] = params[i];
-            }
-        }
-        public DownloadTaskController getController(){
-            return controller;
-        }
-        public int getDownloadedSize(){
-            return params[0];
-        }
-        public int getSpeed(){
-            return params[1];
-        }
-        public int getFileSize(){
-            return params[2];
-        }
-        public int getInfoID(){
-            return controller.getInfo().getID();
         }
     }
 }
