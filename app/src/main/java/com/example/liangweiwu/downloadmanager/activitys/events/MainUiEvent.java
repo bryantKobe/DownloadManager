@@ -1,4 +1,4 @@
-package com.example.liangweiwu.downloadmanager.activitys.adapters;
+package com.example.liangweiwu.downloadmanager.activitys.events;
 
 import com.example.liangweiwu.downloadmanager.model.DownloadTaskController;
 

@@ -2,8 +2,8 @@ package com.example.liangweiwu.downloadmanager.model;
 
 import android.util.Log;
 
-import com.example.liangweiwu.downloadmanager.activitys.events.ViewController;
-import com.example.liangweiwu.downloadmanager.activitys.adapters.MainUiEvent;
+import com.example.liangweiwu.downloadmanager.activitys.adapters.ViewController;
+import com.example.liangweiwu.downloadmanager.activitys.events.MainUiEvent;
 import com.example.liangweiwu.downloadmanager.model.thread.DownloadMainThread;
 import com.example.liangweiwu.downloadmanager.utils.DownloadTaskPool;
 import com.example.liangweiwu.downloadmanager.utils.GameParamUtils;
