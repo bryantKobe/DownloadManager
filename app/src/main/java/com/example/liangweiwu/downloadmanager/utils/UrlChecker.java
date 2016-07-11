@@ -2,8 +2,8 @@ package com.example.liangweiwu.downloadmanager.utils;
 
 import android.os.Handler;
 import android.os.Message;
-import com.example.liangweiwu.downloadmanager.model.GameInformation;
-import com.example.liangweiwu.downloadmanager.utils.GameInformationUtils;
+import com.example.liangweiwu.downloadmanager.model.ApkInformation;
+
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -58,9 +58,9 @@ public class UrlChecker extends Thread {
 
     public boolean duplicationCheck() {
         boolean isDuplication = false;
-        ArrayList<GameInformation> list = GameInformationUtils.getInstance().getGameList();
-        for(GameInformation info : list){
-            String url = (String)info.getAttribution("url");
+        ArrayList<ApkInformation> list = GameInformationUtils.getInstance().getGameList();
+        for(ApkInformation info : list){
+            String url = info.getUrl();
             if(url == null){
                 continue;
             }

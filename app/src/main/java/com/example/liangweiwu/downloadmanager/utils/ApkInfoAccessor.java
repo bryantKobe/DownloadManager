@@ -9,7 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.Settings;
 
-import com.example.liangweiwu.downloadmanager.model.GameInformation;
+import com.example.liangweiwu.downloadmanager.model.ApkInformation;
 import com.example.liangweiwu.downloadmanager.services.MyAccessibilityService;
 
 
@@ -37,7 +37,7 @@ public class ApkInfoAccessor {
      **  @param fileName: 文件名字
      **  @param  mInfo: 更新的对象,可为null
     ***/
-    public GameInformation drawPackages(String fileName,GameInformation mInfo){
+    public ApkInformation drawPackages(String fileName, ApkInformation mInfo){
         String mFilePath = FileUtils.DIR_PACKAGE + fileName;
         PackageInfo packageInfo = packageManager.getPackageArchiveInfo(mFilePath,PackageManager.GET_ACTIVITIES);
         if(packageInfo == null){

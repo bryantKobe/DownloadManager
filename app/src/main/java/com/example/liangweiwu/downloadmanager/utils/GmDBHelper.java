@@ -7,8 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.example.liangweiwu.downloadmanager.model.DownloadParam;
-import com.example.liangweiwu.downloadmanager.model.GameInformation;
+import com.example.liangweiwu.downloadmanager.model.DownloadParameter;
+import com.example.liangweiwu.downloadmanager.model.ApkInformation;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -62,14 +62,14 @@ public class GmDBHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion){
 
     }
-    public HashMap<Integer,GameInformation> query(){
-        HashMap<Integer,GameInformation> list = new HashMap<>();
+    public HashMap<Integer,ApkInformation> query(){
+        HashMap<Integer,ApkInformation> list = new HashMap<>();
         SQLiteDatabase db = this.getReadableDatabase();
         String sql = "select * from DownloadManager";
         Cursor cursor = db.rawQuery(sql,new String[]{});
         try{
             while(cursor.moveToNext()){
-                GameInformation info = new GameInformation();
+                ApkInformation info = new ApkInformation();
                 String[] column_filed = {"ID","name","url","package","versionCode",
                         "versionName","size","category","detail","status","thread_number"};
                 for(String filed:column_filed){
@@ -91,14 +91,14 @@ public class GmDBHelper extends SQLiteOpenHelper {
         db.close();
         return list;
     }
-    public GameInformation query(int id){
-        GameInformation info = null;
+    public ApkInformation query(int id){
+        ApkInformation info = null;
         SQLiteDatabase db = this.getReadableDatabase();
         String sql = "select * from DownloadManager where ID = ?";
         Cursor cursor = db.rawQuery(sql,new String[]{String.valueOf(id)});
         try{
             if(cursor.moveToFirst()){
-                info = new GameInformation();
+                info = new ApkInformation();
                 String[] column_filed = {"ID","name","url","package","versionCode",
                         "versionName","size","category","detail","status","thread_number"};
                 for(String filed:column_filed){
@@ -118,7 +118,7 @@ public class GmDBHelper extends SQLiteOpenHelper {
         db.close();
         return info;
     }
-    public void insert(GameInformation info){
+    public void insert(ApkInformation info){
         if(info == null){
             return;
         }
@@ -132,15 +132,15 @@ public class GmDBHelper extends SQLiteOpenHelper {
             db.execSQL(sql,new Object[]{
                     info.getID(),
                     info.getName(),
-                    info.getAttribution("url"),
-                    info.getAttribution("package"),
+                    info.getUrl(),
+                    info.getFileName(),
                     info.getAttribution("versionCode"),
                     info.getAttribution("versionName"),
-                    info.getAttribution("size"),
+                    info.getSize(),
                     info.getAttribution("category"),
                     info.getAttribution("detail"),
-                    info.getAttribution("status"),
-                    info.getAttribution("thread_number")
+                    info.getStatus(),
+                    info.getThreadNumber()
             });
         }catch (SQLException e){
             e.printStackTrace();
@@ -148,15 +148,15 @@ public class GmDBHelper extends SQLiteOpenHelper {
         }
         db.close();
     }
-    public void insert(Collection<GameInformation> list){
+    public void insert(Collection<ApkInformation> list){
         if(list == null){
             return;
         }
-        for(GameInformation info : list){
+        for(ApkInformation info : list){
             insert(info);
         }
     }
-    public void update(GameInformation info){
+    public void update(ApkInformation info){
         if(info == null){
             return;
         }
@@ -167,15 +167,15 @@ public class GmDBHelper extends SQLiteOpenHelper {
                     "detail=?,status=?,thread_number=? where ID=?";
             db.execSQL(sql,new Object[]{
                     info.getName(),
-                    info.getAttribution("url"),
-                    info.getAttribution("package"),
+                    info.getUrl(),
+                    info.getFileName(),
                     info.getAttribution("versionCode"),
                     info.getAttribution("versionName"),
-                    info.getAttribution("size"),
+                    info.getSize(),
                     info.getAttribution("category"),
                     info.getAttribution("detail"),
-                    info.getAttribution("status"),
-                    info.getAttribution("thread_number"),
+                    info.getStatus(),
+                    info.getThreadNumber(),
                     info.getID()
             });
         }catch (SQLException e){
@@ -216,11 +216,11 @@ public class GmDBHelper extends SQLiteOpenHelper {
     public void insertParam(){
 
     }
-    public DownloadParam[] query_param(int id){
+    public DownloadParameter[] query_param(int id){
         return null;
     }
-    public HashMap<Integer,DownloadParam[]> query_param(){
-        HashMap<Integer,DownloadParam[] > map = new HashMap<>();
+    public HashMap<Integer,DownloadParameter[]> query_param(){
+        HashMap<Integer,DownloadParameter[] > map = new HashMap<>();
         SQLiteDatabase db = getReadableDatabase();
         String sql = "select * from ThreadDetail";
         Cursor cursor = db.rawQuery(sql,new String[]{});
@@ -232,14 +232,14 @@ public class GmDBHelper extends SQLiteOpenHelper {
                 int status = cursor.getInt(cursor.getColumnIndex("thread_status"));
                 int blockSize = cursor.getInt(cursor.getColumnIndex("thread_blockSize"));
                 int downloadedSize = cursor.getInt(cursor.getColumnIndex("thread_startOffset"));
-                DownloadParam param = new DownloadParam(id,thread_id,status,blockSize,downloadedSize);
+                DownloadParameter param = new DownloadParameter(id,thread_id,status,blockSize,downloadedSize);
                 if(map.get(id) == null){
-                    GameInformation info = query(id);
+                    ApkInformation info = query(id);
                     if(info == null){
                         delete_param(id);
                     }else{
-                        int thread_num = (Integer)info.getAttribution("thread_number");
-                        DownloadParam[] params = new DownloadParam[thread_num];
+                        int thread_num = info.getThreadNumber();
+                        DownloadParameter[] params = new DownloadParameter[thread_num];
                         params[thread_id] = param;
                         map.put(id,params);
                     }
@@ -256,7 +256,7 @@ public class GmDBHelper extends SQLiteOpenHelper {
         db.close();
         return map;
     }
-    private void insert_param(DownloadParam param){
+    private void insert_param(DownloadParameter param){
         if(param == null){
             return;
         }
@@ -280,23 +280,23 @@ public class GmDBHelper extends SQLiteOpenHelper {
         }
         db.close();
     }
-    public void insert_params(DownloadParam[] params){
+    public void insert_params(DownloadParameter[] params){
         if(params == null){
             return;
         }
-        for(DownloadParam param : params){
+        for(DownloadParameter param : params){
             insert_param(param);
         }
     }
-    public void insert_params(Collection<DownloadParam[]> list){
+    public void insert_params(Collection<DownloadParameter[]> list){
         if(list == null){
             return;
         }
-        for(DownloadParam[] params : list){
+        for(DownloadParameter[] params : list){
             insert_params(params);
         }
     }
-    public void update_param(DownloadParam param){
+    public void update_param(DownloadParameter param){
         if(param == null){
             return;
         }

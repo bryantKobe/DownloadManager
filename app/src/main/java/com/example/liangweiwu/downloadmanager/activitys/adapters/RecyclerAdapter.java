@@ -12,15 +12,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.liangweiwu.downloadmanager.activitys.views.FloatingPopupWindowView;
-import com.example.liangweiwu.downloadmanager.model.GameInformation;
+import com.example.liangweiwu.downloadmanager.model.ApkInformation;
 import com.example.liangweiwu.downloadmanager.R;
 
 import java.util.ArrayList;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder>{
-    public ArrayList<GameInformation> datas = null;
+    public ArrayList<ApkInformation> datas = null;
     public Handler mHandler;
-    public RecyclerAdapter(ArrayList<GameInformation> datas,Handler handler) {
+    public RecyclerAdapter(ArrayList<ApkInformation> datas, Handler handler) {
         this.datas = datas;
         this.mHandler = handler;
     }
@@ -33,7 +33,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     //将数据与界面进行绑定的操作
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, int position) {
-        final GameInformation info = datas.get(position);
+        final ApkInformation info = datas.get(position);
         viewHolder.mTextView.setText(info.getName());
         Drawable icon = info.getIcon();
         if(icon == null){

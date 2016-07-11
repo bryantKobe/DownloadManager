@@ -17,8 +17,8 @@ import android.widget.TextView;
 
 import com.example.liangweiwu.downloadmanager.activitys.MainActivity;
 import com.example.liangweiwu.downloadmanager.utils.ApkInfoAccessor;
-import com.example.liangweiwu.downloadmanager.model.DownloadController;
-import com.example.liangweiwu.downloadmanager.model.DownloadTask;
+import com.example.liangweiwu.downloadmanager.model.DownloadTaskController;
+import com.example.liangweiwu.downloadmanager.model.thread.DownloadMainThread;
 import com.example.liangweiwu.downloadmanager.R;
 
 import java.util.ArrayList;
@@ -46,25 +46,25 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
         holder.setParamTag(params);
         int state = params.getController().getDownloadState();
         switch (state){
-            case DownloadTask.DOWNLOAD_STATE_NEW:
+            case DownloadMainThread.DOWNLOAD_STATE_NEW:
                 holder.showWording("等待中","等待下载",Color.BLACK);
                 break;
-            case DownloadTask.DOWNLOAD_STATE_RUNNABLE:
-            case DownloadTask.DOWNLOAD_STATE_RUNNING:
+            case DownloadMainThread.DOWNLOAD_STATE_RUNNABLE:
+            case DownloadMainThread.DOWNLOAD_STATE_RUNNING:
                 holder.updateProgress(params.getDownloadedSize(),params.getSpeed(),params.getFileSize());
                 break;
-            case DownloadTask.DOWNLOAD_STATE_PAUSED:
-            case DownloadTask.DOWNLOAD_STATE_TERMINATED:
+            case DownloadMainThread.DOWNLOAD_STATE_PAUSED:
+            case DownloadMainThread.DOWNLOAD_STATE_TERMINATED:
                 holder.showWording("继续","已暂停",Color.BLACK);
                 break;
-            case DownloadTask.DOWNLOAD_STATE_FAILED:
+            case DownloadMainThread.DOWNLOAD_STATE_FAILED:
                 holder.showWording("重试","网络连接失败！",Color.RED);
                 break;
-            case DownloadTask.DOWNLOAD_STATE_END:
+            case DownloadMainThread.DOWNLOAD_STATE_END:
                 holder.showWording("安装","等待安装",Color.BLACK);
                 holder.onFinish();
                 break;
-            case DownloadTask.DOWNLOAD_STATE_INSTALLED:
+            case DownloadMainThread.DOWNLOAD_STATE_INSTALLED:
                 holder.showWording("打开","",Color.BLACK);
                 holder.onFinish();
                 break;
@@ -93,7 +93,7 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
         private Button btn;
         private ImageView deleteBtn;
         private Dialog dialog;
-        private DownloadController controller;
+        private DownloadTaskController controller;
 
         public MyViewHolder(View v,DownloadItemAdapter adapter) {
             super(v);
@@ -114,26 +114,26 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
                         return;
                     }
                     switch (controller.getDownloadState()){
-                        case DownloadTask.DOWNLOAD_STATE_NEW:
+                        case DownloadMainThread.DOWNLOAD_STATE_NEW:
                             controller.addTask();
                             break;
-                        case DownloadTask.DOWNLOAD_STATE_RUNNABLE:
-                        case DownloadTask.DOWNLOAD_STATE_RUNNING:
+                        case DownloadMainThread.DOWNLOAD_STATE_RUNNABLE:
+                        case DownloadMainThread.DOWNLOAD_STATE_RUNNING:
                             controller.pauseTask();
                             break;
-                        case DownloadTask.DOWNLOAD_STATE_PAUSED:
+                        case DownloadMainThread.DOWNLOAD_STATE_PAUSED:
                             controller.restart();
                             break;
-                        case DownloadTask.DOWNLOAD_STATE_TERMINATED:
-                        case DownloadTask.DOWNLOAD_STATE_FAILED:
+                        case DownloadMainThread.DOWNLOAD_STATE_TERMINATED:
+                        case DownloadMainThread.DOWNLOAD_STATE_FAILED:
                             controller.restart();
                             break;
-                        case DownloadTask.DOWNLOAD_STATE_END:
+                        case DownloadMainThread.DOWNLOAD_STATE_END:
                             ApkInfoAccessor.getInstance().apkInstallAttempt(controller.getInfo().getFileName());
                             break;
-                        case DownloadTask.DOWNLOAD_STATE_BLOCKED:
+                        case DownloadMainThread.DOWNLOAD_STATE_BLOCKED:
                             break;
-                        case DownloadTask.DOWNLOAD_STATE_INSTALLED:
+                        case DownloadMainThread.DOWNLOAD_STATE_INSTALLED:
                             ApkInfoAccessor.getInstance().launchApp(controller.getInfo().getPackageName());
                             break;
                         default:
@@ -196,7 +196,7 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
     }
     public static class UpdateParams{
         public static final int PARAMS_LENGTH = 3;
-        private DownloadController controller = null;
+        private DownloadTaskController controller = null;
         private Integer[] params = new Integer[PARAMS_LENGTH];
         private boolean isFinish = false;
         public UpdateParams(){
@@ -204,7 +204,7 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
                 params[i] = 0;
             }
         }
-        public void setController(DownloadController controller){
+        public void setController(DownloadTaskController controller){
             this.controller = controller;
         }
         public void updateParams(Integer[] params){
@@ -212,7 +212,7 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
                 this.params[i] = params[i];
             }
         }
-        public DownloadController getController(){
+        public DownloadTaskController getController(){
             return controller;
         }
         public int getDownloadedSize(){

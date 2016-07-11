@@ -15,7 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.liangweiwu.downloadmanager.utils.ApkInfoAccessor;
-import com.example.liangweiwu.downloadmanager.model.GameInformation;
+import com.example.liangweiwu.downloadmanager.model.ApkInformation;
 import com.example.liangweiwu.downloadmanager.utils.FloatingWindowManager;
 import com.example.liangweiwu.downloadmanager.utils.GameInformationUtils;
 import com.example.liangweiwu.downloadmanager.R;
@@ -51,7 +51,7 @@ public class FloatingPopupWindowView extends LinearLayout {
                     rootLayout.addView(view);
                     LinearLayout itemLayout = (LinearLayout) view.findViewById(R.id.detail_layout);
                     int id = (int)msg.obj;
-                    final GameInformation info = GameInformationUtils.getInstance().getGameInfoByID(id);
+                    final ApkInformation info = GameInformationUtils.getInstance().getGameInfoByID(id);
                     for(Pair<String,String> pair : info.getAttributions()){
                         addField(itemLayout,pair);
                     }
@@ -97,12 +97,12 @@ public class FloatingPopupWindowView extends LinearLayout {
         //如果可以确定每个item的高度是固定的，设置这个选项可以提高性能
         mRecyclerView.setHasFixedSize(true);
         //创建并设置Adapter
-        ArrayList<GameInformation> datas = getDatas();
+        ArrayList<ApkInformation> datas = getDatas();
         mAdapter = new RecyclerAdapter(datas,mHandler);
         mRecyclerView.setAdapter(mAdapter);
     }
 
-    private ArrayList<GameInformation> getDatas(){
+    private ArrayList<ApkInformation> getDatas(){
         return GameInformationUtils.getInstance().getDownloadedGamelist();
     }
     @Override
