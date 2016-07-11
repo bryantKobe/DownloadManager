@@ -1,4 +1,4 @@
-package com.example.liangweiwu.downloadmanager.views;
+package com.example.liangweiwu.downloadmanager.activitys.views;
 
 import android.content.Context;
 import android.content.res.Configuration;

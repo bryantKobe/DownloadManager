@@ -1,4 +1,4 @@
-package com.example.liangweiwu.downloadmanager.helper;
+package com.example.liangweiwu.downloadmanager.activitys.adapters;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -16,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.liangweiwu.downloadmanager.activitys.MainActivity;
+import com.example.liangweiwu.downloadmanager.utils.ApkInfoAccessor;
 import com.example.liangweiwu.downloadmanager.model.DownloadController;
 import com.example.liangweiwu.downloadmanager.model.DownloadTask;
 import com.example.liangweiwu.downloadmanager.R;

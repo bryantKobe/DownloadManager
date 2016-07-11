@@ -1,11 +1,9 @@
 package com.example.liangweiwu.downloadmanager.model;
 
-import android.content.pm.ProviderInfo;
-import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 
 import com.example.liangweiwu.downloadmanager.activitys.MainActivity;
-import com.example.liangweiwu.downloadmanager.helper.DownloadItemAdapter;
+import com.example.liangweiwu.downloadmanager.activitys.adapters.DownloadItemAdapter;
 import com.example.liangweiwu.downloadmanager.utils.GameParamUtils;
 
 

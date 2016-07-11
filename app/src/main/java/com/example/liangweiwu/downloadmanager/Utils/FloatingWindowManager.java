@@ -1,12 +1,7 @@
 package com.example.liangweiwu.downloadmanager.utils;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.ColorFilter;
 import android.graphics.PixelFormat;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -14,8 +9,8 @@ import android.view.Gravity;
 import android.view.WindowManager;
 
 import com.example.liangweiwu.downloadmanager.R;
-import com.example.liangweiwu.downloadmanager.views.FloatingBtnView;
-import com.example.liangweiwu.downloadmanager.views.FloatingPopupWindowView;
+import com.example.liangweiwu.downloadmanager.activitys.views.FloatingBtnView;
+import com.example.liangweiwu.downloadmanager.activitys.views.FloatingPopupWindowView;
 
 
 public class FloatingWindowManager {

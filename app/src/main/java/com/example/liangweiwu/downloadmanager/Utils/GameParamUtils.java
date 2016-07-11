@@ -4,7 +4,6 @@ package com.example.liangweiwu.downloadmanager.utils;
 import android.content.Context;
 import android.util.Log;
 
-import com.example.liangweiwu.downloadmanager.helper.GmDBHelper;
 import com.example.liangweiwu.downloadmanager.model.DownloadParam;
 import com.example.liangweiwu.downloadmanager.model.GameInformation;
 

@@ -1,4 +1,4 @@
-package com.example.liangweiwu.downloadmanager.views;
+package com.example.liangweiwu.downloadmanager.activitys.views;
 
 import android.content.Context;
 import android.os.Handler;
@@ -14,12 +14,12 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.liangweiwu.downloadmanager.helper.ApkInfoAccessor;
+import com.example.liangweiwu.downloadmanager.utils.ApkInfoAccessor;
 import com.example.liangweiwu.downloadmanager.model.GameInformation;
 import com.example.liangweiwu.downloadmanager.utils.FloatingWindowManager;
 import com.example.liangweiwu.downloadmanager.utils.GameInformationUtils;
 import com.example.liangweiwu.downloadmanager.R;
-import com.example.liangweiwu.downloadmanager.helper.RecyclerAdapter;
+import com.example.liangweiwu.downloadmanager.activitys.adapters.RecyclerAdapter;
 
 import java.util.ArrayList;
 

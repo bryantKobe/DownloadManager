@@ -1,4 +1,4 @@
-package com.example.liangweiwu.downloadmanager.helper;
+package com.example.liangweiwu.downloadmanager.utils;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,9 +11,6 @@ import android.provider.Settings;
 
 import com.example.liangweiwu.downloadmanager.model.GameInformation;
 import com.example.liangweiwu.downloadmanager.services.MyAccessibilityService;
-import com.example.liangweiwu.downloadmanager.utils.AccessibilityServiceUtils;
-import com.example.liangweiwu.downloadmanager.utils.FileUtils;
-import com.example.liangweiwu.downloadmanager.utils.GameInformationUtils;
 
 
 public class ApkInfoAccessor {

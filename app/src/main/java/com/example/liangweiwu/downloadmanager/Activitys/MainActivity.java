@@ -13,9 +13,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import com.example.liangweiwu.downloadmanager.helper.ApkInfoAccessor;
-import com.example.liangweiwu.downloadmanager.helper.DownloadItemAdapter;
-import com.example.liangweiwu.downloadmanager.helper.UrlChecker;
+import com.example.liangweiwu.downloadmanager.utils.ApkInfoAccessor;
+import com.example.liangweiwu.downloadmanager.activitys.adapters.DownloadItemAdapter;
+import com.example.liangweiwu.downloadmanager.utils.UrlChecker;
 import com.example.liangweiwu.downloadmanager.model.DownloadController;
 import com.example.liangweiwu.downloadmanager.model.DownloadParam;
 import com.example.liangweiwu.downloadmanager.model.DownloadTaskPool;
@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<GameInformation> info_list = GameInformationUtils.getInstance().getGameList();
         HashMap<Integer,DownloadParam[]> params_map = GameParamUtils.getInstance().getParamMap();
         for(GameInformation info_temp : info_list){
-            final DownloadItemAdapter.UpdateParams pp = DownloadController.createInstance(info_temp,params_map.get(info_temp.getID()),mAdapter);
+            DownloadItemAdapter.UpdateParams pp = DownloadController.createInstance(info_temp,params_map.get(info_temp.getID()),mAdapter);
             mUpdateParams.add(pp);
         }
         RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.downloadList);

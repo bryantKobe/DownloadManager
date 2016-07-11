@@ -4,8 +4,6 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
-import com.example.liangweiwu.downloadmanager.helper.ApkInfoAccessor;
-import com.example.liangweiwu.downloadmanager.helper.GmDBHelper;
 import com.example.liangweiwu.downloadmanager.model.GameInformation;
 
 import java.io.File;

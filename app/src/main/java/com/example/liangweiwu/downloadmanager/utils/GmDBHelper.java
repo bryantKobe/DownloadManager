@@ -1,4 +1,4 @@
-package com.example.liangweiwu.downloadmanager.helper;
+package com.example.liangweiwu.downloadmanager.utils;
 
 import android.content.Context;
 import android.database.Cursor;
