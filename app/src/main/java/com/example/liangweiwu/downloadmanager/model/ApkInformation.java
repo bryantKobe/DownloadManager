@@ -4,7 +4,7 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.util.Pair;
 import android.util.Log;
 
-import com.example.liangweiwu.downloadmanager.threads.DownloadMainThread;
+import com.example.liangweiwu.downloadmanager.thread.DownloadMainThread;
 
 import java.util.ArrayList;
 import java.util.HashMap;
