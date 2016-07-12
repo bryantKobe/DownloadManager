@@ -7,7 +7,9 @@ import android.util.Log;
 
 import java.io.File;
 
-
+/**
+ *  Created by Nol
+ */
 public class FileUtils {
     public static String DIR_ICON;
     public static String DIR_PACKAGE;

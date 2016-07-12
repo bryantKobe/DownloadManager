@@ -10,7 +10,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
+/**
+ *  Created by Nol
+ */
 public class ApkInfoUtils {
     private static ApkInfoUtils mGameInfoUtils;
     private Context mContext;

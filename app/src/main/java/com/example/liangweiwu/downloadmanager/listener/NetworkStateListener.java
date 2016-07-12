@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.widget.Toast;
 import com.example.liangweiwu.downloadmanager.util.NetworkUtils;
 
-
+/**
+ *  Created by Nol
+ */
 public class NetworkStateListener extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {

@@ -8,7 +8,9 @@ import com.example.liangweiwu.downloadmanager.thread.DownloadMainThread;
 import com.example.liangweiwu.downloadmanager.thread.DownloadTaskPoolThread;
 import com.example.liangweiwu.downloadmanager.util.DownloadParameterUtils;
 
-
+/**
+ *  Created by Nol
+ */
 public abstract class DownloadTaskController {
     private DownloadMainThread mDownloadTask = null;
     private ApkInformation info;

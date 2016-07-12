@@ -12,7 +12,9 @@ import com.example.liangweiwu.downloadmanager.R;
 import com.example.liangweiwu.downloadmanager.view.views.FloatingBtn;
 import com.example.liangweiwu.downloadmanager.view.views.FloatingPopWin;
 
-
+/**
+ *  Created by Nol
+ */
 public class FloatingWindowManager {
     /**
      * 小悬浮窗View的实例

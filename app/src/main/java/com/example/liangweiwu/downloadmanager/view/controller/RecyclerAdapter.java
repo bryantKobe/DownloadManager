@@ -17,6 +17,9 @@ import com.example.liangweiwu.downloadmanager.R;
 
 import java.util.ArrayList;
 
+/**
+ *  Created by Nol
+ */
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder>{
     public ArrayList<ApkInformation> datas = null;
     public Handler mHandler;

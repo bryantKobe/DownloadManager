@@ -59,6 +59,9 @@ public class ApkInfoAccessor {
 
         String appName = packageManager.getApplicationLabel(appInfo).toString();
 
+        if(!mInfo.isDownloaded()){
+            mInfo.setDownloaded();
+        }
         mInfo.setAttribute("package",fileName);
         mInfo.setAttribute("name",appName);
         mInfo.setAttribute("packageName",packageName);

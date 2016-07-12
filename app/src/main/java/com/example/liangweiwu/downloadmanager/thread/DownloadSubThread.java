@@ -12,7 +12,9 @@ import java.io.RandomAccessFile;
 import java.net.URL;
 import java.net.URLConnection;
 
-
+/**
+ *  Created by Nol
+ */
 public class DownloadSubThread extends Thread {
     public static int MAX_LOOP_TIMES = 2;
 
@@ -56,6 +58,8 @@ public class DownloadSubThread extends Thread {
     @Override
     public void run() {
         if(param.isCompleted()){
+            thread_state = THREAD_STATE_END;
+            isCompleted = true;
             Log.d("Thread "+param.getThread_id(), "Completed");
             return;
         }

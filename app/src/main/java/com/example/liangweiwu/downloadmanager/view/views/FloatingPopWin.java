@@ -23,7 +23,9 @@ import com.example.liangweiwu.downloadmanager.view.controller.RecyclerAdapter;
 
 import java.util.ArrayList;
 
-
+/**
+ *  Created by Nol
+ */
 public class FloatingPopWin extends LinearLayout {
     /**
      * 记录大悬浮窗的宽度

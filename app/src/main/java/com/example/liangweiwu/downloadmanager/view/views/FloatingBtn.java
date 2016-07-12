@@ -13,7 +13,9 @@ import com.example.liangweiwu.downloadmanager.util.FloatingWindowManager;
 import com.example.liangweiwu.downloadmanager.R;
 
 import java.lang.reflect.Field;
-
+/**
+ *  Created by Nol
+ */
 public class FloatingBtn extends LinearLayout {
     /**
      * 记录小悬浮窗的宽度

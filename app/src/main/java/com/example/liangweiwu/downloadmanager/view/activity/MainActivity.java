@@ -44,6 +44,10 @@ import java.util.Iterator;
 
 import de.greenrobot.event.EventBus;
 
+/**
+ *  Created by Nol & xinxin.li
+ */
+
 public class MainActivity extends AppCompatActivity {
     public final static int REQUEST_CODE = 10010;
     public static final String TAG = "MainActivityTest";

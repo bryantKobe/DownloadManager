@@ -8,7 +8,9 @@ import com.example.liangweiwu.downloadmanager.model.DownloadParameter;
 import com.example.liangweiwu.downloadmanager.model.ApkInformation;
 
 import java.util.HashMap;
-
+/**
+ *  Created by Nol
+ */
 public class DownloadParameterUtils {
     private static DownloadParameterUtils mDownloadParameterUtils;
     private Context mContext;

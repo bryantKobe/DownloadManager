@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.widget.Toast;
 
 import com.example.liangweiwu.downloadmanager.thread.DownloadTaskPoolThread;
-
+/**
+ *  Created by Nol
+ */
 
 public class ApkInstallationListener extends BroadcastReceiver {
     @Override

@@ -14,7 +14,9 @@ import java.io.RandomAccessFile;
 import java.net.URL;
 import java.net.URLConnection;
 
-
+/**
+ *  Created by Nol
+ */
 public class DownloadMainThread extends AsyncTask<Integer,Integer,String> {
     public static final int DEFAULT_THREAD_COUNT = 5;
 
@@ -164,7 +166,7 @@ public class DownloadMainThread extends AsyncTask<Integer,Integer,String> {
                         if(threads[i].isFailed()){
                             isFailed = true;
                         }
-                        if (!threads[i].isStop()){
+                        if (!threads[i].isStop() || threads[i].isAlive()){
                             isFinished = false;
                         }
                     }
@@ -178,16 +180,8 @@ public class DownloadMainThread extends AsyncTask<Integer,Integer,String> {
                     Thread.sleep(1000);
                 }
                 if(downloadedAllSize == fileSize){
-                    // TODO
-                    //
-                    // 判断文件是否写入
-
                     download_states = DOWNLOAD_STATE_END;
                     info.setDownloaded();
-
-                    // TODO
-                    //
-                    // 获取apk的name、icon、versionCode、versionName、category、detail
                 }
                 Log.d("download", " all of downloadSize:" + downloadedAllSize);
             }

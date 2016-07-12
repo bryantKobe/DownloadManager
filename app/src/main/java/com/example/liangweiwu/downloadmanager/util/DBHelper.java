@@ -13,7 +13,9 @@ import com.example.liangweiwu.downloadmanager.model.ApkInformation;
 import java.util.Collection;
 import java.util.HashMap;
 
-
+/**
+ *  Created by Nol
+ */
 public class DBHelper extends SQLiteOpenHelper {
     public static String DATABASE_NAME = "dm.db";
     public static int DATABASE_VERSION = 1;

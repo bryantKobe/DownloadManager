@@ -9,7 +9,9 @@ import com.example.liangweiwu.downloadmanager.thread.DownloadMainThread;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
+/**
+ *  Created by Nol
+ */
 public class ApkInformation {
     private int mId = EMPTY_ID;
     private String mName = "正在加载...";

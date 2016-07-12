@@ -8,7 +8,9 @@ import android.os.IBinder;
 import com.example.liangweiwu.downloadmanager.util.FloatingWindowManager;
 
 import java.util.Timer;
-
+/**
+ *  Created by Nol
+ */
 public class FloatingService extends Service {
 
     @Override

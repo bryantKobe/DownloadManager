@@ -13,6 +13,10 @@ import java.util.concurrent.Executors;
 
 import de.greenrobot.event.EventBus;
 
+
+/**
+ *  Created by Nol
+ */
 public class DownloadTaskPoolThread extends Thread{
     public static final int MAX_PARALLEL_THREAD_COUNT = 2;
     public static final int TASK_PRIORITY_NORMAL = 0;
