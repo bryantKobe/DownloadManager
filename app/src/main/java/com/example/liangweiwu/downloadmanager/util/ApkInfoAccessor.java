@@ -45,7 +45,7 @@ public class ApkInfoAccessor {
             return null;
         }
         if(mInfo == null){
-            mInfo = GameInformationUtils.getInstance().createGameInfo("local");
+            mInfo = ApkInfoUtils.getInstance().createGameInfo("local");
         }
 
         ApplicationInfo appInfo = packageInfo.applicationInfo;

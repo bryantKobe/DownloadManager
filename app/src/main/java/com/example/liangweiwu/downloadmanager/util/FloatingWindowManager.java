@@ -9,20 +9,20 @@ import android.view.Gravity;
 import android.view.WindowManager;
 
 import com.example.liangweiwu.downloadmanager.R;
-import com.example.liangweiwu.downloadmanager.activity.views.FloatingBtnView;
-import com.example.liangweiwu.downloadmanager.activity.views.FloatingPopupWindowView;
+import com.example.liangweiwu.downloadmanager.view.views.FloatingBtn;
+import com.example.liangweiwu.downloadmanager.view.views.FloatingPopWin;
 
 
 public class FloatingWindowManager {
     /**
      * 小悬浮窗View的实例
      */
-    private static FloatingBtnView smallWindow;
+    private static FloatingBtn smallWindow;
 
     /**
      * 大悬浮窗View的实例
      */
-    private static FloatingPopupWindowView bigWindow;
+    private static FloatingPopWin bigWindow;
 
     /**
      * 小悬浮窗View的参数
@@ -54,7 +54,7 @@ public class FloatingWindowManager {
         int screenWidth = metrics.widthPixels;
         int screenHeight = metrics.heightPixels;
         if (smallWindow == null) {
-            smallWindow = new FloatingBtnView(context);
+            smallWindow = new FloatingBtn(context);
             if (smallWindowParams == null) {
                 smallWindowParams = new WindowManager.LayoutParams();
                 smallWindowParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
@@ -63,16 +63,16 @@ public class FloatingWindowManager {
                 smallWindowParams.flags =   WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                         | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
                 smallWindowParams.gravity = Gravity.TOP|Gravity.LEFT;
-                smallWindowParams.width = FloatingBtnView.viewWidth;
-                smallWindowParams.height = FloatingBtnView.viewHeight;
+                smallWindowParams.width = FloatingBtn.viewWidth;
+                smallWindowParams.height = FloatingBtn.viewHeight;
                 smallWindowParams.x = screenWidth;
-                smallWindowParams.y = screenHeight/2-FloatingBtnView.viewHeight/2;
+                smallWindowParams.y = screenHeight/2- FloatingBtn.viewHeight/2;
             }
             smallWindow.setParams(smallWindowParams);
-            if(GameInformationUtils.getInstance() == null){
-                GameInformationUtils.init(context);
+            if(ApkInfoUtils.getInstance() == null){
+                ApkInfoUtils.init(context);
             }
-            updateFloatIcon(GameInformationUtils.getInstance().getLatestDownloadedApkIcon());
+            updateFloatIcon(ApkInfoUtils.getInstance().getLatestDownloadedApkIcon());
             windowManager.addView(smallWindow, smallWindowParams);
         }
     }
@@ -114,7 +114,7 @@ public class FloatingWindowManager {
         int screenHeight = metrics.heightPixels;
         */
         if (bigWindow == null) {
-            bigWindow = new FloatingPopupWindowView(context);
+            bigWindow = new FloatingPopWin(context);
             if (bigWindowParams == null) {
                 bigWindowParams = new WindowManager.LayoutParams();
                 bigWindowParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
@@ -123,8 +123,8 @@ public class FloatingWindowManager {
 
                 bigWindowParams.format = PixelFormat.RGBA_8888;
                 bigWindowParams.gravity = Gravity.CENTER;
-                bigWindowParams.width = FloatingPopupWindowView.viewWidth;
-                bigWindowParams.height = FloatingPopupWindowView.viewHeight;
+                bigWindowParams.width = FloatingPopWin.viewWidth;
+                bigWindowParams.height = FloatingPopWin.viewHeight;
             }
             windowManager.addView(bigWindow, bigWindowParams);
         }

@@ -6,8 +6,8 @@ import android.util.Log;
 import com.example.liangweiwu.downloadmanager.model.DownloadParameter;
 import com.example.liangweiwu.downloadmanager.model.ApkInformation;
 import com.example.liangweiwu.downloadmanager.util.FileUtils;
-import com.example.liangweiwu.downloadmanager.util.GameInformationUtils;
-import com.example.liangweiwu.downloadmanager.util.GameParamUtils;
+import com.example.liangweiwu.downloadmanager.util.ApkInfoUtils;
+import com.example.liangweiwu.downloadmanager.util.DownloadParameterUtils;
 
 import java.io.File;
 import java.io.RandomAccessFile;
@@ -46,7 +46,7 @@ public class DownloadMainThread extends AsyncTask<Integer,Integer,String> {
      **/
     public DownloadMainThread(ApkInformation info, DownloadParameter[] params) throws Exception{
         if(params == null){
-            params = GameParamUtils.getInstance().createParams(info);
+            params = DownloadParameterUtils.getInstance().createParams(info);
         }
         this.params = params;
         this.info = info;
@@ -61,10 +61,10 @@ public class DownloadMainThread extends AsyncTask<Integer,Integer,String> {
      **  新建下载任务
      **/
     public DownloadMainThread(String downloadUrl, int threadNum) throws Exception{
-        info = GameInformationUtils.getInstance().createGameInfo(downloadUrl,threadNum);
+        info = ApkInfoUtils.getInstance().createGameInfo(downloadUrl,threadNum);
         info.setAttribute("url",downloadUrl);
         info.setAttribute("thread_number",threadNum);
-        params = GameParamUtils.getInstance().createParams(info);
+        params = DownloadParameterUtils.getInstance().createParams(info);
         init(downloadUrl,threadNum);
         for(int i = 0 ; i < threadNum; i++){
             threads[i] = new DownloadSubThread(params[i], file , downloadUrl);
@@ -212,7 +212,7 @@ public class DownloadMainThread extends AsyncTask<Integer,Integer,String> {
         }
     }
     private void onDownloadFinished(){
-        GameInformationUtils.getInstance().onDownloadedFinish(info);
+        ApkInfoUtils.getInstance().onDownloadedFinish(info);
     }
     public void Start(){
         if(download_states != DOWNLOAD_STATE_NEW){
@@ -260,7 +260,7 @@ public class DownloadMainThread extends AsyncTask<Integer,Integer,String> {
         Log.d("download","Terminated");
     }
     private void saveParams(){
-        GameParamUtils.getInstance().saveParams(params);
+        DownloadParameterUtils.getInstance().saveParams(params);
     }
     public boolean isFinished(){
         return getStatus().equals(Status.FINISHED);

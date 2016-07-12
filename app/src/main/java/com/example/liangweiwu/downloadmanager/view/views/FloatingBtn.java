@@ -1,4 +1,4 @@
-package com.example.liangweiwu.downloadmanager.activity.views;
+package com.example.liangweiwu.downloadmanager.view.views;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -14,7 +14,7 @@ import com.example.liangweiwu.downloadmanager.R;
 
 import java.lang.reflect.Field;
 
-public class FloatingBtnView extends LinearLayout {
+public class FloatingBtn extends LinearLayout {
     /**
      * 记录小悬浮窗的宽度
      */
@@ -81,7 +81,7 @@ public class FloatingBtnView extends LinearLayout {
      */
     private int screenHeight;
 
-    public FloatingBtnView(Context context) {
+    public FloatingBtn(Context context) {
         super(context);
         windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         configuration = context.getResources().getConfiguration();

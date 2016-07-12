@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".view.activity.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,12 +30,12 @@
             android:exported="true">
         </service>
 
-        <receiver android:name=".receiver.NetworkStateReceiver">
+        <receiver android:name=".listener.NetworkStateListener">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".receiver.ApkInstallationListener">
+        <receiver android:name=".listener.ApkInstallationListener">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
 

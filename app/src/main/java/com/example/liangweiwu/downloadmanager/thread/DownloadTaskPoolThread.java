@@ -1,10 +1,10 @@
 package com.example.liangweiwu.downloadmanager.thread;
 
-import com.example.liangweiwu.downloadmanager.activity.events.MainUiEvent;
+import com.example.liangweiwu.downloadmanager.view.event.MainUiEvent;
 import com.example.liangweiwu.downloadmanager.model.ApkInformation;
 import com.example.liangweiwu.downloadmanager.model.DownloadTaskController;
 import com.example.liangweiwu.downloadmanager.util.FileUtils;
-import com.example.liangweiwu.downloadmanager.util.GameInformationUtils;
+import com.example.liangweiwu.downloadmanager.util.ApkInfoUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -74,7 +74,7 @@ public class DownloadTaskPoolThread extends Thread{
     public void deleteTask(DownloadTaskController controller){
         cancelTask(controller);
         final ApkInformation info = controller.getInfo();
-        GameInformationUtils.getInstance().delete(info.getID());
+        ApkInfoUtils.getInstance().delete(info.getID());
         MainUiEvent event = new MainUiEvent(MainUiEvent.EVENT_TASK_DELETE,info.getID());
         postEvent(event);
         new Thread(new Runnable() {
@@ -90,7 +90,7 @@ public class DownloadTaskPoolThread extends Thread{
         postEvent(event);
     }
     public String setApkInstalled(String packageName){
-        int id = GameInformationUtils.getInstance().setApkInstalled(packageName);
+        int id = ApkInfoUtils.getInstance().setApkInstalled(packageName);
         String appName = null;
         if(id != ApkInformation.EMPTY_ID){
             for(Iterator<DownloadTaskController> it = mFinishedQueue.iterator(); it.hasNext();) {

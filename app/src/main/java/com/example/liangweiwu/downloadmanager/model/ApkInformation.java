@@ -141,8 +141,8 @@ public class ApkInformation {
         return list;
     }
     public void debug(){
-        Log.i("ID",String.valueOf(mId));
-        Log.i("name",mName);
+        //Log.i("ID",String.valueOf(mId));
+        //Log.i("name",mName);
         for(String field:mAttributeSet.keySet()){
             Object value = mAttributeSet.get(field);
             if(value == null || String.valueOf(value).equals("")){

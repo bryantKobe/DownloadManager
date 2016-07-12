@@ -1,6 +1,6 @@
 package com.example.liangweiwu.downloadmanager.util;
 
-import com.example.liangweiwu.downloadmanager.activity.events.MainUiEvent;
+import com.example.liangweiwu.downloadmanager.view.event.MainUiEvent;
 import com.example.liangweiwu.downloadmanager.model.ApkInformation;
 
 import java.net.URL;
@@ -11,8 +11,6 @@ import de.greenrobot.event.EventBus;
 
 public class UrlChecker extends Thread {
     private String mUrlStr;
-    public static final int URL_VALID = 1;
-    public static final int URL_INVALID = 2;
 
     public UrlChecker( String mUrlStr) {
         this.mUrlStr = mUrlStr;
@@ -51,7 +49,7 @@ public class UrlChecker extends Thread {
 
     public boolean duplicationCheck() {
         boolean isDuplication = false;
-        ArrayList<ApkInformation> list = GameInformationUtils.getInstance().getGameList();
+        ArrayList<ApkInformation> list = ApkInfoUtils.getInstance().getGameList();
         for(ApkInformation info : list){
             String url = info.getUrl();
             if(url == null){

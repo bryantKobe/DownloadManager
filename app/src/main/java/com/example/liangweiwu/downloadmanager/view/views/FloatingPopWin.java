@@ -1,4 +1,4 @@
-package com.example.liangweiwu.downloadmanager.activity.views;
+package com.example.liangweiwu.downloadmanager.view.views;
 
 import android.content.Context;
 import android.os.Handler;
@@ -17,14 +17,14 @@ import android.widget.TextView;
 import com.example.liangweiwu.downloadmanager.util.ApkInfoAccessor;
 import com.example.liangweiwu.downloadmanager.model.ApkInformation;
 import com.example.liangweiwu.downloadmanager.util.FloatingWindowManager;
-import com.example.liangweiwu.downloadmanager.util.GameInformationUtils;
+import com.example.liangweiwu.downloadmanager.util.ApkInfoUtils;
 import com.example.liangweiwu.downloadmanager.R;
-import com.example.liangweiwu.downloadmanager.activity.adapters.RecyclerAdapter;
+import com.example.liangweiwu.downloadmanager.view.controller.RecyclerAdapter;
 
 import java.util.ArrayList;
 
 
-public class FloatingPopupWindowView extends LinearLayout {
+public class FloatingPopWin extends LinearLayout {
     /**
      * 记录大悬浮窗的宽度
      */
@@ -51,7 +51,7 @@ public class FloatingPopupWindowView extends LinearLayout {
                     rootLayout.addView(view);
                     LinearLayout itemLayout = (LinearLayout) view.findViewById(R.id.detail_layout);
                     int id = (int)msg.obj;
-                    final ApkInformation info = GameInformationUtils.getInstance().getGameInfoByID(id);
+                    final ApkInformation info = ApkInfoUtils.getInstance().getGameInfoByID(id);
                     for(Pair<String,String> pair : info.getAttributions()){
                         addField(itemLayout,pair);
                     }
@@ -85,7 +85,7 @@ public class FloatingPopupWindowView extends LinearLayout {
         ((TextView)view.findViewById(R.id.game_information_detail_content)).setText(pair.second);
         layout.addView(view);
     }
-    public FloatingPopupWindowView(final Context context) {
+    public FloatingPopWin(final Context context) {
         super(context);
         LayoutInflater.from(context).inflate(R.layout.floating_popup_window, this);
         View view = findViewById(R.id.floating_popWin_layout);
@@ -103,7 +103,7 @@ public class FloatingPopupWindowView extends LinearLayout {
     }
 
     private ArrayList<ApkInformation> getDatas(){
-        return GameInformationUtils.getInstance().getDownloadedGamelist();
+        return ApkInfoUtils.getInstance().getDownloadedGamelist();
     }
     @Override
     public boolean onTouchEvent(MotionEvent event){

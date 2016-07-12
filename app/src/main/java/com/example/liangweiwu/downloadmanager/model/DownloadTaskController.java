@@ -2,11 +2,11 @@ package com.example.liangweiwu.downloadmanager.model;
 
 import android.util.Log;
 
-import com.example.liangweiwu.downloadmanager.activity.adapters.ViewController;
-import com.example.liangweiwu.downloadmanager.activity.events.MainUiEvent;
+import com.example.liangweiwu.downloadmanager.view.controller.ViewController;
+import com.example.liangweiwu.downloadmanager.view.event.MainUiEvent;
 import com.example.liangweiwu.downloadmanager.thread.DownloadMainThread;
 import com.example.liangweiwu.downloadmanager.thread.DownloadTaskPoolThread;
-import com.example.liangweiwu.downloadmanager.util.GameParamUtils;
+import com.example.liangweiwu.downloadmanager.util.DownloadParameterUtils;
 
 
 public abstract class DownloadTaskController {
@@ -80,7 +80,7 @@ public abstract class DownloadTaskController {
             if(!info.isDownloaded()){
                 mDownloadTask = newTask(info,params);
                 if(params == null){
-                    params = GameParamUtils.getInstance().createParams(info);
+                    params = DownloadParameterUtils.getInstance().createParams(info);
                 }
             }
             isInstalled = info.isInstalled();

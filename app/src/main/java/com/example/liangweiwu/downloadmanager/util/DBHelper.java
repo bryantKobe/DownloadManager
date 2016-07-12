@@ -14,16 +14,16 @@ import java.util.Collection;
 import java.util.HashMap;
 
 
-public class GmDBHelper extends SQLiteOpenHelper {
+public class DBHelper extends SQLiteOpenHelper {
     public static String DATABASE_NAME = "dm.db";
     public static int DATABASE_VERSION = 1;
     private Context mContext;
-    private GmDBHelper(Context context,String name,SQLiteDatabase.CursorFactory factory,int version){
+    private DBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
         super(context,name,factory,version);
         mContext = context;
     }
-    public static GmDBHelper getGmDBhelper(Context context){
-        return new GmDBHelper(context,DATABASE_NAME,null,DATABASE_VERSION);
+    public static DBHelper getGmDBhelper(Context context){
+        return new DBHelper(context,DATABASE_NAME,null,DATABASE_VERSION);
     }
     @Override
     public void onCreate(SQLiteDatabase db){

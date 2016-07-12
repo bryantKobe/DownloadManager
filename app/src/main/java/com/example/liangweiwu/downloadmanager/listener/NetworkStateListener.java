@@ -1,4 +1,4 @@
-package com.example.liangweiwu.downloadmanager.receiver;
+package com.example.liangweiwu.downloadmanager.listener;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,7 +7,7 @@ import android.widget.Toast;
 import com.example.liangweiwu.downloadmanager.util.NetworkUtils;
 
 
-public class NetworkStateReceiver extends BroadcastReceiver {
+public class NetworkStateListener extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         //this.stop();

@@ -11,22 +11,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
-public class GameInformationUtils {
-    private static GameInformationUtils mGameInfoUtils;
+public class ApkInfoUtils {
+    private static ApkInfoUtils mGameInfoUtils;
     private Context mContext;
-    private GmDBHelper mDBHelper;
+    private DBHelper mDBHelper;
     private HashMap<Integer,ApkInformation> mGameInfoMap;
 
 
-    private GameInformationUtils(Context context){
+    private ApkInfoUtils(Context context){
         mContext = context;
-        mDBHelper = GmDBHelper.getGmDBhelper(mContext);
+        mDBHelper = DBHelper.getGmDBhelper(mContext);
         mGameInfoMap = new HashMap<>();
     }
     /*
      *  获取Util单例
      */
-    public static GameInformationUtils getInstance(){
+    public static ApkInfoUtils getInstance(){
         return mGameInfoUtils;
     }
     /*
@@ -34,7 +34,7 @@ public class GameInformationUtils {
      */
     public static void init(Context context){
         if(mGameInfoUtils==null){
-            mGameInfoUtils = new GameInformationUtils(context.getApplicationContext());
+            mGameInfoUtils = new ApkInfoUtils(context.getApplicationContext());
         }
     }
     public void onCreate(){
@@ -169,7 +169,7 @@ public class GameInformationUtils {
     public ApkInformation createGameInfo(String url, int thread_number){
         ApkInformation info = new ApkInformation(url,thread_number);
         mGameInfoMap.put(info.getID(),info);
-        GameParamUtils.getInstance().createParams(info);
+        DownloadParameterUtils.getInstance().createParams(info);
         return info;
     }
     public ApkInformation createGameInfo(String type){
@@ -186,10 +186,10 @@ public class GameInformationUtils {
         if(info.getIcon() == null){
             ApkInfoAccessor.getInstance().drawPackages(info.getFileName(),info);
         }
-        GameParamUtils.getInstance().delete(info.getID());
+        DownloadParameterUtils.getInstance().delete(info.getID());
     }
     public void delete(int id){
-            GameParamUtils.getInstance().delete(id);
+            DownloadParameterUtils.getInstance().delete(id);
             mGameInfoMap.remove(id);
             mDBHelper.delete(id);
     }

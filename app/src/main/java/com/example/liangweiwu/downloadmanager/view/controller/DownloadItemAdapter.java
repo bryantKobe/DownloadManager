@@ -1,4 +1,4 @@
-package com.example.liangweiwu.downloadmanager.activity.adapters;
+package com.example.liangweiwu.downloadmanager.view.controller;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -139,6 +139,7 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             DownloadTaskPoolThread.getInstance().deleteTask(controller);
+                            notifyItemRemoved(getLayoutPosition());
                         }
                     })
                     .setNegativeButton(R.string.dialog_cancel,null).create();

@@ -9,23 +9,23 @@ import com.example.liangweiwu.downloadmanager.model.ApkInformation;
 
 import java.util.HashMap;
 
-public class GameParamUtils {
-    private static GameParamUtils mGameParamUtils;
+public class DownloadParameterUtils {
+    private static DownloadParameterUtils mDownloadParameterUtils;
     private Context mContext;
-    private GmDBHelper mDBHelper;
+    private DBHelper mDBHelper;
     private HashMap<Integer,DownloadParameter[]> mParamMap;
 
-    private GameParamUtils(Context context){
+    private DownloadParameterUtils(Context context){
         this.mContext = context.getApplicationContext();
-        mDBHelper = GmDBHelper.getGmDBhelper(mContext);
+        mDBHelper = DBHelper.getGmDBhelper(mContext);
     }
     public static void init(Context context){
-        if(mGameParamUtils == null){
-            mGameParamUtils = new GameParamUtils(context);
+        if(mDownloadParameterUtils == null){
+            mDownloadParameterUtils = new DownloadParameterUtils(context);
         }
     }
-    public static GameParamUtils getInstance(){
-        return mGameParamUtils;
+    public static DownloadParameterUtils getInstance(){
+        return mDownloadParameterUtils;
     }
     public void onCreate(){
         mParamMap = mDBHelper.query_param();

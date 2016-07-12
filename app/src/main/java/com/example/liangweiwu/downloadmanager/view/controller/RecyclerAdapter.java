@@ -1,4 +1,4 @@
-package com.example.liangweiwu.downloadmanager.activity.adapters;
+package com.example.liangweiwu.downloadmanager.view.controller;
 
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.liangweiwu.downloadmanager.activity.views.FloatingPopupWindowView;
+import com.example.liangweiwu.downloadmanager.view.views.FloatingPopWin;
 import com.example.liangweiwu.downloadmanager.model.ApkInformation;
 import com.example.liangweiwu.downloadmanager.R;
 
@@ -46,7 +46,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             public void onClick(View view) {
                 Log.i("motion","game detail");
                 // TODO
-                mHandler.sendMessage(mHandler.obtainMessage(FloatingPopupWindowView.SHOW_GAME_DETAIL,info.getID()));
+                mHandler.sendMessage(mHandler.obtainMessage(FloatingPopWin.SHOW_GAME_DETAIL,info.getID()));
             }
         });
     }

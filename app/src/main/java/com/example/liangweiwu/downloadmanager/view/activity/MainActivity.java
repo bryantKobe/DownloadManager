@@ -1,41 +1,43 @@
-package com.example.liangweiwu.downloadmanager.activity;
+package com.example.liangweiwu.downloadmanager.view.activity;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-
-import com.example.liangweiwu.downloadmanager.activity.adapters.ViewController;
-import com.example.liangweiwu.downloadmanager.activity.events.MainUiEvent;
-import com.example.liangweiwu.downloadmanager.thread.DownloadMainThread;
-import com.example.liangweiwu.downloadmanager.util.ApkInfoAccessor;
-import com.example.liangweiwu.downloadmanager.activity.adapters.DownloadItemAdapter;
-import com.example.liangweiwu.downloadmanager.util.UrlChecker;
-import com.example.liangweiwu.downloadmanager.model.DownloadTaskController;
-import com.example.liangweiwu.downloadmanager.model.DownloadParameter;
-import com.example.liangweiwu.downloadmanager.thread.DownloadTaskPoolThread;
-import com.example.liangweiwu.downloadmanager.model.ApkInformation;
-import com.example.liangweiwu.downloadmanager.service.FloatingService;
-import com.example.liangweiwu.downloadmanager.R;
-import com.example.liangweiwu.downloadmanager.util.FileUtils;
-import com.example.liangweiwu.downloadmanager.util.FloatingWindowManager;
-import com.example.liangweiwu.downloadmanager.util.GameInformationUtils;
-import com.example.liangweiwu.downloadmanager.util.GameParamUtils;
-import com.example.liangweiwu.downloadmanager.util.NetworkUtils;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.liangweiwu.downloadmanager.R;
+import com.example.liangweiwu.downloadmanager.view.controller.DownloadItemAdapter;
+import com.example.liangweiwu.downloadmanager.view.controller.DeleteAnimator;
+import com.example.liangweiwu.downloadmanager.view.controller.ViewController;
+import com.example.liangweiwu.downloadmanager.view.event.MainUiEvent;
+import com.example.liangweiwu.downloadmanager.model.ApkInformation;
+import com.example.liangweiwu.downloadmanager.model.DownloadParameter;
+import com.example.liangweiwu.downloadmanager.model.DownloadTaskController;
+import com.example.liangweiwu.downloadmanager.service.FloatingService;
+import com.example.liangweiwu.downloadmanager.thread.DownloadMainThread;
+import com.example.liangweiwu.downloadmanager.thread.DownloadTaskPoolThread;
+import com.example.liangweiwu.downloadmanager.util.ApkInfoAccessor;
+import com.example.liangweiwu.downloadmanager.util.FileUtils;
+import com.example.liangweiwu.downloadmanager.util.FloatingWindowManager;
+import com.example.liangweiwu.downloadmanager.util.ApkInfoUtils;
+import com.example.liangweiwu.downloadmanager.util.DownloadParameterUtils;
+import com.example.liangweiwu.downloadmanager.util.NetworkUtils;
+import com.example.liangweiwu.downloadmanager.util.UrlChecker;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -61,10 +63,10 @@ public class MainActivity extends AppCompatActivity {
         FileUtils.init(this);
         ApkInfoAccessor.init(this);
         NetworkUtils.init(this);
-        GameParamUtils.init(this);
-        GameInformationUtils.init(this);
-        GameParamUtils.getInstance().onCreate();
-        GameInformationUtils.getInstance().onCreate();
+        DownloadParameterUtils.init(this);
+        ApkInfoUtils.init(this);
+        DownloadParameterUtils.getInstance().onCreate();
+        ApkInfoUtils.getInstance().onCreate();
         dataInit();
         startService(new Intent(MainActivity.this, FloatingService.class));
         startDownloadTask();
@@ -132,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     }
                 }
-                mAdapter.notifyDataSetChanged();
                 break;
             default:
                 break;
@@ -142,21 +143,24 @@ public class MainActivity extends AppCompatActivity {
         String url1 = "http://mydata.xxzhushou.cn/web_server/upload/app/2016-03-04/com.DBGame.DiabloLOL.apk";
         String url2 = "http://mydata.xxzhushou.cn/web_server/upload/app/2016-05-10/Super_Cat_v1.101x.apk";
         String url3 = "http://mydata.xxzhushou.cn/web_server/upload/app/2016-01-31/com.tencent.tmgp.hse_000000_jh.apk";
-        if(GameInformationUtils.getInstance().getGameList().size() == 0){
-            GameInformationUtils.getInstance().createGameInfo(url1, DownloadMainThread.DEFAULT_THREAD_COUNT);
-            GameInformationUtils.getInstance().createGameInfo(url2, DownloadMainThread.DEFAULT_THREAD_COUNT);
-            GameInformationUtils.getInstance().createGameInfo(url3, DownloadMainThread.DEFAULT_THREAD_COUNT);
+        if(ApkInfoUtils.getInstance().getGameList().size() == 0){
+            ApkInfoUtils.getInstance().createGameInfo(url1, DownloadMainThread.DEFAULT_THREAD_COUNT);
+            ApkInfoUtils.getInstance().createGameInfo(url2, DownloadMainThread.DEFAULT_THREAD_COUNT);
+            ApkInfoUtils.getInstance().createGameInfo(url3, DownloadMainThread.DEFAULT_THREAD_COUNT);
         }
         mAdapter = new DownloadItemAdapter(mViewController);
-        ArrayList<ApkInformation> info_list = GameInformationUtils.getInstance().getGameList();
-        HashMap<Integer,DownloadParameter[]> params_map = GameParamUtils.getInstance().getParamMap();
+        ArrayList<ApkInformation> info_list = ApkInfoUtils.getInstance().getGameList();
+        HashMap<Integer,DownloadParameter[]> params_map = DownloadParameterUtils.getInstance().getParamMap();
         for(ApkInformation info_temp : info_list){
+            info_temp.debug();
+            System.out.println("divider");
             ViewController pp = DownloadTaskController.createInstance(info_temp,params_map.get(info_temp.getID()));
             mViewController.add(pp);
         }
         RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.downloadList);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setItemAnimator(new DeleteAnimator());
         checkAnimInit();
     }
     private void checkAnimInit() {
@@ -177,8 +181,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop(){
         super.onStop();
-        GameInformationUtils.getInstance().onDestroy();
-        GameParamUtils.getInstance().onDestroy();
+        ApkInfoUtils.getInstance().onDestroy();
+        DownloadParameterUtils.getInstance().onDestroy();
         Log.d("app","stop");
     }
     @Override
