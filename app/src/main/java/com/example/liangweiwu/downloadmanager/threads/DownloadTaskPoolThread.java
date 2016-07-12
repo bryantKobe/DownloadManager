@@ -73,13 +73,17 @@ public class DownloadTaskPoolThread extends Thread{
     }
     public void deleteTask(DownloadTaskController controller){
         cancelTask(controller);
-        ApkInformation info = controller.getInfo();
-        String fileName = info.getFileName();
-        if(FileUtils.deleteApk(fileName)){
-            GameInformationUtils.getInstance().delete(info.getID());
-            MainUiEvent event = new MainUiEvent(MainUiEvent.EVENT_TASK_DELETE,info.getID());
-            postEvent(event);
-        }
+        final ApkInformation info = controller.getInfo();
+        GameInformationUtils.getInstance().delete(info.getID());
+        MainUiEvent event = new MainUiEvent(MainUiEvent.EVENT_TASK_DELETE,info.getID());
+        postEvent(event);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String fileName = info.getFileName();
+                FileUtils.deleteApk(fileName);
+            }
+        }).start();
     }
     public void onTaskFinish(DownloadTaskController controller){
         MainUiEvent event = new MainUiEvent(MainUiEvent.EVENT_TASK_UPDATE_FLOAT_ICON,controller);
@@ -144,19 +148,21 @@ public class DownloadTaskPoolThread extends Thread{
                         it.remove();
                     }
                 }
-                Thread.sleep(1000);
+                Thread.sleep(500);
             }catch (Exception e){
                 e.printStackTrace();
             }
         }
     }
-    public void Stop(){
-        //isBlocked = true;
+    public void onActivityDestroy(){
+        isBlocked = true;
         for(DownloadTaskController controller : mRunningQueue){
-            //cancelTask(controller);
-            //addTask(controller,TASK_PRIORITY_HIGHEST);
+            cancelTask(controller);
+            addTask(controller,TASK_PRIORITY_HIGHEST);
         }
-        //isBlocked = false;
+        mRunningQueue.clear();
+        current_downloadTask_count = 0;
+        isBlocked = false;
     }
 
 }

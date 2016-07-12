@@ -177,7 +177,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop(){
         super.onStop();
-        DownloadTaskPoolThread.getInstance().Stop();
         GameInformationUtils.getInstance().onDestroy();
         GameParamUtils.getInstance().onDestroy();
         Log.d("app","stop");
@@ -185,6 +184,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy(){
         super.onDestroy();
+        DownloadTaskPoolThread.getInstance().onActivityDestroy();
         EventBus.getDefault().unregister(this);
     }
     private void netTest(){
