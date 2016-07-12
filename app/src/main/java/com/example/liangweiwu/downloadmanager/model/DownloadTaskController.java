@@ -4,8 +4,8 @@ import android.util.Log;
 
 import com.example.liangweiwu.downloadmanager.activitys.adapters.ViewController;
 import com.example.liangweiwu.downloadmanager.activitys.events.MainUiEvent;
-import com.example.liangweiwu.downloadmanager.model.thread.DownloadMainThread;
-import com.example.liangweiwu.downloadmanager.utils.DownloadTaskPool;
+import com.example.liangweiwu.downloadmanager.threads.DownloadMainThread;
+import com.example.liangweiwu.downloadmanager.threads.DownloadTaskPoolThread;
 import com.example.liangweiwu.downloadmanager.utils.GameParamUtils;
 
 
@@ -96,10 +96,10 @@ public abstract class DownloadTaskController {
      *  开始下载任务，若已经开始，则不起作用
      */
     public void addTask(){
-        DownloadTaskPool.getInstance().addTask(this);
+        DownloadTaskPoolThread.getInstance().addTask(this);
     }
     public void pauseTask(){
-        DownloadTaskPool.getInstance().cancelTask(this);
+        DownloadTaskPoolThread.getInstance().cancelTask(this);
     }
     public void start(){
         if(mDownloadTask == null){

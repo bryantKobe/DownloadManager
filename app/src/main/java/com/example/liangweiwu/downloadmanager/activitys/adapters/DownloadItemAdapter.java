@@ -15,9 +15,9 @@ import android.widget.TextView;
 
 import com.example.liangweiwu.downloadmanager.utils.ApkInfoAccessor;
 import com.example.liangweiwu.downloadmanager.model.DownloadTaskController;
-import com.example.liangweiwu.downloadmanager.model.thread.DownloadMainThread;
+import com.example.liangweiwu.downloadmanager.threads.DownloadMainThread;
 import com.example.liangweiwu.downloadmanager.R;
-import com.example.liangweiwu.downloadmanager.utils.DownloadTaskPool;
+import com.example.liangweiwu.downloadmanager.threads.DownloadTaskPoolThread;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -138,7 +138,7 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
                     .setMessage(R.string.dialog_message).setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            DownloadTaskPool.getInstance().deleteTask(controller);
+                            DownloadTaskPoolThread.getInstance().deleteTask(controller);
                         }
                     })
                     .setNegativeButton(R.string.dialog_cancel,null).create();

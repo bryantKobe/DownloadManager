@@ -1,26 +1,25 @@
 package com.example.liangweiwu.downloadmanager.activitys;
 
 import android.annotation.TargetApi;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Message;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import com.example.liangweiwu.downloadmanager.model.thread.DownloadMainThread;
+import com.example.liangweiwu.downloadmanager.activitys.adapters.ViewController;
+import com.example.liangweiwu.downloadmanager.activitys.events.MainUiEvent;
+import com.example.liangweiwu.downloadmanager.threads.DownloadMainThread;
 import com.example.liangweiwu.downloadmanager.utils.ApkInfoAccessor;
 import com.example.liangweiwu.downloadmanager.activitys.adapters.DownloadItemAdapter;
 import com.example.liangweiwu.downloadmanager.utils.UrlChecker;
 import com.example.liangweiwu.downloadmanager.model.DownloadTaskController;
 import com.example.liangweiwu.downloadmanager.model.DownloadParameter;
-import com.example.liangweiwu.downloadmanager.utils.DownloadTaskPool;
+import com.example.liangweiwu.downloadmanager.threads.DownloadTaskPoolThread;
 import com.example.liangweiwu.downloadmanager.model.ApkInformation;
 import com.example.liangweiwu.downloadmanager.services.FloatingService;
 import com.example.liangweiwu.downloadmanager.R;
@@ -39,17 +38,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+
+import de.greenrobot.event.EventBus;
 
 public class MainActivity extends AppCompatActivity {
-
+    public final static int REQUEST_CODE = 10010;
     public static final String TAG = "MainActivityTest";
 
-    public static DownloadTaskPool mThread_pool;
-
     private RecyclerView.Adapter mAdapter;
-    private ArrayList<DownloadItemAdapter.UpdateParams> mUpdateParams = new ArrayList<>();
-    private UrlCheckHandler mHandler;
-
+    private ArrayList<ViewController> mViewController = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         onLaunch();
     }
     private void onLaunch(){
+        EventBus.getDefault().register(this);
         checkDrawOverlayPermission();
         FileUtils.init(this);
         ApkInfoAccessor.init(this);
@@ -67,12 +66,9 @@ public class MainActivity extends AppCompatActivity {
         GameParamUtils.getInstance().onCreate();
         GameInformationUtils.getInstance().onCreate();
         dataInit();
-        uiInit();
+        startService(new Intent(MainActivity.this, FloatingService.class));
         startDownloadTask();
     }
-
-    public final static int REQUEST_CODE = 10010;
-
     @TargetApi(23)
     public void checkDrawOverlayPermission() {
         int api_level = Build.VERSION.SDK_INT;
@@ -85,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
     @TargetApi(23)
     @Override
     protected void onActivityResult(int requestCode, int resultCode,  Intent data) {
@@ -95,33 +90,69 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
-    private void uiInit(){
-        startService(new Intent(MainActivity.this, FloatingService.class));
+    private void startDownloadTask(){
+        if(DownloadTaskPoolThread.getInstance().getState().equals(Thread.State.NEW)){
+            DownloadTaskPoolThread.getInstance().start();
+        }
+    }
+    public void onEventMainThread(MainUiEvent event){
+        //Log.d(TAG,"event");
+        switch (event.what) {
+            case MainUiEvent.EVENT_URL_VALID:
+                Toast.makeText(this, "即将开始下载...", Toast.LENGTH_LONG).show();
+                String url = (String) event.obj;
+                int fileSize = event.arg1;
+                ViewController viewController = DownloadTaskController.createInstance(url, DownloadMainThread.DEFAULT_THREAD_COUNT);
+                viewController.getController().getInfo().setAttribute("size", String.valueOf(fileSize));
+                mViewController.add(viewController);
+                DownloadTaskPoolThread.getInstance().addTask(viewController.getController());
+                mAdapter.notifyDataSetChanged();
+                ((TextView) findViewById(R.id.url_edit)).setText("");
+                break;
+            case MainUiEvent.EVENT_URL_INVALID:
+                Toast.makeText(this, "URL非法或已存在下载记录", Toast.LENGTH_LONG).show();
+                break;
+            case MainUiEvent.EVENT_TASK_START:
+                DownloadTaskController controller = (DownloadTaskController) event.obj;
+                controller.start();
+                break;
+            case MainUiEvent.EVENT_TASK_UPDATE_FLOAT_ICON:
+                Drawable drawable = ((DownloadTaskController) event.obj).getInfo().getIcon();
+                FloatingWindowManager.updateFloatIcon(drawable);
+                break;
+            case MainUiEvent.EVENT_TASK_UPDATE:
+                mAdapter.notifyDataSetChanged();
+                break;
+            case MainUiEvent.EVENT_TASK_DELETE:
+                int id = (int) event.obj;
+                for (Iterator<ViewController> it = mViewController.iterator(); it.hasNext(); ) {
+                    ViewController temp = it.next();
+                    if (temp.getInfoID() == id) {
+                        it.remove();
+                        break;
+                    }
+                }
+                mAdapter.notifyDataSetChanged();
+                break;
+            default:
+                break;
+        }
     }
     private void dataInit(){
-        mHandler = new UrlCheckHandler(this);
-        mThread_pool = new DownloadTaskPool(mHandler);
         String url1 = "http://mydata.xxzhushou.cn/web_server/upload/app/2016-03-04/com.DBGame.DiabloLOL.apk";
         String url2 = "http://mydata.xxzhushou.cn/web_server/upload/app/2016-05-10/Super_Cat_v1.101x.apk";
         String url3 = "http://mydata.xxzhushou.cn/web_server/upload/app/2016-01-31/com.tencent.tmgp.hse_000000_jh.apk";
-        //int thread_num = 5;
-        //GameInformationUtils.getInstance().clear();
         if(GameInformationUtils.getInstance().getGameList().size() == 0){
-            ApkInformation info1 = GameInformationUtils.getInstance().createGameInfo(url1, DownloadMainThread.DEFAULT_THREAD_COUNT);
-            ApkInformation info2 = GameInformationUtils.getInstance().createGameInfo(url2, DownloadMainThread.DEFAULT_THREAD_COUNT);
-            ApkInformation info3 = GameInformationUtils.getInstance().createGameInfo(url3, DownloadMainThread.DEFAULT_THREAD_COUNT);
+            GameInformationUtils.getInstance().createGameInfo(url1, DownloadMainThread.DEFAULT_THREAD_COUNT);
+            GameInformationUtils.getInstance().createGameInfo(url2, DownloadMainThread.DEFAULT_THREAD_COUNT);
+            GameInformationUtils.getInstance().createGameInfo(url3, DownloadMainThread.DEFAULT_THREAD_COUNT);
         }
-        //GameInformationUtils.getInstance().debug();
-        //((TextView)findViewById(R.id.url_edit)).setText("http://mydata.xxzhushou.cn/web_server/upload/app/2016-03-04/com.DBGame.DiabloLOL.apk");
-
-
-        mAdapter = new DownloadItemAdapter(mUpdateParams,mHandler);
+        mAdapter = new DownloadItemAdapter(mViewController);
         ArrayList<ApkInformation> info_list = GameInformationUtils.getInstance().getGameList();
         HashMap<Integer,DownloadParameter[]> params_map = GameParamUtils.getInstance().getParamMap();
         for(ApkInformation info_temp : info_list){
-            DownloadItemAdapter.UpdateParams pp = DownloadTaskController.createInstance(info_temp,params_map.get(info_temp.getID()),mAdapter);
-            mUpdateParams.add(pp);
+            ViewController pp = DownloadTaskController.createInstance(info_temp,params_map.get(info_temp.getID()));
+            mViewController.add(pp);
         }
         RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.downloadList);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -139,18 +170,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 iv.startAnimation(animation);
-                new UrlChecker(mHandler,tv.getText().toString()).start();
+                new UrlChecker(tv.getText().toString()).start();
             }
         });
     }
-    private void startDownloadTask(){
-        mThread_pool.start();
-    }
-
     @Override
     protected void onStop(){
         super.onStop();
-        mThread_pool.Stop();
+        DownloadTaskPoolThread.getInstance().Stop();
         GameInformationUtils.getInstance().onDestroy();
         GameParamUtils.getInstance().onDestroy();
         Log.d("app","stop");
@@ -158,73 +185,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy(){
         super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
-
-
     private void netTest(){
         System.out.println("network:" + NetworkUtils.getInstance().isNetworkAvailable());
         System.out.println("wifi:" + NetworkUtils.getInstance().isWifi());
         System.out.println("3G:" + NetworkUtils.getInstance().is3G());
     }
-
-    public class UrlCheckHandler extends Handler {
-        Context mContext;
-        Toast toast;
-
-        public UrlCheckHandler(Context mContext) {
-            this.mContext = mContext;
-            toast = Toast.makeText(mContext, R.string.null_str,Toast.LENGTH_SHORT);
-        }
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what){
-                case UrlChecker.URL_VALID:
-                    toast.setText("即将开始下载..." + msg.obj);
-                    toast.show();
-                    //TODO:add download task to list
-                    String url = (String) msg.obj;
-                    int fileSize = msg.arg1;
-                    DownloadItemAdapter.UpdateParams pp = DownloadTaskController.createInstance(url, DownloadMainThread.DEFAULT_THREAD_COUNT,mAdapter);
-                    pp.getController().getInfo().setAttribute("size",String.valueOf(fileSize));
-                    mUpdateParams.add(pp);
-                    mThread_pool.addTask(pp.getController());
-                    mAdapter.notifyDataSetChanged();
-                    ((TextView)findViewById(R.id.url_edit)).setText("");
-                    break;
-                case UrlChecker.URL_INVALID:
-                    toast.setText("URL非法或已存在下载记录");
-                    toast.show();
-                    break;
-                case 100:
-                    DownloadTaskController controller = (DownloadTaskController) msg.obj;
-                    controller.start();
-                    break;
-                case 200:
-                    Drawable drawable = ((DownloadTaskController) msg.obj).getInfo().getIcon();
-                    FloatingWindowManager.updateFloatIcon(drawable);
-                    break;
-                case 300:
-                    mAdapter.notifyDataSetChanged();
-                    break;
-                case 400:
-                    int id = (int) msg.obj;
-                    for(DownloadItemAdapter.UpdateParams params : mUpdateParams){
-                        if(params.getInfoID() == id){
-                            mUpdateParams.remove(params);
-                            break;
-                        }
-                    }
-                    mAdapter.notifyDataSetChanged();
-                    break;
-                default:
-                    break;
-            }
-        }
-        private void insertParams(){
-            // TODO
-        }
-    }
-
 }
 

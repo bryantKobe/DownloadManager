@@ -1,10 +1,9 @@
-package com.example.liangweiwu.downloadmanager.model.thread;
+package com.example.liangweiwu.downloadmanager.threads;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.liangweiwu.downloadmanager.model.DownloadParameter;
-import com.example.liangweiwu.downloadmanager.utils.DownloadTaskPool;
 import com.example.liangweiwu.downloadmanager.model.ApkInformation;
 import com.example.liangweiwu.downloadmanager.utils.FileUtils;
 import com.example.liangweiwu.downloadmanager.utils.GameInformationUtils;
@@ -220,7 +219,7 @@ public class DownloadMainThread extends AsyncTask<Integer,Integer,String> {
             return;
         }
         download_states = DOWNLOAD_STATE_RUNNABLE;
-        DownloadTaskPool.getInstance().executeTask(this);
+        DownloadTaskPoolThread.getInstance().executeTask(this);
         Log.d("download","Running");
     }
     public void Pause(){

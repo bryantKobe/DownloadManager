@@ -1,4 +1,4 @@
-package com.example.liangweiwu.downloadmanager.model.thread;
+package com.example.liangweiwu.downloadmanager.threads;
 
 import android.util.Log;
 
@@ -148,8 +148,8 @@ public class DownloadSubThread extends Thread {
         thread_state = THREAD_STATE_INTERRUPTED;
         isInterrupted = true;
         interrupt();
-        while(thread_state != THREAD_STATE_END){
-        }
+        //while(thread_state != THREAD_STATE_END){
+        //}
         Log.d("download","Thread:" + param.getThread_id() + " has stopped,downloaded size:" + downloadLength);
 
     }

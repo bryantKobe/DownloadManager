@@ -13,13 +13,13 @@ import android.view.View;
 
 import com.example.liangweiwu.downloadmanager.activitys.adapters.ViewController;
 import com.example.liangweiwu.downloadmanager.activitys.events.MainUiEvent;
-import com.example.liangweiwu.downloadmanager.model.thread.DownloadMainThread;
+import com.example.liangweiwu.downloadmanager.threads.DownloadMainThread;
 import com.example.liangweiwu.downloadmanager.utils.ApkInfoAccessor;
 import com.example.liangweiwu.downloadmanager.activitys.adapters.DownloadItemAdapter;
 import com.example.liangweiwu.downloadmanager.utils.UrlChecker;
 import com.example.liangweiwu.downloadmanager.model.DownloadTaskController;
 import com.example.liangweiwu.downloadmanager.model.DownloadParameter;
-import com.example.liangweiwu.downloadmanager.utils.DownloadTaskPool;
+import com.example.liangweiwu.downloadmanager.threads.DownloadTaskPoolThread;
 import com.example.liangweiwu.downloadmanager.model.ApkInformation;
 import com.example.liangweiwu.downloadmanager.services.FloatingService;
 import com.example.liangweiwu.downloadmanager.R;
@@ -91,12 +91,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     private void startDownloadTask(){
-        if(DownloadTaskPool.getInstance().getState().equals(Thread.State.NEW)){
-            DownloadTaskPool.getInstance().start();
+        if(DownloadTaskPoolThread.getInstance().getState().equals(Thread.State.NEW)){
+            DownloadTaskPoolThread.getInstance().start();
         }
     }
     public void onEventMainThread(MainUiEvent event){
-        Log.d(TAG,"event");
+        //Log.d(TAG,"event");
         switch (event.what) {
             case MainUiEvent.EVENT_URL_VALID:
                 Toast.makeText(this, "即将开始下载...", Toast.LENGTH_LONG).show();
@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
                 ViewController viewController = DownloadTaskController.createInstance(url, DownloadMainThread.DEFAULT_THREAD_COUNT);
                 viewController.getController().getInfo().setAttribute("size", String.valueOf(fileSize));
                 mViewController.add(viewController);
-                DownloadTaskPool.getInstance().addTask(viewController.getController());
+                DownloadTaskPoolThread.getInstance().addTask(viewController.getController());
                 mAdapter.notifyDataSetChanged();
                 ((TextView) findViewById(R.id.url_edit)).setText("");
                 break;
@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop(){
         super.onStop();
-        DownloadTaskPool.getInstance().Stop();
+        DownloadTaskPoolThread.getInstance().Stop();
         GameInformationUtils.getInstance().onDestroy();
         GameParamUtils.getInstance().onDestroy();
         Log.d("app","stop");

@@ -1,9 +1,10 @@
-package com.example.liangweiwu.downloadmanager.utils;
+package com.example.liangweiwu.downloadmanager.threads;
 
 import com.example.liangweiwu.downloadmanager.activitys.events.MainUiEvent;
 import com.example.liangweiwu.downloadmanager.model.ApkInformation;
 import com.example.liangweiwu.downloadmanager.model.DownloadTaskController;
-import com.example.liangweiwu.downloadmanager.model.thread.DownloadMainThread;
+import com.example.liangweiwu.downloadmanager.utils.FileUtils;
+import com.example.liangweiwu.downloadmanager.utils.GameInformationUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -12,12 +13,12 @@ import java.util.concurrent.Executors;
 
 import de.greenrobot.event.EventBus;
 
-public class DownloadTaskPool extends Thread{
+public class DownloadTaskPoolThread extends Thread{
     public static final int MAX_PARALLEL_THREAD_COUNT = 2;
     public static final int TASK_PRIORITY_NORMAL = 0;
     public static final int TASK_PRIORITY_HIGHEST = 1;
 
-    private static DownloadTaskPool mDownloadTaskPool;
+    private static DownloadTaskPoolThread mDownloadTaskPool;
     private ExecutorService exec;
     private ArrayList<DownloadTaskController> mBlockingQueue;
     private ArrayList<DownloadTaskController> mRunningQueue;
@@ -27,14 +28,14 @@ public class DownloadTaskPool extends Thread{
     private boolean isRunning = true;
     private boolean isBlocked = false;
 
-    public static DownloadTaskPool getInstance(){
+    public static DownloadTaskPoolThread getInstance(){
         if(mDownloadTaskPool == null){
-            mDownloadTaskPool = new DownloadTaskPool();
+            mDownloadTaskPool = new DownloadTaskPoolThread();
         }
         return mDownloadTaskPool;
     }
 
-    public DownloadTaskPool(){
+    public DownloadTaskPoolThread(){
         exec = Executors.newFixedThreadPool(MAX_PARALLEL_THREAD_COUNT);
         mBlockingQueue = new ArrayList<>();
         mRunningQueue = new ArrayList<>();
