@@ -139,6 +139,7 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             DownloadTaskPoolThread.getInstance().deleteTask(controller);
+                            notifyItemRemoved(getLayoutPosition());
                         }
                     })
                     .setNegativeButton(R.string.dialog_cancel,null).create();

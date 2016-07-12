@@ -5,37 +5,39 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-
-import com.example.liangweiwu.downloadmanager.activity.adapters.ViewController;
-import com.example.liangweiwu.downloadmanager.activity.events.MainUiEvent;
-import com.example.liangweiwu.downloadmanager.thread.DownloadMainThread;
-import com.example.liangweiwu.downloadmanager.util.ApkInfoAccessor;
-import com.example.liangweiwu.downloadmanager.activity.adapters.DownloadItemAdapter;
-import com.example.liangweiwu.downloadmanager.util.UrlChecker;
-import com.example.liangweiwu.downloadmanager.model.DownloadTaskController;
-import com.example.liangweiwu.downloadmanager.model.DownloadParameter;
-import com.example.liangweiwu.downloadmanager.thread.DownloadTaskPoolThread;
-import com.example.liangweiwu.downloadmanager.model.ApkInformation;
-import com.example.liangweiwu.downloadmanager.service.FloatingService;
-import com.example.liangweiwu.downloadmanager.R;
-import com.example.liangweiwu.downloadmanager.util.FileUtils;
-import com.example.liangweiwu.downloadmanager.util.FloatingWindowManager;
-import com.example.liangweiwu.downloadmanager.util.GameInformationUtils;
-import com.example.liangweiwu.downloadmanager.util.GameParamUtils;
-import com.example.liangweiwu.downloadmanager.util.NetworkUtils;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.liangweiwu.downloadmanager.R;
+import com.example.liangweiwu.downloadmanager.activity.adapters.DownloadItemAdapter;
+import com.example.liangweiwu.downloadmanager.activity.adapters.MyItemAnimator;
+import com.example.liangweiwu.downloadmanager.activity.adapters.ViewController;
+import com.example.liangweiwu.downloadmanager.activity.events.MainUiEvent;
+import com.example.liangweiwu.downloadmanager.model.ApkInformation;
+import com.example.liangweiwu.downloadmanager.model.DownloadParameter;
+import com.example.liangweiwu.downloadmanager.model.DownloadTaskController;
+import com.example.liangweiwu.downloadmanager.service.FloatingService;
+import com.example.liangweiwu.downloadmanager.thread.DownloadMainThread;
+import com.example.liangweiwu.downloadmanager.thread.DownloadTaskPoolThread;
+import com.example.liangweiwu.downloadmanager.util.ApkInfoAccessor;
+import com.example.liangweiwu.downloadmanager.util.FileUtils;
+import com.example.liangweiwu.downloadmanager.util.FloatingWindowManager;
+import com.example.liangweiwu.downloadmanager.util.GameInformationUtils;
+import com.example.liangweiwu.downloadmanager.util.GameParamUtils;
+import com.example.liangweiwu.downloadmanager.util.NetworkUtils;
+import com.example.liangweiwu.downloadmanager.util.UrlChecker;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -132,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     }
                 }
-                mAdapter.notifyDataSetChanged();
                 break;
             default:
                 break;
@@ -157,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.downloadList);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setItemAnimator(new MyItemAnimator());
         checkAnimInit();
     }
     private void checkAnimInit() {
