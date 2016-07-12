@@ -4,7 +4,9 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,15 +22,18 @@ import com.example.liangweiwu.downloadmanager.R;
 import com.example.liangweiwu.downloadmanager.thread.DownloadTaskPoolThread;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Locale;
 
 
 public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapter.MyViewHolder> {
 
     private ArrayList<ViewController> mDatas;
+    private SimpleItemTouchHelperCallback mCallback;
 
     public DownloadItemAdapter(ArrayList<ViewController> mDatas) {
         this.mDatas = mDatas;
+        mCallback = new SimpleItemTouchHelperCallback();
     }
 
     @Override
@@ -182,5 +187,38 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
             installText.setText(wording);
             installText.setTextColor(color);
         }
+    }
+
+    public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback{
+        @Override
+        public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+            int dragFlags = 0;
+            int swipeFlags = 0;
+            if(recyclerView.getLayoutManager() instanceof LinearLayoutManager){
+                dragFlags = ItemTouchHelper.UP | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT
+                        | ItemTouchHelper.DOWN;
+            }
+            return makeMovementFlags(dragFlags,swipeFlags);
+        }
+
+        @Override
+        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+            int src = viewHolder.getAdapterPosition();
+            int tar = target.getAdapterPosition();
+            if(src == tar){
+                return false;
+            }
+            Collections.swap(mDatas,src,tar);
+            notifyItemMoved(src,tar);
+            return true;
+        }
+
+        @Override
+        public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+        }
+    }
+
+    public SimpleItemTouchHelperCallback getmCallback() {
+        return mCallback;
     }
 }
