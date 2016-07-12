@@ -19,7 +19,7 @@ import com.example.liangweiwu.downloadmanager.model.ApkInformation;
 import com.example.liangweiwu.downloadmanager.util.FloatingWindowManager;
 import com.example.liangweiwu.downloadmanager.util.ApkInfoUtils;
 import com.example.liangweiwu.downloadmanager.R;
-import com.example.liangweiwu.downloadmanager.view.controller.RecyclerAdapter;
+import com.example.liangweiwu.downloadmanager.view.controller.FloatingPopWinAdapter;
 
 import java.util.ArrayList;
 
@@ -40,7 +40,7 @@ public class FloatingPopWin extends LinearLayout {
 
     private RecyclerView mRecyclerView;
     private GridLayoutManager mLayoutManager;
-    private RecyclerAdapter mAdapter;
+    private FloatingPopWinAdapter mAdapter;
     public static final int SHOW_GAME_DETAIL = 1;
     private Handler mHandler = new Handler(){
         @Override
@@ -100,7 +100,7 @@ public class FloatingPopWin extends LinearLayout {
         mRecyclerView.setHasFixedSize(true);
         //创建并设置Adapter
         ArrayList<ApkInformation> datas = getDatas();
-        mAdapter = new RecyclerAdapter(datas,mHandler);
+        mAdapter = new FloatingPopWinAdapter(datas,mHandler);
         mRecyclerView.setAdapter(mAdapter);
     }
 

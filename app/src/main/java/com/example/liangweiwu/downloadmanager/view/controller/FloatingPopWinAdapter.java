@@ -20,10 +20,10 @@ import java.util.ArrayList;
 /**
  *  Created by Nol
  */
-public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder>{
+public class FloatingPopWinAdapter extends RecyclerView.Adapter<FloatingPopWinAdapter.ViewHolder>{
     public ArrayList<ApkInformation> datas = null;
     public Handler mHandler;
-    public RecyclerAdapter(ArrayList<ApkInformation> datas, Handler handler) {
+    public FloatingPopWinAdapter(ArrayList<ApkInformation> datas, Handler handler) {
         this.datas = datas;
         this.mHandler = handler;
     }
