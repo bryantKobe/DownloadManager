@@ -69,6 +69,9 @@ public class FloatingWindowManager {
                 smallWindowParams.y = screenHeight/2-FloatingBtnView.viewHeight/2;
             }
             smallWindow.setParams(smallWindowParams);
+            if(GameInformationUtils.getInstance() == null){
+                GameInformationUtils.init(context);
+            }
             updateFloatIcon(GameInformationUtils.getInstance().getLatestDownloadedApkIcon());
             windowManager.addView(smallWindow, smallWindowParams);
         }
