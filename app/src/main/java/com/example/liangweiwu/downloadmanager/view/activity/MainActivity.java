@@ -54,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
     public static final String TAG = "MainActivityTest";
 
     private DownloadItemAdapter mAdapter;
+    private RecyclerView mRecyclerView;
+    private LinearLayoutManager mLayoutManager;
     private ArrayList<ViewController> mViewController = new ArrayList<>();
 
     @Override
@@ -144,7 +146,9 @@ public class MainActivity extends AppCompatActivity {
                 FloatingWindowManager.updateFloatIcon(drawable);
                 break;
             case MainUiEvent.EVENT_TASK_UPDATE:
-                mAdapter.notifyDataSetChanged();
+                int src = mLayoutManager.findFirstVisibleItemPosition();
+                int tar = mLayoutManager.findLastVisibleItemPosition();
+                mAdapter.notifyVisibleDataChanged(src,tar);
                 break;
             case MainUiEvent.EVENT_TASK_DELETE:
                 int id = (int) event.obj;
@@ -179,11 +183,16 @@ public class MainActivity extends AppCompatActivity {
             ViewController pp = DownloadTaskController.createInstance(info_temp,params_map.get(info_temp.getID()));
             mViewController.add(pp);
         }
-        RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.downloadList);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView = (RecyclerView) findViewById(R.id.downloadList);
+        mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setItemAnimator(new DeleteAnimator());
-        new ItemTouchHelper(mAdapter.getmCallback()).attachToRecyclerView(mRecyclerView);
+
+        DeleteAnimator deleteAnimator = new DeleteAnimator();
+        deleteAnimator.setSupportsChangeAnimations(false);
+        mRecyclerView.setItemAnimator(deleteAnimator);
+
+        new ItemTouchHelper(mAdapter.getCallback()).attachToRecyclerView(mRecyclerView);
         checkAnimInit();
     }
     private void checkAnimInit() {
