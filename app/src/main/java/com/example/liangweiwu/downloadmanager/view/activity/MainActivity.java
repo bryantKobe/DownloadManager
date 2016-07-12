@@ -10,6 +10,7 @@ import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -48,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     public final static int REQUEST_CODE = 10010;
     public static final String TAG = "MainActivityTest";
 
-    private RecyclerView.Adapter mAdapter;
+    private DownloadItemAdapter mAdapter;
     private ArrayList<ViewController> mViewController = new ArrayList<>();
 
     @Override
@@ -178,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setItemAnimator(new DeleteAnimator());
+        new ItemTouchHelper(mAdapter.getmCallback()).attachToRecyclerView(mRecyclerView);
         checkAnimInit();
     }
     private void checkAnimInit() {
