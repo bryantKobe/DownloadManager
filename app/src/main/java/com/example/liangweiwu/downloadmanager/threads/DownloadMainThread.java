@@ -3,17 +3,16 @@ package com.example.liangweiwu.downloadmanager.threads;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.example.liangweiwu.downloadmanager.model.DownloadParameter;
 import com.example.liangweiwu.downloadmanager.model.ApkInformation;
-import com.example.liangweiwu.downloadmanager.utils.FileUtils;
-import com.example.liangweiwu.downloadmanager.utils.GameInformationUtils;
-import com.example.liangweiwu.downloadmanager.utils.GameParamUtils;
+import com.example.liangweiwu.downloadmanager.model.DownloadParameter;
+import com.example.liangweiwu.downloadmanager.util.FileUtils;
+import com.example.liangweiwu.downloadmanager.util.GameInformationUtils;
+import com.example.liangweiwu.downloadmanager.util.GameParamUtils;
 
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.net.URL;
 import java.net.URLConnection;
-
 
 public class DownloadMainThread extends AsyncTask<Integer,Integer,String> {
     public static final int DEFAULT_THREAD_COUNT = 5;
