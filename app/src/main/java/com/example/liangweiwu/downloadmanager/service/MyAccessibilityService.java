@@ -3,7 +3,9 @@ package com.example.liangweiwu.downloadmanager.service;
 import android.accessibilityservice.AccessibilityService;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
-
+/**
+ *  Created by xinxin.li
+ */
 public class MyAccessibilityService extends AccessibilityService {
     public MyAccessibilityService() {
     }

@@ -25,7 +25,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
 
-
+/**
+ *  Created by nol & xinxin.li
+ */
 public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapter.MyViewHolder> {
 
     private ArrayList<ViewController> mDatas;

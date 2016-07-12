@@ -3,6 +3,9 @@ package com.example.liangweiwu.downloadmanager.model;
 
 import android.util.Log;
 
+/**
+ *  Created by Nol
+ */
 public class DownloadParameter {
     public static final int THREAD_STATUS_UNCOMPLETED = 0;
     public static final int THREAD_STATUS_COMPLETED = 1;

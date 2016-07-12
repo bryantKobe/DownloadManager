@@ -9,6 +9,9 @@ import java.util.ArrayList;
 
 import de.greenrobot.event.EventBus;
 
+/**
+ *  Created by xinxin.li
+ */
 public class UrlChecker extends Thread {
     private String mUrlStr;
 

@@ -13,7 +13,9 @@ import android.widget.Toast;
 import com.example.liangweiwu.downloadmanager.model.ApkInformation;
 import com.example.liangweiwu.downloadmanager.service.MyAccessibilityService;
 
-
+/**
+ *  Created by xinxin.li
+ */
 public class ApkInfoAccessor {
     private static ApkInfoAccessor mAccessor;
     private Context mContext;
