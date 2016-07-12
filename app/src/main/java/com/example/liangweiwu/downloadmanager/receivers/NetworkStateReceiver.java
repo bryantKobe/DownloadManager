@@ -1,4 +1,4 @@
-package com.example.liangweiwu.downloadmanager.receiver;
+package com.example.liangweiwu.downloadmanager.receivers;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
