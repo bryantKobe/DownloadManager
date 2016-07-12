@@ -59,17 +59,12 @@ public class MainActivity extends AppCompatActivity {
     }
     private void onLaunch(){
         EventBus.getDefault().register(this);
-        checkDrawOverlayPermission();
         FileUtils.init(this);
         ApkInfoAccessor.init(this);
         NetworkUtils.init(this);
         DownloadParameterUtils.init(this);
         ApkInfoUtils.init(this);
-        DownloadParameterUtils.getInstance().onCreate();
-        ApkInfoUtils.getInstance().onCreate();
-        dataInit();
-        startService(new Intent(MainActivity.this, FloatingService.class));
-        startDownloadTask();
+        loadData();
     }
     @TargetApi(23)
     public void checkDrawOverlayPermission() {
@@ -79,9 +74,12 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                         Uri.parse("package:" + getPackageName()));
                 startActivityForResult(intent, REQUEST_CODE);
+            }else{
+                MainUiEvent.postLaunchEvent();
             }
+        }else{
+            MainUiEvent.postLaunchEvent();
         }
-
     }
     @TargetApi(23)
     @Override
@@ -90,7 +88,18 @@ public class MainActivity extends AppCompatActivity {
             if (!Settings.canDrawOverlays(this)) {
                 Toast.makeText(this,"悬浮窗功能未打开,请在app->permission中打开悬浮窗功能",Toast.LENGTH_LONG).show();
             }
+            MainUiEvent.postLaunchEvent();
         }
+    }
+    private void loadData(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                DownloadParameterUtils.getInstance().onCreate();
+                ApkInfoUtils.getInstance().onCreate();
+                EventBus.getDefault().post(new MainUiEvent(MainUiEvent.EVENT_DATA_LOAD_FINISH));
+            }
+        }).start();
     }
     private void startDownloadTask(){
         if(DownloadTaskPoolThread.getInstance().getState().equals(Thread.State.NEW)){
@@ -98,8 +107,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     public void onEventMainThread(MainUiEvent event){
-        //Log.d(TAG,"event");
         switch (event.what) {
+            case MainUiEvent.EVENT_DATA_LOAD_FINISH:
+                checkDrawOverlayPermission();
+                startService(new Intent(MainActivity.this, FloatingService.class));
+                break;
+            case MainUiEvent.EVENT_LAUNCH:
+                dataInit();
+                startDownloadTask();
+                break;
             case MainUiEvent.EVENT_URL_VALID:
                 Toast.makeText(this, "即将开始下载...", Toast.LENGTH_LONG).show();
                 String url = (String) event.obj;
@@ -140,6 +156,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     private void dataInit(){
+        if(mAdapter != null){
+            return;
+        }
         String url1 = "http://mydata.xxzhushou.cn/web_server/upload/app/2016-03-04/com.DBGame.DiabloLOL.apk";
         String url2 = "http://mydata.xxzhushou.cn/web_server/upload/app/2016-05-10/Super_Cat_v1.101x.apk";
         String url3 = "http://mydata.xxzhushou.cn/web_server/upload/app/2016-01-31/com.tencent.tmgp.hse_000000_jh.apk";
@@ -152,8 +171,6 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<ApkInformation> info_list = ApkInfoUtils.getInstance().getGameList();
         HashMap<Integer,DownloadParameter[]> params_map = DownloadParameterUtils.getInstance().getParamMap();
         for(ApkInformation info_temp : info_list){
-            info_temp.debug();
-            System.out.println("divider");
             ViewController pp = DownloadTaskController.createInstance(info_temp,params_map.get(info_temp.getID()));
             mViewController.add(pp);
         }

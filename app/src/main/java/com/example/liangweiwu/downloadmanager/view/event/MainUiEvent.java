@@ -15,6 +15,8 @@ public class MainUiEvent {
     public static final int EVENT_TASK_UPDATE = 4;
     public static final int EVENT_TASK_UPDATE_FLOAT_ICON = 5;
     public static final int EVENT_TASK_DELETE = 6;
+    public static final int EVENT_LAUNCH = 7;
+    public static final int EVENT_DATA_LOAD_FINISH = 8;
 
     public int what = EVENT_EMPTY;
     public Object obj = null;
@@ -48,6 +50,10 @@ public class MainUiEvent {
             int id = controller.getInfo().getID();
             event = new MainUiEvent(what,controller,id,0);
         }
+        EventBus.getDefault().post(event);
+    }
+    public static void postLaunchEvent(){
+        MainUiEvent event = new MainUiEvent(EVENT_LAUNCH);
         EventBus.getDefault().post(event);
     }
 }
