@@ -78,6 +78,10 @@ public class ApkInfoUtils {
         }
         ApkInformation.MAX_ID += 1;
     }
+
+    public void onStop(){
+        saveToStorage();
+    }
     /*
      *  销毁
      */
@@ -85,9 +89,7 @@ public class ApkInfoUtils {
         saveToStorage();
         mDBHelper.close();
     }
-    /*
-     *   TODO
-     */
+
     public ArrayList<ApkInformation> getGameList(){
         ArrayList<ApkInformation> list = new ArrayList<>();
         for(ApkInformation info : mGameInfoMap.values()){
@@ -195,8 +197,8 @@ public class ApkInfoUtils {
             mGameInfoMap.remove(id);
             mDBHelper.delete(id);
     }
-    private void saveToStorage(){
-        Log.d("app","save");
+    public void saveToStorage(){
+        Log.d("ApkInformation","save");
         mDBHelper.insert(mGameInfoMap.values());
     }
     public void clear(){

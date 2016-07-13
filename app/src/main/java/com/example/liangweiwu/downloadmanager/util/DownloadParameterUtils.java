@@ -32,6 +32,9 @@ public class DownloadParameterUtils {
     public void onCreate(){
         mParamMap = mDBHelper.query_param();
     }
+    public void onStop(){
+        saveToStorage();
+    }
     public void onDestroy(){
         saveToStorage();
         mDBHelper.close();
@@ -63,8 +66,8 @@ public class DownloadParameterUtils {
     public DownloadParameter[] getParams(int id){
         return mParamMap.get(id);
     }
-    private void saveToStorage(){
-        Log.d("app","parameters save");
+    public void saveToStorage(){
+        Log.d("DownloadParameter","save");
         mDBHelper.insert_params(mParamMap.values());
     }
     public void delete(int id){

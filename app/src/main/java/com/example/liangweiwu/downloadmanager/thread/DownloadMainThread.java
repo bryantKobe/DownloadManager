@@ -143,7 +143,7 @@ public class DownloadMainThread extends AsyncTask<Integer,Integer,String> {
                 if(download_states == DOWNLOAD_STATE_TERMINATED){
                     break;
                 }
-                Log.d("download","running");
+                Log.d(info.getFileName(),"Downloading");
                 download_states = DOWNLOAD_STATE_RUNNING;
                 for (int i = 0; i < threadNum; i++) {
                     if(threads[i].isStop()){
@@ -214,7 +214,6 @@ public class DownloadMainThread extends AsyncTask<Integer,Integer,String> {
         }
         download_states = DOWNLOAD_STATE_RUNNABLE;
         DownloadTaskPoolThread.getInstance().executeTask(this);
-        Log.d("download","Running");
     }
     public void Pause(){
         if(download_states != DOWNLOAD_STATE_RUNNING

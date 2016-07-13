@@ -19,7 +19,6 @@ import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.liangweiwu.downloadmanager.R;
 import com.example.liangweiwu.downloadmanager.model.IndexedArrayList;
 import com.example.liangweiwu.downloadmanager.proxy.ProxyActivityUtil;
@@ -40,11 +39,8 @@ import com.example.liangweiwu.downloadmanager.util.ApkInfoUtils;
 import com.example.liangweiwu.downloadmanager.util.DownloadParameterUtils;
 import com.example.liangweiwu.downloadmanager.util.NetworkUtils;
 import com.example.liangweiwu.downloadmanager.util.UrlChecker;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-
 import de.greenrobot.event.EventBus;
 
 /**
@@ -150,7 +146,11 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case MainUiEvent.EVENT_TASK_UPDATE:
                 int pos = event.arg2;
-                mAdapter.notifyItemChanged(pos);
+                if(pos == MainUiEvent.UPDATE_POSITION_UNDEFINED){
+                    mAdapter.notifyDataSetChanged();
+                }else{
+                    mAdapter.notifyItemChanged(pos);
+                }
                 break;
             case MainUiEvent.EVENT_TASK_DELETE:
                 int id = event.arg1;
@@ -219,22 +219,30 @@ public class MainActivity extends AppCompatActivity {
         });
     }
     @Override
+    protected void onResume(){
+        super.onResume();
+        DownloadTaskPoolThread.getInstance().onResume();
+    }
+    @Override
     protected void onStop(){
         super.onStop();
-        ApkInfoUtils.getInstance().onDestroy();
-        DownloadParameterUtils.getInstance().onDestroy();
-        Log.d("app","stop");
+        ApkInfoUtils.getInstance().onStop();
+        DownloadParameterUtils.getInstance().onStop();
+        DownloadTaskPoolThread.getInstance().onStop();
+        //Log.d(TAG,"stop");
     }
     @Override
     protected void onDestroy(){
         super.onDestroy();
+        ApkInfoUtils.getInstance().onDestroy();
+        DownloadParameterUtils.getInstance().onDestroy();
         DownloadTaskPoolThread.getInstance().onActivityDestroy();
         EventBus.getDefault().unregister(this);
     }
     private void netTest(){
-        System.out.println("network:" + NetworkUtils.getInstance().isNetworkAvailable());
-        System.out.println("wifi:" + NetworkUtils.getInstance().isWifi());
-        System.out.println("3G:" + NetworkUtils.getInstance().is3G());
+        Log.d("newtork",""+NetworkUtils.getInstance().isNetworkAvailable());
+        Log.d("wifi",""+NetworkUtils.getInstance().isWifi());
+        Log.d("3G",""+NetworkUtils.getInstance().is3G());
     }
 }
 

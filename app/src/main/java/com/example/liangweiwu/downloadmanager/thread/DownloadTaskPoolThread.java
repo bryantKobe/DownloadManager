@@ -1,5 +1,6 @@
 package com.example.liangweiwu.downloadmanager.thread;
 
+import com.example.liangweiwu.downloadmanager.util.DownloadParameterUtils;
 import com.example.liangweiwu.downloadmanager.view.event.MainUiEvent;
 import com.example.liangweiwu.downloadmanager.model.ApkInformation;
 import com.example.liangweiwu.downloadmanager.model.DownloadTaskController;
@@ -23,6 +24,8 @@ public class DownloadTaskPoolThread extends Thread{
     public static final int TASK_PRIORITY_HIGHEST = 1;
 
     private static DownloadTaskPoolThread mDownloadTaskPool;
+    private final int mRefreshInterval = 500;
+    private final int mSaveProgressInterval = 10*mRefreshInterval;
     private ExecutorService exec;
     private ArrayList<DownloadTaskController> mBlockingQueue;
     private ArrayList<DownloadTaskController> mRunningQueue;
@@ -31,6 +34,7 @@ public class DownloadTaskPoolThread extends Thread{
     private int current_downloadTask_count;
     private boolean isRunning = true;
     private boolean isBlocked = false;
+    private boolean isBackgroundRunning = false;
 
     public static DownloadTaskPoolThread getInstance(){
         if(mDownloadTaskPool == null){
@@ -102,6 +106,7 @@ public class DownloadTaskPoolThread extends Thread{
                 if (controller.getInfo().getID() == id) {
                     appName = controller.getInfo().getName();
                     controller.setApkInstall();
+                    MainUiEvent.postDownloadItemAdapterEvent(MainUiEvent.EVENT_TASK_UPDATE,null,MainUiEvent.UPDATE_POSITION_UNDEFINED);
                     MainUiEvent event = new MainUiEvent(MainUiEvent.EVENT_TASK_UPDATE);
                     postEvent(event);
                     it.remove();
@@ -116,6 +121,7 @@ public class DownloadTaskPoolThread extends Thread{
     }
     @Override
     public void run(){
+        int backgroundRunningTime = 0;
         while(isRunning){
             try {
                 for(Iterator<DownloadTaskController> it = mRunningQueue.iterator(); it.hasNext();){
@@ -152,11 +158,25 @@ public class DownloadTaskPoolThread extends Thread{
                         it.remove();
                     }
                 }
-                Thread.sleep(500);
+                Thread.sleep(mRefreshInterval);
+                if(isBackgroundRunning && mRunningQueue.size() > 0){
+                    backgroundRunningTime += mRefreshInterval;
+                    if(backgroundRunningTime >= mSaveProgressInterval){
+                        ApkInfoUtils.getInstance().saveToStorage();
+                        DownloadParameterUtils.getInstance().saveToStorage();
+                        backgroundRunningTime = 0;
+                    }
+                }
             }catch (Exception e){
                 e.printStackTrace();
             }
         }
+    }
+    public void onResume(){
+        isBackgroundRunning = false;
+    }
+    public void onStop(){
+        isBackgroundRunning = true;
     }
     public void onActivityDestroy(){
         isBlocked = true;

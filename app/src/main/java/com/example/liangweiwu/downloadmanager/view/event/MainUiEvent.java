@@ -18,6 +18,8 @@ public class MainUiEvent {
     public static final int EVENT_LAUNCH = 7;
     public static final int EVENT_DATA_LOAD_FINISH = 8;
 
+    public static final int UPDATE_POSITION_UNDEFINED = -1;
+
     public int what = EVENT_EMPTY;
     public Object obj = null;
     public int arg1 = 0;

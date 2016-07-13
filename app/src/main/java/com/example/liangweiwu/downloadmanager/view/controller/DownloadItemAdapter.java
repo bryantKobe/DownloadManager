@@ -44,7 +44,6 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        Log.d("pos",""+position);
         final ViewController viewController = mDatas.get(position);
         viewController.setPosition(position);
         holder.setViewController(viewController);
