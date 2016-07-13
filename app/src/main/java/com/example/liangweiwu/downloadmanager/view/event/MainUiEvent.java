@@ -42,13 +42,21 @@ public class MainUiEvent {
         MainUiEvent event = new MainUiEvent(what,url,fileSize,0);
         return event;
     }
-    public static void postDownloadItemAdapterEvent(int what, DownloadTaskController controller){
+
+    /**
+     * what:    flag
+     * obj:     controller
+     * arg1:    id
+     * arg2:    position
+     */
+    public static void postDownloadItemAdapterEvent(int what, DownloadTaskController controller,int position){
         MainUiEvent event;
         if(controller == null){
             event = new MainUiEvent(what);
+            event.arg2 = position;
         }else{
             int id = controller.getInfo().getID();
-            event = new MainUiEvent(what,controller,id,0);
+            event = new MainUiEvent(what,controller,id,position);
         }
         EventBus.getDefault().post(event);
     }

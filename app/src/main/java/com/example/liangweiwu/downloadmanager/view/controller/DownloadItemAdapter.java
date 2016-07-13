@@ -7,6 +7,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,14 +16,12 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.liangweiwu.downloadmanager.model.IndexedArrayList;
 import com.example.liangweiwu.downloadmanager.util.ApkInfoAccessor;
 import com.example.liangweiwu.downloadmanager.model.DownloadTaskController;
 import com.example.liangweiwu.downloadmanager.thread.DownloadMainThread;
 import com.example.liangweiwu.downloadmanager.R;
 import com.example.liangweiwu.downloadmanager.thread.DownloadTaskPoolThread;
-
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Locale;
 
 /**
@@ -30,10 +29,10 @@ import java.util.Locale;
  */
 public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapter.MyViewHolder> {
 
-    private ArrayList<ViewController> mDatas;
+    private IndexedArrayList<ViewController> mDatas;
     private SimpleItemTouchHelperCallback mCallback;
 
-    public DownloadItemAdapter(ArrayList<ViewController> mDatas) {
+    public DownloadItemAdapter(IndexedArrayList<ViewController> mDatas) {
         this.mDatas = mDatas;
         mCallback = new SimpleItemTouchHelperCallback();
     }
@@ -45,8 +44,10 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
+        Log.d("pos",""+position);
         final ViewController viewController = mDatas.get(position);
-        holder.setParamTag(viewController);
+        viewController.setPosition(position);
+        holder.setViewController(viewController);
         int state = viewController.getController().getDownloadState();
         switch (state) {
             case DownloadMainThread.DOWNLOAD_STATE_NEW:
@@ -147,8 +148,8 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
                     .setMessage(R.string.dialog_message).setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            DownloadTaskPoolThread.getInstance().deleteTask(controller);
-                            notifyItemRemoved(getLayoutPosition());
+                            int position = getLayoutPosition();
+                            DownloadTaskPoolThread.getInstance().deleteTask(controller,position);
                         }
                     })
                     .setNegativeButton(R.string.dialog_cancel, null).create();
@@ -160,9 +161,9 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
             });
         }
 
-        public void setParamTag(ViewController params) {
-            controller = params.getController();
-            itemView.setTag(params);
+        public void setViewController(ViewController viewController) {
+            controller = viewController.getController();
+            itemView.setTag(viewController);
         }
 
         public void updateProgress(int downloadedSize, int speed, int fileSize) {
@@ -216,7 +217,7 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
             if (src == tar) {
                 return false;
             }
-            Collections.swap(mDatas, src, tar);
+            mDatas.swap(src,tar);
             notifyItemMoved(src, tar);
             return true;
         }

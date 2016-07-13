@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.liangweiwu.downloadmanager.R;
+import com.example.liangweiwu.downloadmanager.model.IndexedArrayList;
 import com.example.liangweiwu.downloadmanager.view.controller.DownloadItemAdapter;
 import com.example.liangweiwu.downloadmanager.view.controller.DeleteAnimator;
 import com.example.liangweiwu.downloadmanager.view.controller.ViewController;
@@ -56,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private DownloadItemAdapter mAdapter;
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
-    private ArrayList<ViewController> mViewController = new ArrayList<>();
+    private IndexedArrayList<ViewController> mViewController = new IndexedArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,19 +147,14 @@ public class MainActivity extends AppCompatActivity {
                 FloatingWindowManager.updateFloatIcon(drawable);
                 break;
             case MainUiEvent.EVENT_TASK_UPDATE:
-                int src = mLayoutManager.findFirstVisibleItemPosition();
-                int tar = mLayoutManager.findLastVisibleItemPosition();
-                mAdapter.notifyVisibleDataChanged(src,tar);
+                int pos = event.arg2;
+                mAdapter.notifyItemChanged(pos);
                 break;
             case MainUiEvent.EVENT_TASK_DELETE:
-                int id = (int) event.obj;
-                for (Iterator<ViewController> it = mViewController.iterator(); it.hasNext(); ) {
-                    ViewController temp = it.next();
-                    if (temp.getInfoID() == id) {
-                        it.remove();
-                        break;
-                    }
-                }
+                int id = event.arg1;
+                int position = event.arg2;
+                mViewController.removeByID(id);
+                mAdapter.notifyItemRemoved(position);
                 break;
             default:
                 break;

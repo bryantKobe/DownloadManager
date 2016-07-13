@@ -75,11 +75,11 @@ public class DownloadTaskPoolThread extends Thread{
         mStoppingQueue.add(controller);
         mBlockingQueue.remove(controller);
     }
-    public void deleteTask(DownloadTaskController controller){
+    public void deleteTask(DownloadTaskController controller,int position){
         cancelTask(controller);
         final ApkInformation info = controller.getInfo();
         ApkInfoUtils.getInstance().delete(info.getID());
-        MainUiEvent event = new MainUiEvent(MainUiEvent.EVENT_TASK_DELETE,info.getID());
+        MainUiEvent event = new MainUiEvent(MainUiEvent.EVENT_TASK_DELETE,controller,info.getID(),position);
         postEvent(event);
         new Thread(new Runnable() {
             @Override

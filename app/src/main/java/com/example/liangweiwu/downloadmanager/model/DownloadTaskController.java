@@ -19,23 +19,22 @@ public abstract class DownloadTaskController {
 
     public static ViewController createInstance(
             String url,int thread_number){
-
         final ViewController viewController = new ViewController();
         DownloadTaskController controller = new DownloadTaskController(url,thread_number) {
             @Override
             public void initViews(Integer... values) {
                 viewController.updateParams(values);
-                updateProgress();
+                updateProgress(viewController.getPosition());
             }
             @Override
             public void bindViews(Integer... values) {
                 viewController.updateParams(values);
-                updateProgress();
+                updateProgress(viewController.getPosition());
             }
             @Override
             public void onDownloadStop() {
                 Log.d("download","stop");
-                updateProgress();
+                updateProgress(viewController.getPosition());
             }
         };
         controller.addTask();
@@ -49,24 +48,24 @@ public abstract class DownloadTaskController {
             @Override
             public void initViews(Integer... values) {
                 viewController.updateParams(values);
-                updateProgress();
+                updateProgress(viewController.getPosition());
             }
             @Override
             public void bindViews(Integer... values) {
                 viewController.updateParams(values);
-                updateProgress();
+                updateProgress(viewController.getPosition());
             }
             @Override
             public void onDownloadStop() {
-                updateProgress();
+                updateProgress(viewController.getPosition());
             }
         };
         controller.addTask();
         viewController.setController(controller);
         return viewController;
     }
-    private static void updateProgress(){
-        MainUiEvent.postDownloadItemAdapterEvent(MainUiEvent.EVENT_TASK_UPDATE,null);
+    private static void updateProgress(int position){
+        MainUiEvent.postDownloadItemAdapterEvent(MainUiEvent.EVENT_TASK_UPDATE,null,position);
     }
     public DownloadTaskController(String url, int threadNum){
         try {

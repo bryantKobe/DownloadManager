@@ -7,34 +7,41 @@ import com.example.liangweiwu.downloadmanager.model.DownloadTaskController;
  */
 public class ViewController{
     public static final int PARAMS_LENGTH = 3;
-    private DownloadTaskController controller = null;
-    private Integer[] params = new Integer[PARAMS_LENGTH];
+    private DownloadTaskController mController = null;
+    private Integer[] mParams = new Integer[PARAMS_LENGTH];
+    private int mPosition;
     public ViewController(){
         for(int i = 0 ; i < PARAMS_LENGTH; i++){
-            params[i] = 0;
+            mParams[i] = 0;
         }
     }
     public void setController(DownloadTaskController controller){
-        this.controller = controller;
+        this.mController = controller;
+    }
+    public void setPosition(int position){
+        this.mPosition = position;
     }
     public void updateParams(Integer[] params){
         for(int i = 0 ; i < PARAMS_LENGTH; i++){
-            this.params[i] = params[i];
+            this.mParams[i] = params[i];
         }
     }
     public DownloadTaskController getController(){
-        return controller;
+        return mController;
+    }
+    public int getPosition(){
+        return mPosition;
     }
     public int getDownloadedSize(){
-        return params[0];
+        return mParams[0];
     }
     public int getSpeed(){
-        return params[1];
+        return mParams[1];
     }
     public int getFileSize(){
-        return params[2];
+        return mParams[2];
     }
     public int getInfoID(){
-        return controller.getInfo().getID();
+        return mController.getInfo().getID();
     }
 }
