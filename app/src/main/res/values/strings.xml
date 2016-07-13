@@ -26,4 +26,6 @@
     <string name="accessibility_service_description">智能安装,代理用户确认权限</string>
     <string name="smart_service">MySmartInstall</string>
 
+    <string name="proxy_msg">正在尝试跳转到client-Activity&#8230;</string>
+
 </resources>
