@@ -19,9 +19,13 @@
     <string name="null_str"> </string>
 
     <string name="dialog_title">提示</string>
-    <string name="dialog_message">删除任务会同时删除已下载的本地文件,是否确定删除?</string>
-    <string name="dialog_ok">确定</string>
-    <string name="dialog_cancel">取消</string>
+    <string name="dialog_delete_message">删除任务会同时删除已下载的本地文件,是否确定删除?</string>
+    <string name="dialog_delete_ok">确定</string>
+    <string name="dialog_delete_cancel">取消</string>
+
+    <string name="dialog_access_message">是否打开辅助安装服务?</string>
+    <string name="dialog_access_ok">打开</string>
+    <string name="dialog_access_canccel">直接安装</string>
 
     <string name="accessibility_service_description">智能安装,代理用户确认权限</string>
     <string name="smart_service">MySmartInstall</string>
