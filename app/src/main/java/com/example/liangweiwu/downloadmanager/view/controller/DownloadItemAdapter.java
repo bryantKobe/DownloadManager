@@ -7,7 +7,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,12 +15,13 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.liangweiwu.downloadmanager.model.IndexedArrayList;
-import com.example.liangweiwu.downloadmanager.util.ApkInfoAccessor;
-import com.example.liangweiwu.downloadmanager.model.DownloadTaskController;
-import com.example.liangweiwu.downloadmanager.thread.DownloadMainThread;
 import com.example.liangweiwu.downloadmanager.R;
+import com.example.liangweiwu.downloadmanager.model.DownloadTaskController;
+import com.example.liangweiwu.downloadmanager.model.IndexedArrayList;
+import com.example.liangweiwu.downloadmanager.thread.DownloadMainThread;
 import com.example.liangweiwu.downloadmanager.thread.DownloadTaskPoolThread;
+import com.example.liangweiwu.downloadmanager.util.ApkInfoAccessor;
+
 import java.util.Locale;
 
 /**
@@ -144,14 +144,14 @@ public class DownloadItemAdapter extends RecyclerView.Adapter<DownloadItemAdapte
             bar = (ProgressBar) v.findViewById(R.id.progressBar);
             deleteBtn = (ImageView) v.findViewById(R.id.dustIcon);
             dialog = new AlertDialog.Builder(v.getContext()).setTitle(R.string.dialog_title)
-                    .setMessage(R.string.dialog_message).setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
+                    .setMessage(R.string.dialog_delete_message).setPositiveButton(R.string.dialog_delete_ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             int position = getLayoutPosition();
                             DownloadTaskPoolThread.getInstance().deleteTask(controller,position);
                         }
                     })
-                    .setNegativeButton(R.string.dialog_cancel, null).create();
+                    .setNegativeButton(R.string.dialog_delete_cancel, null).create();
             deleteBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

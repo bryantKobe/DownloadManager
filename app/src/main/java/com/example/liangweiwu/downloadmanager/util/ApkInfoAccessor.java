@@ -1,6 +1,9 @@
 package com.example.liangweiwu.downloadmanager.util;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -10,6 +13,7 @@ import android.net.Uri;
 import android.provider.Settings;
 import android.widget.Toast;
 
+import com.example.liangweiwu.downloadmanager.R;
 import com.example.liangweiwu.downloadmanager.model.ApkInformation;
 import com.example.liangweiwu.downloadmanager.service.MyAccessibilityService;
 
@@ -28,7 +32,7 @@ public class ApkInfoAccessor {
     }
     public static void init(Context context){
         if(mAccessor == null){
-            mAccessor = new ApkInfoAccessor(context.getApplicationContext());
+            mAccessor = new ApkInfoAccessor(context);
         }
         serviceStr = context.getPackageName()+"/"+ MyAccessibilityService.class.getCanonicalName();
     }
@@ -113,16 +117,30 @@ public class ApkInfoAccessor {
         }
     }
 
-    public void apkInstallAttempt(String fileName){
-        apkInstall(fileName);
-        /*
+    public void apkInstallAttempt(final String fileName){
+
         if(!AccessibilityServiceUtils.checkAccessibilitySettingState(mContext,serviceStr)){
-            onOpenSmart();
+
+            Dialog dialog  = new AlertDialog.Builder(mContext).setTitle(R.string.dialog_title)
+                    .setMessage(R.string.dialog_access_message).setPositiveButton(
+                    R.string.dialog_access_ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    onOpenSmart();
+                }
+            }).setNegativeButton(R.string.dialog_access_canccel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            apkInstall(fileName);
+                        }
+                    }).create();
+
+            dialog.show();
         }
         else{
             apkInstall(fileName);
         }
-        */
+
     }
 
     public void onOpenSmart(){
