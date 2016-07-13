@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.example.liangweiwu.downloadmanager.R;
 import com.example.liangweiwu.downloadmanager.model.IndexedArrayList;
+import com.example.liangweiwu.downloadmanager.proxy.ProxyActivityUtil;
 import com.example.liangweiwu.downloadmanager.view.controller.DownloadItemAdapter;
 import com.example.liangweiwu.downloadmanager.view.controller.DeleteAnimator;
 import com.example.liangweiwu.downloadmanager.view.controller.ViewController;
@@ -105,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 DownloadParameterUtils.getInstance().onCreate();
                 ApkInfoUtils.getInstance().onCreate();
+                Log.d(TAG, "run: data init");
                 EventBus.getDefault().post(new MainUiEvent(MainUiEvent.EVENT_DATA_LOAD_FINISH));
             }
         }).start();
@@ -203,6 +205,16 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 iv.startAnimation(animation);
                 new UrlChecker(tv.getText().toString()).start();
+            }
+        });
+
+        ImageView qrImage = (ImageView)findViewById(R.id.qrImageView);
+        qrImage.setClickable(true);
+        qrImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ProxyActivityUtil.loadProxy(getBaseContext());
+                Toast.makeText(getBaseContext(),"targeting to client activity",Toast.LENGTH_SHORT).show();
             }
         });
     }
